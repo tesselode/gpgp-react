@@ -13,7 +13,7 @@ class App extends Component {
 
 	render() {
 		return (
-			<Container>
+			<Container style={{padding: '1em'}}>
 				<Row>
 					<Col xs='3'>
 						<Nav tabs>
