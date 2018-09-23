@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Container, Row, Col, Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
 import LayerList from './layers/LayerList';
 import Grid from './grid/Grid';
+import GeometryLayer from './layers/GeometryLayer';
 
 class App extends Component {
 	constructor(props) {
@@ -9,6 +10,7 @@ class App extends Component {
 
 		this.state = {
 			activeTab: '1',
+			layers: [<GeometryLayer />],
 		};
 	}
 
@@ -44,7 +46,7 @@ class App extends Component {
 						</TabContent>
 					</Col>
 					<Col xs='9'>
-						<Grid width={16} height={9} />
+						<Grid width={16} height={9} layers={this.state.layers} />
 					</Col>
 				</Row>
 			</Container>

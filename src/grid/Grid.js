@@ -47,6 +47,7 @@ class Grid extends Component {
 						fontSize: this.state.zoom + 'em',
 					}}
 				>
+					{this.props.layers}
 					{gridSquares}
 				</div>
 				Cursor X: {this.state.cursorX}
