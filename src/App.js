@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
 import LayerList from './layers/LayerList';
+import Grid from './grid/Grid';
 
 class App extends Component {
 	constructor(props) {
@@ -43,7 +44,7 @@ class App extends Component {
 						</TabContent>
 					</Col>
 					<Col xs='9'>
-						test app please ignore
+						<Grid />
 					</Col>
 				</Row>
 			</Container>

@@ -24,6 +24,7 @@ class LayerList extends Component {
 						action
 						active={this.state.activeLayer === i}
 						onClick={() => this.setState({activeLayer: i})}
+						key={i}
 					>
 						{layer.name}
 					</ListGroupItem>
