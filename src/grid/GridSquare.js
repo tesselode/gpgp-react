@@ -9,11 +9,20 @@ class GridSquare extends Component {
 		};
 	}
 
+	onHover() {
+		this.setState({hovered: true})
+		this.props.onHover();
+	}
+
+	onUnhover() {
+		this.setState({hovered: false})
+	}
+
 	render() {
 		return(
 			<div
-				onMouseEnter={() => this.setState({hovered: true})}
-				onMouseLeave={() => this.setState({hovered: false})}
+				onMouseEnter={() => this.onHover()}
+				onMouseLeave={() => this.onUnhover()}
 				style={{
 					position: 'absolute',
 					left: this.props.x + 'em',
