@@ -30,6 +30,18 @@ class App extends Component {
 		this.setState({level: level});
 	}
 
+	onRemove(x, y) {
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		let layer = level.layers[this.state.selectedLayer];
+		for (let i = 0; i < layer.data.length; i++) {
+			const tile = layer.data[i];
+			if (tile.x === x && tile.y === y) {
+				layer.data.splice(i, 1);
+			}
+		}
+		this.setState({level: level});
+	}
+
 	render() {
 		return (
 			<Container style={{padding: '1em'}}>
@@ -44,6 +56,7 @@ class App extends Component {
 						<Editor
 							level={this.state.level}
 							onPlace={(x, y) => this.onPlace(x, y)}
+							onRemove={(x, y) => this.onRemove(x, y)}
 						/>
 					</Col>
 				</Row>

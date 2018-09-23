@@ -14,12 +14,20 @@ class Editor extends Component {
 		};
 	}
 
-	onMouseDown() {
-		this.setState({mouseDown: true});
-		this.props.onPlace(this.state.cursorX, this.state.cursorY);
+	onMouseDown(event) {
+		this.setState({mouseDown: event.button});
+		switch (event.button) {
+			case 0:
+				this.props.onPlace(this.state.cursorX, this.state.cursorY);
+				break;
+			case 2:
+				this.props.onRemove(this.state.cursorX, this.state.cursorY);
+				break;
+		}
+		
 	}
 
-	onMouseUp() {
+	onMouseUp(event) {
 		this.setState({mouseDown: false});
 	}
 
@@ -28,8 +36,13 @@ class Editor extends Component {
 			cursorX: x,
 			cursorY: y,
 		});
-		if (this.state.mouseDown) {
-			this.props.onPlace(x, y);
+		switch (this.state.mouseDown) {
+			case 0:
+				this.props.onPlace(x, y);
+				break;
+			case 2:
+				this.props.onRemove(x, y);
+				break;
 		}
 	}
 
@@ -57,8 +70,10 @@ class Editor extends Component {
 						height: this.props.level.height + 'em',
 						fontSize: this.state.zoom + 'em',
 					}}
-					onMouseDown={() => this.onMouseDown()}
-					onMouseUp={() => this.onMouseUp()}
+					onMouseDown={(event) => this.onMouseDown(event)}
+					onMouseUp={(event) => this.onMouseUp(event)}
+					onContextMenu={(event) => event.preventDefault()}
+					onDragStart={(event) => event.preventDefault()}
 				>
 					{this.props.level.layers.map((layer, i) =>
 						<GeometryLayer data={layer.data} key={i} />
