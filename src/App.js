@@ -44,7 +44,7 @@ class App extends Component {
 						</TabContent>
 					</Col>
 					<Col xs='9'>
-						<Grid />
+						<Grid width={16} height={9} />
 					</Col>
 				</Row>
 			</Container>

@@ -16,10 +16,10 @@ class GridSquare extends Component {
 				onMouseLeave={() => this.setState({hovered: false})}
 				style={{
 					position: 'absolute',
-					left: 2 * this.props.x + 'em',
-					top: 2 * this.props.y + 'em',
-					width: '2em',
-					height: '2em',
+					left: this.props.x + 'em',
+					top: this.props.y + 'em',
+					width: '1em',
+					height: '1em',
 					border: '1px solid #bbb',
 					background: this.state.hovered ? '#ddd' : 'none',
 				}}
