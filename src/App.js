@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Nav, NavItem, NavLink, TabPane, TabContent, ListGroup, ListGroupItem } from 'reactstrap';
+import { Container, Row, Col, Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
+import LayerList from './layers/LayerList';
 
 class App extends Component {
 	constructor(props) {
@@ -7,7 +8,6 @@ class App extends Component {
 
 		this.state = {
 			activeTab: '1',
-			activeLayer: '1',
 		};
 	}
 
@@ -36,36 +36,7 @@ class App extends Component {
 						</Nav>
 						<TabContent activeTab={this.state.activeTab}>
 							<TabPane tabId='1'>
-								<ListGroup flush>
-									<ListGroupItem
-										action
-										active={this.state.activeLayer === '1'}
-										onClick={() => this.setState({activeLayer: '1'})}
-									>
-										Entities
-									</ListGroupItem>
-									<ListGroupItem
-										action
-										active={this.state.activeLayer === '2'}
-										onClick={() => this.setState({activeLayer: '2'})}
-									>
-										Geometry
-									</ListGroupItem>
-									<ListGroupItem
-										action
-										active={this.state.activeLayer === '3'}
-										onClick={() => this.setState({activeLayer: '3'})}
-									>
-										Foreground Tiles
-									</ListGroupItem>
-									<ListGroupItem
-										action
-										active={this.state.activeLayer === '4'}
-										onClick={() => this.setState({activeLayer: '4'})}
-									>
-										Background Tiles
-									</ListGroupItem>
-								</ListGroup>
+								<LayerList />
 							</TabPane>
 							<TabPane tabId='2'>
 							</TabPane>
