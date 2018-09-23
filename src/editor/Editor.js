@@ -31,6 +31,16 @@ class Editor extends Component {
 		this.setState({mouseDown: false});
 	}
 
+	onWheel(event) {
+		event.preventDefault();
+		if (event.deltaY > 0) {
+			this.setState({zoom: this.state.zoom / 1.1});
+		}
+		if (event.deltaY < 0) {
+			this.setState({zoom: this.state.zoom * 1.1});
+		}
+	}
+
 	onGridSquareHovered(x, y) {
 		this.setState({
 			cursorX: x,
@@ -62,18 +72,26 @@ class Editor extends Component {
 		}
 
 		return(
-			<div>
+			<div
+				style={{
+					width: '67vw',
+					height: '90vh',
+					overflow: 'auto',
+				}}
+				onWheel={(event) => this.onWheel(event)}
+				onContextMenu={(event) => event.preventDefault()}
+				onDragStart={(event) => event.preventDefault()}
+			>
 				<div
 					style={{
 						position: 'relative',
 						width: this.props.level.width + 'em',
 						height: this.props.level.height + 'em',
 						fontSize: this.state.zoom + 'em',
+						transition: '.15s',
 					}}
 					onMouseDown={(event) => this.onMouseDown(event)}
 					onMouseUp={(event) => this.onMouseUp(event)}
-					onContextMenu={(event) => event.preventDefault()}
-					onDragStart={(event) => event.preventDefault()}
 				>
 					{this.props.level.layers.map((layer, i) =>
 						<GeometryLayer data={layer.data} key={i} />

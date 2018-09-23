@@ -3,7 +3,9 @@ import { ListGroup, ListGroupItem } from 'reactstrap';
 
 class LayerList extends Component {
 	render() {
-		return(
+		return(<div>
+			<h5>Layers</h5>
+			<hr />
 			<ListGroup>
 				{this.props.layers.map((layer, i) =>
 					<ListGroupItem
@@ -15,7 +17,7 @@ class LayerList extends Component {
 					</ListGroupItem>
 				)}
 			</ListGroup>
-		);
+		</div>);
 	}
 }
 
