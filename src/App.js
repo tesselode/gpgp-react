@@ -15,16 +15,25 @@ class App extends Component {
 					{
 						type: 'geometry',
 						name: 'Geometry',
-						data: [
-							{x: 1, y: 4},
-							{x: 2, y: 4},
-							{x: 3, y: 5},
-						],
+						data: [],
 					},
 				],
 			},
 			selectedLayer: 0,
 		};
+	}
+
+	onPlace(x, y) {
+		let layers = this.state.level.layers.slice();
+		let layer = layers[this.state.selectedLayer];
+		layer.data.push({x: x, y: y});
+		this.setState({
+			level: {
+				width: this.state.level.width,
+				height: this.state.level.height,
+				layers: layers,
+			},
+		});
 	}
 
 	render() {
@@ -40,6 +49,7 @@ class App extends Component {
 					<Col xs='9'>
 						<Grid
 							level={this.state.level}
+							onPlace={(x, y) => this.onPlace(x, y)}
 						/>
 					</Col>
 				</Row>

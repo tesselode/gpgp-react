@@ -7,18 +7,19 @@ class Grid extends Component {
 		super(props);
 
 		this.state = {
-			cursorX: 0,
-			cursorY: 0,
-			cursorWithinMap: false,
 			zoom: 2,
+			mouseDown: false,
 		};
 	}
 
+	onGridSquareClicked(x, y) {
+		this.props.onPlace(x, y);
+	}
+
 	onGridSquareHovered(x, y) {
-		this.setState({
-			cursorX: x,
-			cursorY: y,
-		});
+		if (this.state.mouseDown) {
+			this.props.onPlace(x, y);
+		}
 	}
 
 	render() {
@@ -32,6 +33,7 @@ class Grid extends Component {
 					x={x}
 					y={y}
 					onHover={() => this.onGridSquareHovered(x, y)}
+					onClick={() => this.onGridSquareClicked(x, y)}
 				/>);
 			}
 		}
@@ -39,25 +41,20 @@ class Grid extends Component {
 		return(
 			<div>
 				<div
-					onMouseEnter={() => this.setState({cursorWithinMap: true})}
-					onMouseLeave={() => this.setState({cursorWithinMap: false})}
 					style={{
 						position: 'relative',
 						width: this.props.level.width + 'em',
 						height: this.props.level.height + 'em',
 						fontSize: this.state.zoom + 'em',
 					}}
+					onMouseDown={() => this.setState({mouseDown: true})}
+					onMouseUp={() => this.setState({mouseDown: false})}
 				>
 					{this.props.level.layers.map((layer, i) =>
-						<GeometryLayer data={layer.data} />
+						<GeometryLayer data={layer.data} key={i} />
 					)}
 					{gridSquares}
 				</div>
-				Cursor X: {this.state.cursorX}
-				<br />
-				Cursor Y: {this.state.cursorY}
-				<br />
-				Is cursor within map? {this.state.cursorWithinMap ? 'Yes' : 'No'}
 			</div>
 		);
 	}

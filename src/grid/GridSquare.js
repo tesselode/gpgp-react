@@ -23,6 +23,7 @@ class GridSquare extends Component {
 			<div
 				onMouseEnter={() => this.onHover()}
 				onMouseLeave={() => this.onUnhover()}
+				onClick={() => this.props.onClick()}
 				style={{
 					position: 'absolute',
 					left: this.props.x + 'em',

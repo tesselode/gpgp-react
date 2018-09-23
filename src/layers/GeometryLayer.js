@@ -14,6 +14,7 @@ class GeometryLayer extends Component {
 							height: '1em',
 							background: '#27bbe8'
 						}}
+						key={i}
 					/>
 				)}
 			</div>
