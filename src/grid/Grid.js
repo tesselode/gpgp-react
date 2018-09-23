@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import GridSquare from './GridSquare';
+import GeometryLayer from '../layers/GeometryLayer';
 
 class Grid extends Component {
 	constructor(props) {
@@ -23,8 +24,8 @@ class Grid extends Component {
 	render() {
 		let gridSquares = [];
 		let i = -1;
-		for (let x = 0; x < this.props.width; x++) {
-			for (let y = 0; y < this.props.height; y++) {
+		for (let x = 0; x < this.props.level.width; x++) {
+			for (let y = 0; y < this.props.level.height; y++) {
 				i += 1;
 				gridSquares.push(<GridSquare
 					key={i}
@@ -42,12 +43,14 @@ class Grid extends Component {
 					onMouseLeave={() => this.setState({cursorWithinMap: false})}
 					style={{
 						position: 'relative',
-						width: this.props.width + 'em',
-						height: this.props.height + 'em',
+						width: this.props.level.width + 'em',
+						height: this.props.level.height + 'em',
 						fontSize: this.state.zoom + 'em',
 					}}
 				>
-					{this.props.layers}
+					{this.props.level.layers.map((layer, i) =>
+						<GeometryLayer data={layer.data} />
+					)}
 					{gridSquares}
 				</div>
 				Cursor X: {this.state.cursorX}

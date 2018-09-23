@@ -1,16 +1,29 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import LayerList from './layers/LayerList';
 import Grid from './grid/Grid';
-import GeometryLayer from './layers/GeometryLayer';
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			activeTab: '1',
-			layers: [<GeometryLayer />],
+			level: {
+				width: 16,
+				height: 9,
+				layers: [
+					{
+						type: 'geometry',
+						name: 'Geometry',
+						data: [
+							{x: 1, y: 4},
+							{x: 2, y: 4},
+							{x: 3, y: 5},
+						],
+					},
+				],
+			},
+			selectedLayer: 0,
 		};
 	}
 
@@ -19,34 +32,15 @@ class App extends Component {
 			<Container style={{padding: '1em'}}>
 				<Row>
 					<Col xs='3'>
-						<Nav tabs>
-							<NavItem>
-								<NavLink
-									active={this.state.activeTab === '1'}
-									onClick={() => this.setState({activeTab: '1'})}
-								>
-									Layers
-								</NavLink>
-							</NavItem>
-							<NavItem>
-								<NavLink
-									active={this.state.activeTab === '2'}
-									onClick={() => this.setState({activeTab: '2'})}
-								>
-									Entities
-								</NavLink>
-							</NavItem>
-						</Nav>
-						<TabContent activeTab={this.state.activeTab}>
-							<TabPane tabId='1'>
-								<LayerList />
-							</TabPane>
-							<TabPane tabId='2'>
-							</TabPane>
-						</TabContent>
+						<LayerList
+							layers={this.state.level.layers}
+							selectedLayer={this.state.selectedLayer}
+						/>
 					</Col>
 					<Col xs='9'>
-						<Grid width={16} height={9} layers={this.state.layers} />
+						<Grid
+							level={this.state.level}
+						/>
 					</Col>
 				</Row>
 			</Container>

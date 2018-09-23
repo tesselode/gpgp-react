@@ -1,21 +1,10 @@
 import React, { Component } from 'react';
 
 class GeometryLayer extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			data: [
-				{x: 1, y: 4},
-				{x: 2, y: 4},
-				{x: 3, y: 5},
-			],
-		};
-	}
-
 	render() {
 		return(
 			<div>
-				{this.state.data.map((tile, i) =>
+				{this.props.data.map((tile, i) =>
 					<div
 						style={{
 							position: 'absolute',
