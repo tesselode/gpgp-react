@@ -24,16 +24,10 @@ class App extends Component {
 	}
 
 	onPlace(x, y) {
-		let layers = this.state.level.layers.slice();
-		let layer = layers[this.state.selectedLayer];
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		let layer = level.layers[this.state.selectedLayer];
 		layer.data.push({x: x, y: y});
-		this.setState({
-			level: {
-				width: this.state.level.width,
-				height: this.state.level.height,
-				layers: layers,
-			},
-		});
+		this.setState({level: level});
 	}
 
 	render() {

@@ -8,15 +8,26 @@ class Grid extends Component {
 
 		this.state = {
 			zoom: 2,
+			cursorX: 0,
+			cursorY: 0,
 			mouseDown: false,
 		};
 	}
 
-	onGridSquareClicked(x, y) {
-		this.props.onPlace(x, y);
+	onMouseDown() {
+		this.setState({mouseDown: true});
+		this.props.onPlace(this.state.cursorX, this.state.cursorY);
+	}
+
+	onMouseUp() {
+		this.setState({mouseDown: false});
 	}
 
 	onGridSquareHovered(x, y) {
+		this.setState({
+			cursorX: x,
+			cursorY: y,
+		});
 		if (this.state.mouseDown) {
 			this.props.onPlace(x, y);
 		}
@@ -33,7 +44,6 @@ class Grid extends Component {
 					x={x}
 					y={y}
 					onHover={() => this.onGridSquareHovered(x, y)}
-					onClick={() => this.onGridSquareClicked(x, y)}
 				/>);
 			}
 		}
@@ -47,8 +57,8 @@ class Grid extends Component {
 						height: this.props.level.height + 'em',
 						fontSize: this.state.zoom + 'em',
 					}}
-					onMouseDown={() => this.setState({mouseDown: true})}
-					onMouseUp={() => this.setState({mouseDown: false})}
+					onMouseDown={() => this.onMouseDown()}
+					onMouseUp={() => this.onMouseUp()}
 				>
 					{this.props.level.layers.map((layer, i) =>
 						<GeometryLayer data={layer.data} key={i} />
