@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import LayerList from './layers/LayerList';
-import Grid from './grid/Grid';
+import LayerList from './ui/LayerList';
+import Editor from './editor/Editor';
 
 class App extends Component {
 	constructor(props) {
@@ -41,7 +41,7 @@ class App extends Component {
 						/>
 					</Col>
 					<Col xs='9'>
-						<Grid
+						<Editor
 							level={this.state.level}
 							onPlace={(x, y) => this.onPlace(x, y)}
 						/>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import GridSquare from './GridSquare';
 import GeometryLayer from '../layers/GeometryLayer';
 
-class Grid extends Component {
+class Editor extends Component {
 	constructor(props) {
 		super(props);
 
@@ -70,4 +70,4 @@ class Grid extends Component {
 	}
 }
 
-export default Grid;
+export default Editor;
