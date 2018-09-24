@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import LayerList from './ui/LayerList';
 import Editor from './editor/Editor';
+const {ipcRenderer} = window.require('electron');
 
 class App extends Component {
 	constructor(props) {
@@ -21,6 +22,8 @@ class App extends Component {
 			},
 			selectedLayer: 0,
 		};
+
+		ipcRenderer.send('say hi');
 	}
 
 	onPlace(x, y) {

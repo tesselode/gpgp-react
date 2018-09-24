@@ -16,6 +16,7 @@
     "start": "run-p start-react start-electron"
   },
   "devDependencies": {
+    "devtron": "^1.4.0",
     "electron": "^3.0.0",
     "npm-run-all": "^4.1.3"
   }
