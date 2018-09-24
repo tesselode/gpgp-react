@@ -23,8 +23,9 @@ class Editor extends Component {
 			case 2:
 				this.props.onRemove(this.state.cursorX, this.state.cursorY);
 				break;
+			default:
+				break;
 		}
-		
 	}
 
 	onMouseUp(event) {
@@ -52,6 +53,8 @@ class Editor extends Component {
 				break;
 			case 2:
 				this.props.onRemove(x, y);
+				break;
+			default:
 				break;
 		}
 	}
