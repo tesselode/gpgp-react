@@ -26,7 +26,7 @@ class App extends Component {
 					{
 						type: 'tile',
 						name: 'Main tiles',
-						tileset: 'main',
+						tilesetName: 'main',
 					},
 					{
 						type: 'geometry',
@@ -84,8 +84,8 @@ class App extends Component {
 						/>
 						{selectedLayer.type === 'tile' ?
 							<TilePicker
-								project={this.state.project}
-								tileset={selectedLayer.tileset}
+								tilesetName={selectedLayer.tilesetName}
+								tileset={this.state.project.tilesets[selectedLayer.tilesetName]}
 							/>
 						: ''}
 					</Col>

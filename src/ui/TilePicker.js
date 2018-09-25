@@ -4,14 +4,13 @@ import Editor from '../editor/Editor';
 
 export default class TilePicker extends Component {
 	render() {
-		let tileset = this.props.project.tilesets[this.props.tileset];
-		return(<SidebarSection title={'Tiles (' + this.props.tileset + ')'}>
+		return(<SidebarSection title={'Tiles (' + this.props.tilesetName + ')'}>
 			<Editor
 				width='22.5vw'
 				height='50vh'
 				startingZoom={.5}
-				mapWidth={tileset.imageWidth / tileset.tileSize}
-				mapHeight={tileset.imageHeight / tileset.tileSize}
+				mapWidth={this.props.tileset.imageWidth / this.props.tileset.tileSize}
+				mapHeight={this.props.tileset.imageHeight / this.props.tileset.tileSize}
 				project={this.props.project}
 				layers={[
 					{

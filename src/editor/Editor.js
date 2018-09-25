@@ -102,10 +102,17 @@ class Editor extends Component {
 					{this.props.layers.map((layer, i) => {
 						switch (layer.type) {
 							case 'geometry':
-								return <GeometryLayer data={layer.data} order={-i} key={i} />;
+								return <GeometryLayer
+									data={layer.data}
+									order={-i}
+									key={i}
+								/>;
 							case 'tilePreview':
-								let tileset = this.props.project.tilesets[layer.tileset];
-								return <TilePreviewLayer tileset={tileset} order={-i} key={i} />;
+								return <TilePreviewLayer
+									tileset={layer.tileset}
+									order={-i}
+									key={i}
+								/>;
 							default:
 								return '';
 						}
