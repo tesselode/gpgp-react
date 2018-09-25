@@ -100,12 +100,12 @@ class Editor extends Component {
 					{this.props.level.layers.map((layer, i) => {
 						switch (layer.type) {
 							case 'geometry':
-								return <GeometryLayer data={layer.data} key={i} />
+								return <GeometryLayer data={layer.data} key={i} />;
 							case 'tile':
 								let tileset = this.props.project.tilesets[layer.tileset];
-								return <TileLayer tileset={tileset} key={i} />
+								return <TileLayer tileset={tileset} key={i} />;
 							default:
-								break;
+								return '';
 						}
 					})}
 					{gridSquares}
