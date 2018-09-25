@@ -12,6 +12,9 @@ class App extends Component {
 				tilesets: {
 					main: {
 						image: 'sheet.png',
+						imageWidth: 272,
+						imageHeight: 128,
+						tileSize: 16,
 					},
 				},
 			},
