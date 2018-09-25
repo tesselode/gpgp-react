@@ -1,10 +1,31 @@
 import React, { Component } from 'react';
-import { ListGroup, ListGroupItem } from 'reactstrap';
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroup, ListGroupItem } from 'reactstrap';
 import SidebarSection from './SidebarSection';
 
 export default class LayerList extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			dropdownOpen: false,
+		};
+	}
+
 	render() {
-		return(<SidebarSection title='Layers'>
+		return(<SidebarSection
+			title='Layers'
+			headerContent={
+				<ButtonDropdown
+					isOpen={this.state.dropdownOpen}
+					toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
+				>
+					<DropdownToggle color='light' size='sm'>+</DropdownToggle>
+					<DropdownMenu>
+						<DropdownItem>Geometry</DropdownItem>
+						<DropdownItem>Tile</DropdownItem>
+					</DropdownMenu>
+				</ButtonDropdown>
+			}
+		>
 			<ListGroup flush>
 				{this.props.layers.map((layer, i) =>
 					<ListGroupItem

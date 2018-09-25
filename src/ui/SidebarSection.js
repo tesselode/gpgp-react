@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Card, CardHeader, CardBody, Collapse } from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Collapse, Navbar } from 'reactstrap';
 
 export default class SidebarSection extends Component {
 	constructor(props) {
@@ -11,14 +11,16 @@ export default class SidebarSection extends Component {
 
 	render() {
 		return(<Card>
-			<CardHeader
-				onClick={() => this.setState({expanded: !this.state.expanded})}
-				style={{
-					padding: '0',
-					cursor: 'pointer',
-				}}
-			>
-				<Button color='link'>{this.props.title}</Button>
+			<CardHeader style={{padding: '0'}}>
+				<Navbar style={{padding: '0'}}>
+					<Button
+						color='link'
+						onClick={() => this.setState({expanded: !this.state.expanded})}
+					>
+						{this.props.title}
+					</Button>
+					{this.props.headerContent}
+				</Navbar>
 			</CardHeader>
 			<Collapse isOpen={this.state.expanded} style={{transition: '.15s'}}>
 				<CardBody style={{padding: '0'}}>

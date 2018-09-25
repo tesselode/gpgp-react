@@ -8,7 +8,7 @@ export default class TilePicker extends Component {
 		return(<SidebarSection title={'Tiles (' + this.props.tileset + ')'}>
 			<Editor
 				width='22.5vw'
-				height='33vh'
+				height='50vh'
 				startingZoom={.5}
 				mapWidth={tileset.imageWidth / tileset.tileSize}
 				mapHeight={tileset.imageHeight / tileset.tileSize}
