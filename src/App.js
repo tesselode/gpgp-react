@@ -59,12 +59,13 @@ class App extends Component {
 
 	render() {
 		return (
-			<Container style={{padding: '1em'}}>
+			<Container fluid style={{padding: '1em'}}>
 				<Row>
 					<Col xs='3'>
 						<LayerList
 							layers={this.state.level.layers}
 							selectedLayer={this.state.selectedLayer}
+							onSelectLayer={(i) => this.setState({selectedLayer: i})}
 						/>
 					</Col>
 					<Col xs='9'>

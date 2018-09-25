@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "GPGP",
+  "name": "General Purpose Grid Placer",
   "icons": [
     {
       "src": "favicon.ico",
