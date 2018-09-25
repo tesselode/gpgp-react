@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import GridSquare from './GridSquare';
 import GeometryLayer from '../layers/GeometryLayer';
+import TileLayer from '../layers/TileLayer';
 
 class Editor extends Component {
 	constructor(props) {
@@ -96,9 +97,17 @@ class Editor extends Component {
 					onMouseDown={(event) => this.onMouseDown(event)}
 					onMouseUp={(event) => this.onMouseUp(event)}
 				>
-					{this.props.level.layers.map((layer, i) =>
-						<GeometryLayer data={layer.data} key={i} />
-					)}
+					{this.props.level.layers.map((layer, i) => {
+						switch (layer.type) {
+							case 'geometry':
+								return <GeometryLayer data={layer.data} key={i} />
+							case 'tile':
+								let tileset = this.props.project.tilesets[layer.tileset];
+								return <TileLayer tileset={tileset} key={i} />
+							default:
+								break;
+						}
+					})}
 					{gridSquares}
 				</div>
 			</div>

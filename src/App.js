@@ -8,10 +8,22 @@ class App extends Component {
 		super(props);
 
 		this.state = {
+			project: {
+				tilesets: {
+					main: {
+						image: 'sheet.png',
+					},
+				},
+			},
 			level: {
 				width: 16,
 				height: 9,
 				layers: [
+					{
+						type: 'tile',
+						name: 'Main tiles',
+						tileset: 'main',
+					},
 					{
 						type: 'geometry',
 						name: 'Geometry',
@@ -55,6 +67,7 @@ class App extends Component {
 					<Col xs='9'>
 						<Editor
 							level={this.state.level}
+							project={this.state.project}
 							onPlace={(x, y) => this.onPlace(x, y)}
 							onRemove={(x, y) => this.onRemove(x, y)}
 						/>
