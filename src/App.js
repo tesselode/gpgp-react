@@ -64,6 +64,7 @@ class App extends Component {
 					}
 				}
 				this.setState({level: level});
+				break;
 			default:
 				break;
 		}
@@ -81,7 +82,7 @@ class App extends Component {
 							selectedLayer={this.state.selectedLayer}
 							onSelectLayer={(i) => this.setState({selectedLayer: i})}
 						/>
-						{selectedLayer.type == 'tile' ?
+						{selectedLayer.type === 'tile' ?
 							<TilePicker
 								project={this.state.project}
 								tileset={selectedLayer.tileset}
