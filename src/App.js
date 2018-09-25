@@ -35,15 +35,15 @@ class App extends Component {
 					},
 				],
 			},
-			selectedLayer: 0,
+			selectedLayerIndex: 0,
 		};
 	}
 
 	onPlace(x, y) {
-		switch (this.state.level.layers[this.state.selectedLayer].type) {
+		switch (this.state.level.layers[this.state.selectedLayerIndex].type) {
 			case 'geometry':
 				let level = JSON.parse(JSON.stringify(this.state.level));
-				let layer = level.layers[this.state.selectedLayer];
+				let layer = level.layers[this.state.selectedLayerIndex];
 				layer.data.push({x: x, y: y});
 				this.setState({level: level});
 				break;
@@ -53,10 +53,10 @@ class App extends Component {
 	}
 
 	onRemove(x, y) {
-		switch (this.state.level.layers[this.state.selectedLayer].type) {
+		switch (this.state.level.layers[this.state.selectedLayerIndex].type) {
 			case 'geometry':
 				let level = JSON.parse(JSON.stringify(this.state.level));
-				let layer = level.layers[this.state.selectedLayer];
+				let layer = level.layers[this.state.selectedLayerIndex];
 				for (let i = 0; i < layer.data.length; i++) {
 					const tile = layer.data[i];
 					if (tile.x === x && tile.y === y) {
@@ -71,7 +71,7 @@ class App extends Component {
 	}
 
 	render() {
-		let selectedLayer = this.state.level.layers[this.state.selectedLayer];
+		let selectedLayer = this.state.level.layers[this.state.selectedLayerIndex];
 
 		return (
 			<Container fluid style={{padding: '1em'}}>
@@ -79,8 +79,8 @@ class App extends Component {
 					<Col xs='3'>
 						<LayerList
 							layers={this.state.level.layers}
-							selectedLayer={this.state.selectedLayer}
-							onSelectLayer={(i) => this.setState({selectedLayer: i})}
+							selectedLayer={this.state.selectedLayerIndex}
+							onSelectLayer={(i) => this.setState({selectedLayerIndex: i})}
 						/>
 						{selectedLayer.type === 'tile' ?
 							<TilePicker
