@@ -1,6 +1,4 @@
-const {app, BrowserWindow, ipcMain } = require('electron');
-
-ipcMain.on('say hi', () => console.log('hi!'));
+const {app, BrowserWindow } = require('electron');
 
 let mainWindow;
 
