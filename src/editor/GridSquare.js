@@ -29,7 +29,8 @@ class GridSquare extends Component {
 					top: this.props.y + 'em',
 					width: '1em',
 					height: '1em',
-					border: '1px solid #bbb',
+					borderLeft: '.025em solid #bbb',
+					borderTop: '.025em solid #bbb',
 					background: this.state.hovered ? 'rgba(1, 1, 1, .1)' : 'none',
 				}}
 			/>

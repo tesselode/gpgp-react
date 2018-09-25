@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import GridSquare from './GridSquare';
 import GeometryLayer from '../layers/GeometryLayer';
-import TileLayer from '../layers/TileLayer';
+import TilePreviewLayer from '../layers/TilePreviewLayer';
 
 class Editor extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			zoom: 2,
+			zoom: 2 * (props.startingZoom ? props.startingZoom : 1),
 			cursorX: 0,
 			cursorY: 0,
 			mouseDown: false,
@@ -63,8 +63,8 @@ class Editor extends Component {
 	render() {
 		let gridSquares = [];
 		let i = -1;
-		for (let x = 0; x < this.props.level.width; x++) {
-			for (let y = 0; y < this.props.level.height; y++) {
+		for (let x = 0; x < this.props.mapWidth; x++) {
+			for (let y = 0; y < this.props.mapHeight; y++) {
 				i += 1;
 				gridSquares.push(<GridSquare
 					key={i}
@@ -78,8 +78,8 @@ class Editor extends Component {
 		return(
 			<div
 				style={{
-					width: '67vw',
-					height: '90vh',
+					width: this.props.width,
+					height: this.props.height,
 					overflow: 'auto',
 				}}
 				onWheel={(event) => this.onWheel(event)}
@@ -89,21 +89,23 @@ class Editor extends Component {
 				<div
 					style={{
 						position: 'relative',
-						width: this.props.level.width + 'em',
-						height: this.props.level.height + 'em',
+						width: this.props.mapWidth + 'em',
+						height: this.props.mapHeight + 'em',
+						borderRight: '1px solid #bbb',
+						borderBottom: '1px solid #bbb',
 						fontSize: this.state.zoom + 'em',
 						transition: '.15s',
 					}}
 					onMouseDown={(event) => this.onMouseDown(event)}
 					onMouseUp={(event) => this.onMouseUp(event)}
 				>
-					{this.props.level.layers.map((layer, i) => {
+					{this.props.layers.map((layer, i) => {
 						switch (layer.type) {
 							case 'geometry':
 								return <GeometryLayer data={layer.data} order={-i} key={i} />;
-							case 'tile':
+							case 'tilePreview':
 								let tileset = this.props.project.tilesets[layer.tileset];
-								return <TileLayer tileset={tileset} order={-i} key={i} />;
+								return <TilePreviewLayer tileset={tileset} order={-i} key={i} />;
 							default:
 								return '';
 						}

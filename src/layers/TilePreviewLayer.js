@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TileLayer = (props) => {
+const TilePreviewLayer = (props) => {
 	let scale = props.tileset.imageWidth / props.tileset.tileSize;
 	return <img
 		src={props.tileset.image}
@@ -14,4 +14,4 @@ const TileLayer = (props) => {
 	/>;
 }
 
-export default TileLayer;
+export default TilePreviewLayer;
