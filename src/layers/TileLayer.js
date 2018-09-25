@@ -6,6 +6,8 @@ const TileLayer = (props) => {
 		src={props.tileset.image}
 		alt=''
 		style={{
+			position: 'absolute',
+			zIndex: props.order,
 			width: scale + 'em',
 			imageRendering: 'pixelated',
 		}}

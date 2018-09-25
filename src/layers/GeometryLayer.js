@@ -6,6 +6,7 @@ const GeometryLayer = (props) =>
 			<div
 				style={{
 					position: 'absolute',
+					zIndex: props.order,
 					left: tile.x + 'em',
 					top: tile.y + 'em',
 					width: '1em',
