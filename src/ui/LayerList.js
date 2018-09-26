@@ -13,6 +13,7 @@ export default class LayerList extends Component {
 	render() {
 		return(<SidebarSection
 			title='Layers'
+			flush
 			headerContent={
 				<ButtonDropdown
 					isOpen={this.state.dropdownOpen}

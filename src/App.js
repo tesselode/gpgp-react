@@ -3,6 +3,7 @@ import { Container, Row, Col } from 'reactstrap';
 import LayerList from './ui/LayerList';
 import Editor from './editor/Editor';
 import TilePicker from './ui/TilePicker';
+import LevelProperties from './ui/LevelProperties';
 
 class App extends Component {
 	constructor(props) {
@@ -37,6 +38,18 @@ class App extends Component {
 			},
 			selectedLayerIndex: 0,
 		};
+	}
+
+	onLevelWidthChanged(width) {
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		level.width = width;
+		this.setState({level: level});
+	}
+
+	onLevelHeightChanged(height) {
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		level.height = height;
+		this.setState({level: level});
 	}
 
 	onPlace(x, y) {
@@ -77,6 +90,11 @@ class App extends Component {
 			<Container fluid style={{padding: '1em'}}>
 				<Row>
 					<Col xs='3'>
+						<LevelProperties
+							level={this.state.level}
+							onLevelWidthChanged={(width) => this.onLevelWidthChanged(width)}
+							onLevelHeightChanged={(height) => this.onLevelHeightChanged(height)}
+						/>
 						<LayerList
 							layers={this.state.level.layers}
 							selectedLayer={this.state.selectedLayerIndex}

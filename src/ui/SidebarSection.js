@@ -10,6 +10,8 @@ export default class SidebarSection extends Component {
 	}
 
 	render() {
+		let style = this.props.flush ? {padding: '0'} : {}
+
 		return(<Card>
 			<CardHeader style={{padding: '0'}}>
 				<Navbar style={{padding: '0'}}>
@@ -23,7 +25,7 @@ export default class SidebarSection extends Component {
 				</Navbar>
 			</CardHeader>
 			<Collapse isOpen={this.state.expanded} style={{transition: '.15s'}}>
-				<CardBody style={{padding: '0'}}>
+				<CardBody style={style}>
 					{this.props.children}
 				</CardBody>
 			</Collapse>
