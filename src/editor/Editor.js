@@ -81,6 +81,7 @@ class Editor extends Component {
 				onWheel={(event) => this.onWheel(event)}
 				onContextMenu={(event) => event.preventDefault()}
 				onDragStart={(event) => event.preventDefault()}
+				style={{userSelect: 'none'}}
 			>
 				<div
 					style={{

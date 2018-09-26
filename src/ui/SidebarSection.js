@@ -12,7 +12,7 @@ export default class SidebarSection extends Component {
 	render() {
 		let style = this.props.flush ? {padding: '0'} : {}
 
-		return(<Card>
+		return(<Card style={{userSelect: 'none'}}>
 			<CardHeader style={{padding: '0'}}>
 				<Navbar style={{padding: '0'}}>
 					<Button
