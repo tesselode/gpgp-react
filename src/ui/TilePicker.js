@@ -23,9 +23,11 @@ const TilePicker = (props) =>
 						name: 'Tileset',
 						type: 'tilePreview',
 						tileset: props.tileset,
+						selectedTileX: props.selectedTileX,
+						selectedTileY: props.selectedTileY,
 					},
 				]}
-				onPlace={() => {}}
+				onPlace={(x, y) => props.onTileSelected(x, y)}
 				onRemove={() => {}}
 			/>
 		</div>

@@ -37,6 +37,8 @@ class App extends Component {
 				],
 			},
 			selectedLayerIndex: 0,
+			selectedTileX: 0,
+			selectedTileY: 0,
 		};
 	}
 
@@ -50,6 +52,13 @@ class App extends Component {
 		let level = JSON.parse(JSON.stringify(this.state.level));
 		level.height = height;
 		this.setState({level: level});
+	}
+
+	onTileSelected(x, y) {
+		this.setState({
+			selectedTileX: x,
+			selectedTileY: y,
+		});
 	}
 
 	onPlace(x, y) {
@@ -104,6 +113,9 @@ class App extends Component {
 							<TilePicker
 								tilesetName={selectedLayer.tilesetName}
 								tileset={this.state.project.tilesets[selectedLayer.tilesetName]}
+								selectedTileX={this.state.selectedTileX}
+								selectedTileY={this.state.selectedTileY}
+								onTileSelected={(x, y) => this.onTileSelected(x, y)}
 							/>
 						: ''}
 					</Col>

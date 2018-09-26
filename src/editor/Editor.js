@@ -105,6 +105,8 @@ class Editor extends Component {
 							case 'tilePreview':
 								return <TilePreviewLayer
 									tileset={layer.tileset}
+									selectedTileX={layer.selectedTileX}
+									selectedTileY={layer.selectedTileY}
 									order={-i}
 									key={i}
 								/>;
