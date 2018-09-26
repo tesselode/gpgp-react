@@ -8,7 +8,6 @@ const TilePreviewLayer = (props) => {
 			alt=''
 			style={{
 				position: 'absolute',
-				zIndex: props.order,
 				width: scale + 'em',
 				imageRendering: 'pixelated',
 			}}
@@ -16,7 +15,7 @@ const TilePreviewLayer = (props) => {
 		<div
 			style={{
 				position: 'absolute',
-				zIndex: props.order + 1,
+				zIndex: 1,
 				width: '1em',
 				height: '1em',
 				left: props.selectedTileX + 'em',

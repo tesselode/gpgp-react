@@ -133,6 +133,7 @@ class App extends Component {
 							mapWidth={this.state.level.width}
 							mapHeight={this.state.level.height}
 							layers={this.state.level.layers}
+							selectedLayerIndex={this.state.selectedLayerIndex}
 							onPlace={(x, y) => this.onPlace(x, y)}
 							onRemove={(x, y) => this.onRemove(x, y)}
 						/>

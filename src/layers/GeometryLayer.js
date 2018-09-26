@@ -11,7 +11,7 @@ const GeometryLayer = (props) =>
 					top: tile.y + 'em',
 					width: '1em',
 					height: '1em',
-					background: '#27bbe8'
+					background: 'rgba(39, 187, 232, .33)'
 				}}
 				key={i}
 			/>
