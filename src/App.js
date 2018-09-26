@@ -89,7 +89,7 @@ class App extends Component {
 		return (
 			<Container fluid style={{padding: '1em'}}>
 				<Row>
-					<Col xs='3'>
+					<Col xs='3' style={{height: '95vh', overflowY: 'auto'}}>
 						<LevelProperties
 							level={this.state.level}
 							onLevelWidthChanged={(width) => this.onLevelWidthChanged(width)}
@@ -107,11 +107,9 @@ class App extends Component {
 							/>
 						: ''}
 					</Col>
-					<Col xs='9'>
+					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
 						<Editor
 							project={this.state.project}
-							width='67vw'
-							height='90vh'
 							mapWidth={this.state.level.width}
 							mapHeight={this.state.level.height}
 							layers={this.state.level.layers}

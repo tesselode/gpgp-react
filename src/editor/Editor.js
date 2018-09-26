@@ -77,11 +77,6 @@ class Editor extends Component {
 
 		return(
 			<div
-				style={{
-					width: this.props.width,
-					height: this.props.height,
-					overflow: 'auto',
-				}}
 				onWheel={(event) => this.onWheel(event)}
 				onContextMenu={(event) => event.preventDefault()}
 				onDragStart={(event) => event.preventDefault()}

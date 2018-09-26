@@ -7,23 +7,28 @@ const TilePicker = (props) =>
 		title={'Tiles (' + props.tilesetName + ')'}
 		flush
 	>
-		<Editor
-			width='22.5vw'
-			height='50vh'
-			startingZoom={.5}
-			mapWidth={props.tileset.imageWidth / props.tileset.tileSize}
-			mapHeight={props.tileset.imageHeight / props.tileset.tileSize}
-			project={props.project}
-			layers={[
-				{
-					name: 'Tileset',
-					type: 'tilePreview',
-					tileset: props.tileset,
-				},
-			]}
-			onPlace={() => {}}
-			onRemove={() => {}}
-		/>
+		<div
+			style={{
+				maxHeight: '20em',
+				overflow: 'auto',
+			}}
+		>
+			<Editor
+				startingZoom={.5}
+				mapWidth={props.tileset.imageWidth / props.tileset.tileSize}
+				mapHeight={props.tileset.imageHeight / props.tileset.tileSize}
+				project={props.project}
+				layers={[
+					{
+						name: 'Tileset',
+						type: 'tilePreview',
+						tileset: props.tileset,
+					},
+				]}
+				onPlace={() => {}}
+				onRemove={() => {}}
+			/>
+		</div>
 	</SidebarSection>
 
 export default TilePicker;
