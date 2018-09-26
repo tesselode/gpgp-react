@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import GridSquare from './GridSquare';
 import GeometryLayer from '../layers/GeometryLayer';
 import TilePreviewLayer from '../layers/TilePreviewLayer';
+import TileLayer from '../layers/TileLayer';
 
 class Editor extends Component {
 	constructor(props) {
@@ -99,6 +100,13 @@ class Editor extends Component {
 							case 'geometry':
 								return <GeometryLayer
 									data={layer.data}
+									order={-i}
+									key={i}
+								/>;
+							case 'tile':
+								return <TileLayer
+									data={layer.data}
+									tileset={this.props.project.tilesets[layer.tilesetName]}
 									order={-i}
 									key={i}
 								/>;

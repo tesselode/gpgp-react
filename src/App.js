@@ -28,6 +28,7 @@ class App extends Component {
 						type: 'tile',
 						name: 'Main tiles',
 						tilesetName: 'main',
+						data: [],
 					},
 					{
 						type: 'geometry',
@@ -61,35 +62,42 @@ class App extends Component {
 		});
 	}
 
-	onPlace(x, y) {
-		switch (this.state.level.layers[this.state.selectedLayerIndex].type) {
-			case 'geometry':
-				let level = JSON.parse(JSON.stringify(this.state.level));
-				let layer = level.layers[this.state.selectedLayerIndex];
-				layer.data.push({x: x, y: y});
-				this.setState({level: level});
-				break;
-			default:
-				break;
+	onRemove(x, y) {
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		let layer = level.layers[this.state.selectedLayerIndex];
+		for (let i = 0; i < layer.data.length; i++) {
+			const tile = layer.data[i];
+			if (tile.x === x && tile.y === y) {
+				layer.data.splice(i, 1);
+			}
 		}
+		this.setState({level: level});
 	}
 
-	onRemove(x, y) {
+	onPlace(x, y) {
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		let layer = level.layers[this.state.selectedLayerIndex];
+		for (let i = 0; i < layer.data.length; i++) {
+			const tile = layer.data[i];
+			if (tile.x === x && tile.y === y) {
+				layer.data.splice(i, 1);
+			}
+		}
 		switch (this.state.level.layers[this.state.selectedLayerIndex].type) {
 			case 'geometry':
-				let level = JSON.parse(JSON.stringify(this.state.level));
-				let layer = level.layers[this.state.selectedLayerIndex];
-				for (let i = 0; i < layer.data.length; i++) {
-					const tile = layer.data[i];
-					if (tile.x === x && tile.y === y) {
-						layer.data.splice(i, 1);
-					}
-				}
-				this.setState({level: level});
+				layer.data.push({x: x, y: y});
 				break;
+			case 'tile':
+				layer.data.push({
+					x: x, 
+					y: y,
+					tileX: this.state.selectedTileX,
+					tileY: this.state.selectedTileY,
+				});
 			default:
 				break;
 		}
+		this.setState({level: level});
 	}
 
 	render() {
