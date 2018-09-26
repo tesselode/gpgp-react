@@ -65,24 +65,14 @@ class App extends Component {
 	onRemove(x, y) {
 		let level = JSON.parse(JSON.stringify(this.state.level));
 		let layer = level.layers[this.state.selectedLayerIndex];
-		for (let i = 0; i < layer.data.length; i++) {
-			const tile = layer.data[i];
-			if (tile.x === x && tile.y === y) {
-				layer.data.splice(i, 1);
-			}
-		}
+		layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
 		this.setState({level: level});
 	}
 
 	onPlace(x, y) {
 		let level = JSON.parse(JSON.stringify(this.state.level));
 		let layer = level.layers[this.state.selectedLayerIndex];
-		for (let i = 0; i < layer.data.length; i++) {
-			const tile = layer.data[i];
-			if (tile.x === x && tile.y === y) {
-				layer.data.splice(i, 1);
-			}
-		}
+		layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
 		switch (this.state.level.layers[this.state.selectedLayerIndex].type) {
 			case 'geometry':
 				layer.data.push({x: x, y: y});
