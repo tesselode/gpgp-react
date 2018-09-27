@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col, Button } from 'reactstrap';
 import LayerList from './ui/LayerList';
 import Editor from './editor/Editor';
 import TilePicker from './ui/TilePicker';
 import LevelProperties from './ui/LevelProperties';
+const fs = window.require('fs');
+const { dialog } = window.require('electron').remote;
 
 class App extends Component {
 	constructor(props) {
@@ -37,6 +39,7 @@ class App extends Component {
 					},
 				],
 			},
+			levelFilePath: null,
 			selectedLayerIndex: 0,
 			selectedTileX: 0,
 			selectedTileY: 0,
@@ -91,6 +94,18 @@ class App extends Component {
 		this.setState({level: level});
 	}
 
+	save(saveAs) {
+		let path = this.state.levelFilePath;
+		if (!path || saveAs) {
+			path = dialog.showSaveDialog();
+			this.setState({levelFilePath: path})
+		}
+		fs.writeFile(path, JSON.stringify(this.state.level), (error) => {
+			if (error)
+				dialog.showErrorBox('Error saving file', 'The file was not saved successfully.')
+		});
+	}
+
 	render() {
 		let selectedLayer = this.state.level.layers[this.state.selectedLayerIndex];
 
@@ -117,6 +132,7 @@ class App extends Component {
 								onTileSelected={(x, y) => this.onTileSelected(x, y)}
 							/>
 						: ''}
+						<Button onClick={() => this.save()}>Save</Button>
 					</Col>
 					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
 						<Editor
