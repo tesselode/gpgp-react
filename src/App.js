@@ -4,6 +4,7 @@ import LayerList from './ui/LayerList';
 import Editor from './editor/Editor';
 import TilePicker from './ui/TilePicker';
 import LevelProperties from './ui/LevelProperties';
+import LayerProperties from './ui/LayerProperties';
 const fs = window.require('fs');
 const { ipcRenderer } = window.require('electron');
 const { dialog } = window.require('electron').remote;
@@ -59,6 +60,13 @@ class App extends Component {
 	onLevelHeightChanged(height) {
 		let level = JSON.parse(JSON.stringify(this.state.level));
 		level.height = height;
+		this.setState({level: level});
+	}
+
+	onLayerNameChanged(name) {
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		let layer = level.layers[this.state.selectedLayerIndex];
+		layer.name = name;
 		this.setState({level: level});
 	}
 
@@ -141,6 +149,10 @@ class App extends Component {
 							layers={this.state.level.layers}
 							selectedLayer={this.state.selectedLayerIndex}
 							onSelectLayer={(i) => this.setState({selectedLayerIndex: i})}
+						/>
+						<LayerProperties
+							layer={selectedLayer}
+							onLayerNameChanged={(name) => this.onLayerNameChanged(name)}
 						/>
 						{selectedLayer.type === 'tile' ?
 							<TilePicker

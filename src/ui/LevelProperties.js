@@ -7,7 +7,7 @@ function validateLevelSize(value) {
 }
 
 const LevelProperties = (props) =>
-	<SidebarSection title='Properties'>
+	<SidebarSection title='Level properties'>
 		<Form>
 			<FormGroup>
 				<Label>Level width</Label>
