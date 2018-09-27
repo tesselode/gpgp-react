@@ -1,4 +1,4 @@
-const {app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 
 let mainWindow;
 
@@ -8,6 +8,54 @@ function createWindow () {
 	mainWindow.on('closed', function () {
 		mainWindow = null;
 	})
+
+	Menu.setApplicationMenu(Menu.buildFromTemplate([
+		{
+			label: 'File',
+			submenu: [
+				{
+					label: 'Open',
+					accelerator: 'CmdOrCtrl+O',
+					click(item, focusedWindow) {
+						if (focusedWindow) focusedWindow.webContents.send('open');
+					}
+				},
+				{
+					label: 'Save',
+					accelerator: 'CmdOrCtrl+S',
+					click(item, focusedWindow) {
+						if (focusedWindow) focusedWindow.webContents.send('save');
+					}
+				},
+				{
+					label: 'Save as',
+					accelerator: 'CmdOrCtrl+Shift+S',
+					click(item, focusedWindow) {
+						if (focusedWindow) focusedWindow.webContents.send('save', true);
+					}
+				},
+			],
+		},
+		{
+			label: 'Developer',
+			submenu: [
+				{
+					label: 'Reload',
+					accelerator: 'CmdOrCtrl+R',
+					click(item, focusedWindow) {
+						if (focusedWindow) focusedWindow.reload()
+					}
+				},
+				{
+					label: 'Toggle developer tools',
+					accelerator: 'CmdOrCtrl+Shift+I',
+					click (item, focusedWindow) {
+						if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+					}
+				}
+			]
+		}
+	]));
 }
 
 app.on('ready', createWindow);

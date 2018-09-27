@@ -5,6 +5,7 @@ import Editor from './editor/Editor';
 import TilePicker from './ui/TilePicker';
 import LevelProperties from './ui/LevelProperties';
 const fs = window.require('fs');
+const { ipcRenderer } = window.require('electron');
 const { dialog } = window.require('electron').remote;
 
 class App extends Component {
@@ -44,6 +45,8 @@ class App extends Component {
 			selectedTileX: 0,
 			selectedTileY: 0,
 		};
+
+		ipcRenderer.on('save', (event, saveAs) => this.save(saveAs));
 	}
 
 	onLevelWidthChanged(width) {
@@ -98,12 +101,14 @@ class App extends Component {
 		let path = this.state.levelFilePath;
 		if (!path || saveAs) {
 			path = dialog.showSaveDialog();
-			this.setState({levelFilePath: path})
+			if (path)
+				this.setState({levelFilePath: path})
 		}
-		fs.writeFile(path, JSON.stringify(this.state.level), (error) => {
-			if (error)
-				dialog.showErrorBox('Error saving file', 'The file was not saved successfully.')
-		});
+		if (path)
+			fs.writeFile(path, JSON.stringify(this.state.level), (error) => {
+				if (error)
+					dialog.showErrorBox('Error saving file', 'The file was not saved successfully.')
+			});
 	}
 
 	render() {
@@ -132,7 +137,6 @@ class App extends Component {
 								onTileSelected={(x, y) => this.onTileSelected(x, y)}
 							/>
 						: ''}
-						<Button onClick={() => this.save()}>Save</Button>
 					</Col>
 					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
 						<Editor
