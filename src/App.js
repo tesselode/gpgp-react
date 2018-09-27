@@ -84,6 +84,7 @@ class App extends Component {
 					tileX: this.state.selectedTileX,
 					tileY: this.state.selectedTileY,
 				});
+				break;
 			default:
 				break;
 		}

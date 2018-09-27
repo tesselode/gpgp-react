@@ -101,14 +101,14 @@ class Editor extends Component {
 							case 'geometry':
 								return <GeometryLayer
 									data={layer.data}
-									order={i == this.props.selectedLayerIndex ? 0 : -i - 1}
+									order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
 									key={i}
 								/>;
 							case 'tile':
 								return <TileLayer
 									data={layer.data}
 									tileset={this.props.project.tilesets[layer.tilesetName]}
-									order={i == this.props.selectedLayerIndex ? 0 : -i - 1}
+									order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
 									key={i}
 								/>;
 							case 'tilePreview':
@@ -116,7 +116,7 @@ class Editor extends Component {
 									tileset={layer.tileset}
 									selectedTileX={layer.selectedTileX}
 									selectedTileY={layer.selectedTileY}
-									order={i == this.props.selectedLayerIndex ? 0 : -i - 1}
+									order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
 									key={i}
 								/>;
 							default:
