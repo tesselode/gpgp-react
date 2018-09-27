@@ -37,6 +37,25 @@ function createWindow () {
 			],
 		},
 		{
+			label: 'Edit',
+			submenu: [
+				{
+					label: 'Undo',
+					accelerator: 'CmdOrCtrl+Z',
+					click(item, focusedWindow) {
+						if (focusedWindow) focusedWindow.webContents.send('undo');
+					}
+				},
+				{
+					label: 'Redo',
+					accelerator: 'CmdOrCtrl+Y',
+					click (item, focusedWindow) {
+						if (focusedWindow) focusedWindow.webContents.send('redo');
+					}
+				}
+			]
+		},
+		{
 			label: 'Developer',
 			submenu: [
 				{

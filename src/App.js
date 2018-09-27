@@ -5,6 +5,7 @@ import Editor from './editor/Editor';
 import TilePicker from './ui/TilePicker';
 import LevelProperties from './ui/LevelProperties';
 import LayerProperties from './ui/LayerProperties';
+import History from './ui/History';
 const fs = window.require('fs');
 const { ipcRenderer } = window.require('electron');
 const { dialog } = window.require('electron').remote;
@@ -24,7 +25,7 @@ class App extends Component {
 					},
 				},
 			},
-			level: {
+			levelHistory: [{
 				width: 16,
 				height: 9,
 				layers: [
@@ -34,7 +35,8 @@ class App extends Component {
 						data: [],
 					},
 				],
-			},
+			}],
+			levelHistoryPosition: 0,
 			levelFilePath: null,
 			selectedLayerIndex: 0,
 			selectedTileX: 0,
@@ -43,28 +45,43 @@ class App extends Component {
 
 		ipcRenderer.on('save', (event, saveAs) => this.save(saveAs));
 		ipcRenderer.on('open', (event) => this.open());
+		ipcRenderer.on('undo', (event) => this.undo());
+		ipcRenderer.on('redo', (event) => this.redo());
 	}
 
 	getCurrentLevelState() {
-		return this.state.level;
+		return this.state.levelHistory[this.state.levelHistoryPosition];
 	}
 
 	modifyLevel(f) {
 		let level = JSON.parse(JSON.stringify(this.getCurrentLevelState()));
-		this.setState({level: f(level)});
+		f(level);
+		let levelHistory = this.state.levelHistory.slice(0, this.state.levelHistoryPosition + 1);
+		this.setState({
+			levelHistory: levelHistory.concat(level),
+			levelHistoryPosition: this.state.levelHistoryPosition + 1,
+		});
+	}
+
+	undo() {
+		if (this.state.levelHistoryPosition > 0)
+			this.setState({levelHistoryPosition: this.state.levelHistoryPosition - 1});
+	}
+
+	redo() {
+		if (this.state.levelHistoryPosition < this.state.levelHistory.length - 1)
+			this.setState({levelHistoryPosition: this.state.levelHistoryPosition + 1});
 	}
 
 	onLevelWidthChanged(width) {
 		this.modifyLevel((level) => {
 			level.width = width;
-			return level;
 		})
 	}
 
 	onLevelHeightChanged(height) {
 		this.modifyLevel((level) => {
 			level.height = height;
-			return level;
 		})
 	}
 
@@ -72,7 +89,6 @@ class App extends Component {
 		this.modifyLevel((level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
 			layer.name = name;
-			return level;
 		})
 	}
 
@@ -83,7 +99,6 @@ class App extends Component {
 				let current = level.layers[this.state.selectedLayerIndex];
 				level.layers[this.state.selectedLayerIndex - 1] = current;
 				level.layers[this.state.selectedLayerIndex] = above;
-				return level;
 			});
 		}
 	}
@@ -95,7 +110,6 @@ class App extends Component {
 				let current = level.layers[this.state.selectedLayerIndex];
 				level.layers[this.state.selectedLayerIndex + 1] = current;
 				level.layers[this.state.selectedLayerIndex] = below;
-				return level;
 			});
 		}
 	}
@@ -104,10 +118,9 @@ class App extends Component {
 		if (this.getCurrentLevelState().layers.length > 1) {
 			this.modifyLevel((level) => {
 				level.layers.splice(this.state.selectedLayerIndex, 1);
-				return level;
 			});
 			this.setState({
-				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.getCurrentLevelState().layers.length - 2),
+				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.getCurrentLevelState().layers.length - 1),
 			});
 		}
 	}
@@ -119,7 +132,6 @@ class App extends Component {
 				name: 'New Geometry Layer',
 				data: [],
 			});
-			return level;
 		})
 	}
 
@@ -131,7 +143,6 @@ class App extends Component {
 				tilesetName: tilesetName,
 				data: [],
 			});
-			return level;
 		})
 	}
 
@@ -146,7 +157,6 @@ class App extends Component {
 		this.modifyLevel((level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
 			layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
-			return level;
 		})
 	}
 
@@ -169,7 +179,6 @@ class App extends Component {
 				default:
 					break;
 			}
-			return level;
 		})
 	}
 
@@ -181,7 +190,8 @@ class App extends Component {
 					dialog.showErrorBox('Error opening level', 'The level could not be opened.')
 				else
 					this.setState({
-						level: JSON.parse(data),
+						levelHistory: [JSON.parse(data)],
+						levelHistoryPosition: 0,
 						levelFilePath: path,
 					});
 			})
@@ -239,6 +249,10 @@ class App extends Component {
 								onTileSelected={(x, y) => this.onTileSelected(x, y)}
 							/>
 						: ''}
+						<History
+							history={this.state.levelHistory}
+							historyPosition={this.state.levelHistoryPosition}
+						/>
 					</Col>
 					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
 						<Editor
