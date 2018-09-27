@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Button } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import LayerList from './ui/LayerList';
 import Editor from './editor/Editor';
 import TilePicker from './ui/TilePicker';
