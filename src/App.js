@@ -92,6 +92,17 @@ class App extends Component {
 		}
 	}
 
+	onLayerDeleted() {
+		if (this.state.level.layers.length > 1) {
+			let level = JSON.parse(JSON.stringify(this.state.level));
+			level.layers.splice(this.state.selectedLayerIndex, 1);
+			this.setState({
+				level: level,
+				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.state.level.layers.length - 2),
+			});
+		}
+	}
+
 	onGeometryLayerAdded() {
 		let level = JSON.parse(JSON.stringify(this.state.level));
 		level.layers.splice(this.state.selectedLayerIndex, 0, {
@@ -204,6 +215,7 @@ class App extends Component {
 							onLayerNameChanged={(name) => this.onLayerNameChanged(name)}
 							onLayerMovedUp={() => this.onLayerMovedUp()}
 							onLayerMovedDown={() => this.onLayerMovedDown()}
+							onLayerDeleted={() => this.onLayerDeleted()}
 						/>
 						{selectedLayer.type === 'tile' ?
 							<TilePicker
