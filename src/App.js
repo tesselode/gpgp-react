@@ -47,6 +47,7 @@ class App extends Component {
 		};
 
 		ipcRenderer.on('save', (event, saveAs) => this.save(saveAs));
+		ipcRenderer.on('open', (event) => this.open());
 	}
 
 	onLevelWidthChanged(width) {
@@ -97,17 +98,30 @@ class App extends Component {
 		this.setState({level: level});
 	}
 
+	open() {
+		let path = dialog.showOpenDialog()[0];
+		if (path) {
+			fs.readFile(path, (error, data) => {
+				if (error)
+					dialog.showErrorBox('Error opening level', 'The level could not be opened.')
+				else
+					this.setState({
+						level: JSON.parse(data),
+						levelFilePath: path,
+					});
+			})
+		}
+	}
+
 	save(saveAs) {
 		let path = this.state.levelFilePath;
-		if (!path || saveAs) {
-			path = dialog.showSaveDialog();
-			if (path)
-				this.setState({levelFilePath: path})
-		}
+		if (!path || saveAs) path = dialog.showSaveDialog();
 		if (path)
 			fs.writeFile(path, JSON.stringify(this.state.level), (error) => {
 				if (error)
-					dialog.showErrorBox('Error saving file', 'The file was not saved successfully.')
+					dialog.showErrorBox('Error saving level', 'The level was not saved successfully.')
+				else
+					this.setState({levelFilePath: path})
 			});
 	}
 
