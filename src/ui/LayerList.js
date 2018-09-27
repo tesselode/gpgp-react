@@ -45,7 +45,9 @@ export default class LayerList extends Component {
 						style={{padding: '.5em'}}
 						onClick={() => this.props.onSelectLayer(i)}
 					>
-						{layer.name + ' (' + layer.type + ')'}
+						{layer.type === 'tile' ?
+							layer.name + ' (' + layer.type + ' - ' + layer.tilesetName + ')' :
+							layer.name + ' (' + layer.type + ')'}
 					</ListGroupItem>
 				)}
 			</ListGroup>
