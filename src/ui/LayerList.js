@@ -22,12 +22,14 @@ export default class LayerList extends Component {
 					<DropdownToggle color='light' size='sm'>+</DropdownToggle>
 					<DropdownMenu>
 						<DropdownItem
+							key='geometry'
 							onClick={() => this.props.onGeometryLayerAdded()}
 						>
 							Geometry
 						</DropdownItem>
 						{this.props.tilesetNames.map((tilesetName, i) =>
 							<DropdownItem
+								key={'tile' + i}
 								onClick={() => this.props.onTileLayerAdded(tilesetName)}
 							>
 								Tile - {tilesetName}
