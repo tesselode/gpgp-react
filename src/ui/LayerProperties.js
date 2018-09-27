@@ -20,7 +20,7 @@ const LayerProperties = (props) =>
 						<Button>▲</Button>
 						<Button>▼</Button>
 					</ButtonGroup>
-					<Button color='danger'>Delete</Button>
+					<Button color='danger' disabled={!props.allowDeleting}>Delete</Button>
 				</Navbar>
 			</FormGroup>
 		</Form>

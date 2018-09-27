@@ -29,12 +29,6 @@ class App extends Component {
 				height: 9,
 				layers: [
 					{
-						type: 'tile',
-						name: 'Main tiles',
-						tilesetName: 'main',
-						data: [],
-					},
-					{
 						type: 'geometry',
 						name: 'Geometry',
 						data: [],
@@ -67,6 +61,27 @@ class App extends Component {
 		let level = JSON.parse(JSON.stringify(this.state.level));
 		let layer = level.layers[this.state.selectedLayerIndex];
 		layer.name = name;
+		this.setState({level: level});
+	}
+
+	onGeometryLayerAdded() {
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		level.layers.splice(this.state.selectedLayerIndex, 0, {
+			type: 'geometry',
+			name: 'New Geometry Layer',
+			data: [],
+		});
+		this.setState({level: level});
+	}
+
+	onTileLayerAdded(tilesetName) {
+		let level = JSON.parse(JSON.stringify(this.state.level));
+		level.layers.splice(this.state.selectedLayerIndex, 0, {
+			type: 'tile',
+			name: 'New Tile Layer',
+			tilesetName: tilesetName,
+			data: [],
+		});
 		this.setState({level: level});
 	}
 
@@ -147,11 +162,15 @@ class App extends Component {
 						/>
 						<LayerList
 							layers={this.state.level.layers}
+							tilesetNames={Object.keys(this.state.project.tilesets)}
 							selectedLayer={this.state.selectedLayerIndex}
 							onSelectLayer={(i) => this.setState({selectedLayerIndex: i})}
+							onGeometryLayerAdded={() => this.onGeometryLayerAdded()}
+							onTileLayerAdded={(tilesetName) => this.onTileLayerAdded(tilesetName)}
 						/>
 						<LayerProperties
 							layer={selectedLayer}
+							allowDeleting={this.state.level.layers.length > 1}
 							onLayerNameChanged={(name) => this.onLayerNameChanged(name)}
 						/>
 						{selectedLayer.type === 'tile' ?
