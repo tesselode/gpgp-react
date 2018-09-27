@@ -45,8 +45,12 @@ class App extends Component {
 		ipcRenderer.on('open', (event) => this.open());
 	}
 
+	getCurrentLevelState() {
+		return this.state.level;
+	}
+
 	modifyLevel(f) {
-		let level = JSON.parse(JSON.stringify(this.state.level));
+		let level = JSON.parse(JSON.stringify(this.getCurrentLevelState()));
 		this.setState({level: f(level)});
 	}
 
@@ -85,7 +89,7 @@ class App extends Component {
 	}
 
 	onLayerMovedDown() {
-		if (this.state.selectedLayerIndex < this.state.level.layers.length - 1) {
+		if (this.state.selectedLayerIndex < this.getCurrentLevelState().layers.length - 1) {
 			this.modifyLevel((level) => {
 				let below = level.layers[this.state.selectedLayerIndex + 1];
 				let current = level.layers[this.state.selectedLayerIndex];
@@ -97,13 +101,13 @@ class App extends Component {
 	}
 
 	onLayerDeleted() {
-		if (this.state.level.layers.length > 1) {
+		if (this.getCurrentLevelState().layers.length > 1) {
 			this.modifyLevel((level) => {
 				level.layers.splice(this.state.selectedLayerIndex, 1);
 				return level;
 			});
 			this.setState({
-				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.state.level.layers.length - 2),
+				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.getCurrentLevelState().layers.length - 2),
 			});
 		}
 	}
@@ -150,7 +154,7 @@ class App extends Component {
 		this.modifyLevel((level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
 			layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
-			switch (this.state.level.layers[this.state.selectedLayerIndex].type) {
+			switch (this.getCurrentLevelState().layers[this.state.selectedLayerIndex].type) {
 				case 'geometry':
 					layer.data.push({x: x, y: y});
 					break;
@@ -188,7 +192,7 @@ class App extends Component {
 		let path = this.state.levelFilePath;
 		if (!path || saveAs) path = dialog.showSaveDialog();
 		if (path)
-			fs.writeFile(path, JSON.stringify(this.state.level), (error) => {
+			fs.writeFile(path, JSON.stringify(this.getCurrentLevelState()), (error) => {
 				if (error)
 					dialog.showErrorBox('Error saving level', 'The level was not saved successfully.')
 				else
@@ -197,19 +201,19 @@ class App extends Component {
 	}
 
 	render() {
-		let selectedLayer = this.state.level.layers[this.state.selectedLayerIndex];
+		let selectedLayer = this.getCurrentLevelState().layers[this.state.selectedLayerIndex];
 
 		return (
 			<Container fluid style={{padding: '1em'}}>
 				<Row>
 					<Col xs='3' style={{height: '95vh', overflowY: 'auto'}}>
 						<LevelProperties
-							level={this.state.level}
+							level={this.getCurrentLevelState()}
 							onLevelWidthChanged={(width) => this.onLevelWidthChanged(width)}
 							onLevelHeightChanged={(height) => this.onLevelHeightChanged(height)}
 						/>
 						<LayerList
-							layers={this.state.level.layers}
+							layers={this.getCurrentLevelState().layers}
 							tilesetNames={Object.keys(this.state.project.tilesets)}
 							selectedLayer={this.state.selectedLayerIndex}
 							onSelectLayer={(i) => this.setState({selectedLayerIndex: i})}
@@ -219,8 +223,8 @@ class App extends Component {
 						<LayerProperties
 							layer={selectedLayer}
 							allowMovingUp={this.state.selectedLayerIndex > 0}
-							allowMovingDown={this.state.selectedLayerIndex < this.state.level.layers.length - 1}
-							allowDeleting={this.state.level.layers.length > 1}
+							allowMovingDown={this.state.selectedLayerIndex < this.getCurrentLevelState().layers.length - 1}
+							allowDeleting={this.getCurrentLevelState().layers.length > 1}
 							onLayerNameChanged={(name) => this.onLayerNameChanged(name)}
 							onLayerMovedUp={() => this.onLayerMovedUp()}
 							onLayerMovedDown={() => this.onLayerMovedDown()}
@@ -239,9 +243,9 @@ class App extends Component {
 					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
 						<Editor
 							project={this.state.project}
-							mapWidth={this.state.level.width}
-							mapHeight={this.state.level.height}
-							layers={this.state.level.layers}
+							mapWidth={this.getCurrentLevelState().width}
+							mapHeight={this.getCurrentLevelState().height}
+							layers={this.getCurrentLevelState().layers}
 							selectedLayerIndex={this.state.selectedLayerIndex}
 							onPlace={(x, y) => this.onPlace(x, y)}
 							onRemove={(x, y) => this.onRemove(x, y)}
