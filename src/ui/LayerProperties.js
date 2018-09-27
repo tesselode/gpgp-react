@@ -17,8 +17,18 @@ const LayerProperties = (props) =>
 			<FormGroup>
 				<Navbar style={{padding: 0}}>
 					<ButtonGroup>
-						<Button>▲</Button>
-						<Button>▼</Button>
+						<Button
+							disabled={!props.allowMovingUp}
+							onClick={() => props.onLayerMovedUp()}
+						>
+							▲
+						</Button>
+						<Button
+							disabled={!props.allowMovingDown}
+							onClick={() => props.onLayerMovedDown()}
+						>
+							▼
+						</Button>
 					</ButtonGroup>
 					<Button color='danger' disabled={!props.allowDeleting}>Delete</Button>
 				</Navbar>

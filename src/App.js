@@ -64,6 +64,34 @@ class App extends Component {
 		this.setState({level: level});
 	}
 
+	onLayerMovedUp() {
+		if (this.state.selectedLayerIndex > 0) {
+			let level = JSON.parse(JSON.stringify(this.state.level));
+			let above = level.layers[this.state.selectedLayerIndex - 1];
+			let current = level.layers[this.state.selectedLayerIndex];
+			level.layers[this.state.selectedLayerIndex - 1] = current;
+			level.layers[this.state.selectedLayerIndex] = above;
+			this.setState({
+				level: level,
+				selectedLayerIndex: this.state.selectedLayerIndex - 1,
+			});
+		}
+	}
+
+	onLayerMovedDown() {
+		if (this.state.selectedLayerIndex < this.state.level.layers.length - 1) {
+			let level = JSON.parse(JSON.stringify(this.state.level));
+			let below = level.layers[this.state.selectedLayerIndex + 1];
+			let current = level.layers[this.state.selectedLayerIndex];
+			level.layers[this.state.selectedLayerIndex + 1] = current;
+			level.layers[this.state.selectedLayerIndex] = below;
+			this.setState({
+				level: level,
+				selectedLayerIndex: this.state.selectedLayerIndex + 1,
+			});
+		}
+	}
+
 	onGeometryLayerAdded() {
 		let level = JSON.parse(JSON.stringify(this.state.level));
 		level.layers.splice(this.state.selectedLayerIndex, 0, {
@@ -170,8 +198,12 @@ class App extends Component {
 						/>
 						<LayerProperties
 							layer={selectedLayer}
+							allowMovingUp={this.state.selectedLayerIndex > 0}
+							allowMovingDown={this.state.selectedLayerIndex < this.state.level.layers.length - 1}
 							allowDeleting={this.state.level.layers.length > 1}
 							onLayerNameChanged={(name) => this.onLayerNameChanged(name)}
+							onLayerMovedUp={() => this.onLayerMovedUp()}
+							onLayerMovedDown={() => this.onLayerMovedDown()}
 						/>
 						{selectedLayer.type === 'tile' ?
 							<TilePicker
