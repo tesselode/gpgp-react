@@ -35,8 +35,10 @@ class App extends Component {
 						data: [],
 					},
 				],
+				description: 'New level',
 			}],
 			levelHistoryPosition: 0,
+			finishedAction: true,
 			levelFilePath: null,
 			selectedLayerIndex: 0,
 			selectedTileX: 0,
@@ -53,13 +55,20 @@ class App extends Component {
 		return this.state.levelHistory[this.state.levelHistoryPosition];
 	}
 
-	modifyLevel(f) {
-		let level = JSON.parse(JSON.stringify(this.getCurrentLevelState()));
-		f(level);
-		let levelHistory = this.state.levelHistory.slice(0, this.state.levelHistoryPosition + 1);
+	modifyLevel(description, f) {
+		let newLevelData = JSON.parse(JSON.stringify(this.getCurrentLevelState()));
+		f(newLevelData);
+		let levelHistoryPosition = this.state.levelHistoryPosition;
+		if (this.state.finishedAction) {
+			this.setState({finishedAction: false});
+			newLevelData.description = description;
+		} else {
+			levelHistoryPosition--;
+		}
+		let levelHistory = this.state.levelHistory.slice(0, levelHistoryPosition + 1);
 		this.setState({
-			levelHistory: levelHistory.concat(level),
-			levelHistoryPosition: this.state.levelHistoryPosition + 1,
+			levelHistory: levelHistory.concat(newLevelData),
+			levelHistoryPosition: levelHistoryPosition + 1,
 		});
 	}
 
@@ -74,69 +83,76 @@ class App extends Component {
 	}
 
 	onLevelWidthChanged(width) {
-		this.modifyLevel((level) => {
+		this.modifyLevel('Change level width', (level) => {
 			level.width = width;
 		})
+		this.setState({finishedAction: true});
 	}
 
 	onLevelHeightChanged(height) {
-		this.modifyLevel((level) => {
+		this.modifyLevel('Change level height', (level) => {
 			level.height = height;
 		})
+		this.setState({finishedAction: true});
 	}
 
 	onLayerNameChanged(name) {
-		this.modifyLevel((level) => {
+		this.modifyLevel('Change layer name', (level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
 			layer.name = name;
 		})
+		this.setState({finishedAction: true});
 	}
 
 	onLayerMovedUp() {
 		if (this.state.selectedLayerIndex > 0) {
-			this.modifyLevel((level) => {
+			this.modifyLevel('Move layer up', (level) => {
 				let above = level.layers[this.state.selectedLayerIndex - 1];
 				let current = level.layers[this.state.selectedLayerIndex];
 				level.layers[this.state.selectedLayerIndex - 1] = current;
 				level.layers[this.state.selectedLayerIndex] = above;
 			});
 		}
+		this.setState({finishedAction: true});
 	}
 
 	onLayerMovedDown() {
 		if (this.state.selectedLayerIndex < this.getCurrentLevelState().layers.length - 1) {
-			this.modifyLevel((level) => {
+			this.modifyLevel('Move layer down', (level) => {
 				let below = level.layers[this.state.selectedLayerIndex + 1];
 				let current = level.layers[this.state.selectedLayerIndex];
 				level.layers[this.state.selectedLayerIndex + 1] = current;
 				level.layers[this.state.selectedLayerIndex] = below;
 			});
 		}
+		this.setState({finishedAction: true});
 	}
 
 	onLayerDeleted() {
 		if (this.getCurrentLevelState().layers.length > 1) {
-			this.modifyLevel((level) => {
+			this.modifyLevel('Delete layer', (level) => {
 				level.layers.splice(this.state.selectedLayerIndex, 1);
 			});
 			this.setState({
 				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.getCurrentLevelState().layers.length - 1),
 			});
 		}
+		this.setState({finishedAction: true});
 	}
 
 	onGeometryLayerAdded() {
-		this.modifyLevel((level) => {
+		this.modifyLevel('Add geometry layer', (level) => {
 			level.layers.splice(this.state.selectedLayerIndex, 0, {
 				type: 'geometry',
 				name: 'New Geometry Layer',
 				data: [],
 			});
 		})
+		this.setState({finishedAction: true});
 	}
 
 	onTileLayerAdded(tilesetName) {
-		this.modifyLevel((level) => {
+		this.modifyLevel('Add tile layer', (level) => {
 			level.layers.splice(this.state.selectedLayerIndex, 0, {
 				type: 'tile',
 				name: 'New Tile Layer',
@@ -144,6 +160,7 @@ class App extends Component {
 				data: [],
 			});
 		})
+		this.setState({finishedAction: true});
 	}
 
 	onTileSelected(x, y) {
@@ -154,14 +171,14 @@ class App extends Component {
 	}
 
 	onRemove(x, y) {
-		this.modifyLevel((level) => {
+		this.modifyLevel('Remove tiles', (level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
 			layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
 		})
 	}
 
 	onPlace(x, y) {
-		this.modifyLevel((level) => {
+		this.modifyLevel('Place tiles', (level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
 			layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
 			switch (this.getCurrentLevelState().layers[this.state.selectedLayerIndex].type) {
@@ -252,6 +269,7 @@ class App extends Component {
 						<History
 							history={this.state.levelHistory}
 							historyPosition={this.state.levelHistoryPosition}
+							onHistoryPositionChanged={(position) => this.setState({levelHistoryPosition: position})}
 						/>
 					</Col>
 					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
@@ -263,6 +281,7 @@ class App extends Component {
 							selectedLayerIndex={this.state.selectedLayerIndex}
 							onPlace={(x, y) => this.onPlace(x, y)}
 							onRemove={(x, y) => this.onRemove(x, y)}
+							onMouseUp={() => this.setState({finishedAction: true})}
 						/>
 					</Col>
 				</Row>

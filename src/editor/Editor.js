@@ -32,6 +32,7 @@ class Editor extends Component {
 
 	onMouseUp(event) {
 		this.setState({mouseDown: false});
+		this.props.onMouseUp();
 	}
 
 	onWheel(event) {

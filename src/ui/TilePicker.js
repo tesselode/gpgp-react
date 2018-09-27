@@ -29,6 +29,7 @@ const TilePicker = (props) =>
 				]}
 				onPlace={(x, y) => props.onTileSelected(x, y)}
 				onRemove={() => {}}
+				onMouseUp={() => {}}
 			/>
 		</div>
 	</SidebarSection>
