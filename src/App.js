@@ -45,83 +45,90 @@ class App extends Component {
 		ipcRenderer.on('open', (event) => this.open());
 	}
 
-	onLevelWidthChanged(width) {
+	modifyLevel(f) {
 		let level = JSON.parse(JSON.stringify(this.state.level));
-		level.width = width;
-		this.setState({level: level});
+		this.setState({level: f(level)});
+	}
+
+	onLevelWidthChanged(width) {
+		this.modifyLevel((level) => {
+			level.width = width;
+			return level;
+		})
 	}
 
 	onLevelHeightChanged(height) {
-		let level = JSON.parse(JSON.stringify(this.state.level));
-		level.height = height;
-		this.setState({level: level});
+		this.modifyLevel((level) => {
+			level.height = height;
+			return level;
+		})
 	}
 
 	onLayerNameChanged(name) {
-		let level = JSON.parse(JSON.stringify(this.state.level));
-		let layer = level.layers[this.state.selectedLayerIndex];
-		layer.name = name;
-		this.setState({level: level});
+		this.modifyLevel((level) => {
+			let layer = level.layers[this.state.selectedLayerIndex];
+			layer.name = name;
+			return level;
+		})
 	}
 
 	onLayerMovedUp() {
 		if (this.state.selectedLayerIndex > 0) {
-			let level = JSON.parse(JSON.stringify(this.state.level));
-			let above = level.layers[this.state.selectedLayerIndex - 1];
-			let current = level.layers[this.state.selectedLayerIndex];
-			level.layers[this.state.selectedLayerIndex - 1] = current;
-			level.layers[this.state.selectedLayerIndex] = above;
-			this.setState({
-				level: level,
-				selectedLayerIndex: this.state.selectedLayerIndex - 1,
+			this.modifyLevel((level) => {
+				let above = level.layers[this.state.selectedLayerIndex - 1];
+				let current = level.layers[this.state.selectedLayerIndex];
+				level.layers[this.state.selectedLayerIndex - 1] = current;
+				level.layers[this.state.selectedLayerIndex] = above;
+				return level;
 			});
 		}
 	}
 
 	onLayerMovedDown() {
 		if (this.state.selectedLayerIndex < this.state.level.layers.length - 1) {
-			let level = JSON.parse(JSON.stringify(this.state.level));
-			let below = level.layers[this.state.selectedLayerIndex + 1];
-			let current = level.layers[this.state.selectedLayerIndex];
-			level.layers[this.state.selectedLayerIndex + 1] = current;
-			level.layers[this.state.selectedLayerIndex] = below;
-			this.setState({
-				level: level,
-				selectedLayerIndex: this.state.selectedLayerIndex + 1,
+			this.modifyLevel((level) => {
+				let below = level.layers[this.state.selectedLayerIndex + 1];
+				let current = level.layers[this.state.selectedLayerIndex];
+				level.layers[this.state.selectedLayerIndex + 1] = current;
+				level.layers[this.state.selectedLayerIndex] = below;
+				return level;
 			});
 		}
 	}
 
 	onLayerDeleted() {
 		if (this.state.level.layers.length > 1) {
-			let level = JSON.parse(JSON.stringify(this.state.level));
-			level.layers.splice(this.state.selectedLayerIndex, 1);
+			this.modifyLevel((level) => {
+				level.layers.splice(this.state.selectedLayerIndex, 1);
+				return level;
+			});
 			this.setState({
-				level: level,
 				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.state.level.layers.length - 2),
 			});
 		}
 	}
 
 	onGeometryLayerAdded() {
-		let level = JSON.parse(JSON.stringify(this.state.level));
-		level.layers.splice(this.state.selectedLayerIndex, 0, {
-			type: 'geometry',
-			name: 'New Geometry Layer',
-			data: [],
-		});
-		this.setState({level: level});
+		this.modifyLevel((level) => {
+			level.layers.splice(this.state.selectedLayerIndex, 0, {
+				type: 'geometry',
+				name: 'New Geometry Layer',
+				data: [],
+			});
+			return level;
+		})
 	}
 
 	onTileLayerAdded(tilesetName) {
-		let level = JSON.parse(JSON.stringify(this.state.level));
-		level.layers.splice(this.state.selectedLayerIndex, 0, {
-			type: 'tile',
-			name: 'New Tile Layer',
-			tilesetName: tilesetName,
-			data: [],
-		});
-		this.setState({level: level});
+		this.modifyLevel((level) => {
+			level.layers.splice(this.state.selectedLayerIndex, 0, {
+				type: 'tile',
+				name: 'New Tile Layer',
+				tilesetName: tilesetName,
+				data: [],
+			});
+			return level;
+		})
 	}
 
 	onTileSelected(x, y) {
@@ -132,32 +139,34 @@ class App extends Component {
 	}
 
 	onRemove(x, y) {
-		let level = JSON.parse(JSON.stringify(this.state.level));
-		let layer = level.layers[this.state.selectedLayerIndex];
-		layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
-		this.setState({level: level});
+		this.modifyLevel((level) => {
+			let layer = level.layers[this.state.selectedLayerIndex];
+			layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
+			return level;
+		})
 	}
 
 	onPlace(x, y) {
-		let level = JSON.parse(JSON.stringify(this.state.level));
-		let layer = level.layers[this.state.selectedLayerIndex];
-		layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
-		switch (this.state.level.layers[this.state.selectedLayerIndex].type) {
-			case 'geometry':
-				layer.data.push({x: x, y: y});
-				break;
-			case 'tile':
-				layer.data.push({
-					x: x, 
-					y: y,
-					tileX: this.state.selectedTileX,
-					tileY: this.state.selectedTileY,
-				});
-				break;
-			default:
-				break;
-		}
-		this.setState({level: level});
+		this.modifyLevel((level) => {
+			let layer = level.layers[this.state.selectedLayerIndex];
+			layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
+			switch (this.state.level.layers[this.state.selectedLayerIndex].type) {
+				case 'geometry':
+					layer.data.push({x: x, y: y});
+					break;
+				case 'tile':
+					layer.data.push({
+						x: x, 
+						y: y,
+						tileX: this.state.selectedTileX,
+						tileY: this.state.selectedTileY,
+					});
+					break;
+				default:
+					break;
+			}
+			return level;
+		})
 	}
 
 	open() {
