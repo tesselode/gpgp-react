@@ -19,9 +19,10 @@ export default class LayerList extends Component {
 					isOpen={this.state.dropdownOpen}
 					toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
 				>
-					<DropdownToggle color='light' size='sm'>+</DropdownToggle>
+					<DropdownToggle caret color='link' size='sm'>New...</DropdownToggle>
 					<DropdownMenu>
 						<DropdownItem
+							style={{fontSize: '.875em'}}
 							key='geometry'
 							onClick={() => this.props.onGeometryLayerAdded()}
 						>
@@ -29,6 +30,7 @@ export default class LayerList extends Component {
 						</DropdownItem>
 						{this.props.tilesetNames.map((tilesetName, i) =>
 							<DropdownItem
+								style={{fontSize: '.875em'}}
 								key={'tile' + i}
 								onClick={() => this.props.onTileLayerAdded(tilesetName)}
 							>
@@ -41,10 +43,9 @@ export default class LayerList extends Component {
 			<ListGroup flush>
 				{this.props.layers.map((layer, i) =>
 					<ListGroupItem
-						action
 						active={this.props.selectedLayer === i}
 						key={i}
-						style={{padding: '.5em'}}
+						style={{padding: '.5em', fontSize: '.875em'}}
 						onClick={() => this.props.onSelectLayer(i)}
 					>
 						{layer.type === 'tile' ?

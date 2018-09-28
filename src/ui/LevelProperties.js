@@ -10,8 +10,9 @@ const LevelProperties = (props) =>
 	<SidebarSection title='Level properties'>
 		<Form>
 			<FormGroup>
-				<Label>Level width</Label>
+				<Label size='sm'>Level width</Label>
 				<Input
+					size='sm'
 					type='number'
 					value={props.level.width}
 					onChange={(event) => {
@@ -22,8 +23,9 @@ const LevelProperties = (props) =>
 				/>
 			</FormGroup>
 			<FormGroup>
-				<Label>Level height</Label>
+				<Label size='sm'>Level height</Label>
 				<Input
+					size='sm'
 					type='number'
 					value={props.level.height}
 					onChange={(event) => {

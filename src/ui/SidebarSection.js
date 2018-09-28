@@ -10,12 +10,11 @@ export default class SidebarSection extends Component {
 	}
 
 	render() {
-		let style = this.props.flush ? {padding: '0'} : {}
-
-		return(<Card style={{userSelect: 'none'}}>
+		return(<Card style={{userSelect: 'none', marginBottom: '1em'}}>
 			<CardHeader style={{padding: '0'}}>
 				<Navbar style={{padding: '0'}}>
 					<Button
+						size='sm'
 						color='link'
 						onClick={() => this.setState({expanded: !this.state.expanded})}
 					>
@@ -25,7 +24,7 @@ export default class SidebarSection extends Component {
 				</Navbar>
 			</CardHeader>
 			<Collapse isOpen={this.state.expanded} style={{transition: '.15s'}}>
-				<CardBody style={style}>
+				<CardBody style={this.props.flush ? {padding: '0'} : {}}>
 					{this.props.children}
 				</CardBody>
 			</Collapse>

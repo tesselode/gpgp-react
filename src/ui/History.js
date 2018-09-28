@@ -12,10 +12,11 @@ const History = (props) => {
 		title={'History'}
 		flush
 	>
-		<ListGroup>
+		<ListGroup flush>
 			{historyItems.map((state, i) =>
 				<ListGroupItem
 					key={i}
+					style={{padding: '.5em', fontSize: '.875em'}}
 					active={props.historyPosition === historyItems.length - 1 - i}
 					onClick={() => props.onHistoryPositionChanged(historyItems.length - 1 - i)}
 				>

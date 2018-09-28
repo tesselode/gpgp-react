@@ -6,8 +6,9 @@ const LayerProperties = (props) =>
 	<SidebarSection title='Layer properties'>
 		<Form>
 			<FormGroup>
-				<Label>Layer name</Label>
+				<Label size='sm'>Layer name</Label>
 				<Input
+					size='sm'
 					value={props.layer.name}
 					onChange={(event) => {
 						props.onLayerNameChanged(event.target.value);
@@ -19,12 +20,14 @@ const LayerProperties = (props) =>
 				<Navbar style={{padding: 0}}>
 					<ButtonGroup>
 						<Button
+							size='sm'
 							disabled={!props.allowMovingUp}
 							onClick={() => props.onLayerMovedUp()}
 						>
 							▲
 						</Button>
 						<Button
+							size='sm'
 							disabled={!props.allowMovingDown}
 							onClick={() => props.onLayerMovedDown()}
 						>
@@ -32,6 +35,7 @@ const LayerProperties = (props) =>
 						</Button>
 					</ButtonGroup>
 					<Button
+						size='sm'
 						color='danger'
 						disabled={!props.allowDeleting}
 						onClick={() => props.onLayerDeleted()}
