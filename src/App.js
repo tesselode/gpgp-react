@@ -59,10 +59,10 @@ class App extends Component {
 		this.setState({finishedAction: true});
 	}
 
-	modifyLevel(description, f, unfinishedAction) {
+	modifyLevel(f, unfinishedAction) {
 		// create new level data
 		let newLevelData = JSON.parse(JSON.stringify(this.getCurrentLevelState()));
-		f(newLevelData);
+		let description = f(newLevelData);
 		if (this.state.finishedAction) newLevelData.description = description;
 
 		// update the history
@@ -87,75 +87,85 @@ class App extends Component {
 	}
 
 	onLevelWidthChanged(width) {
-		this.modifyLevel('Change level width', (level) => {
+		this.modifyLevel((level) => {
 			level.width = width;
+			return 'Change level width to ' + width;
 		})
 	}
 
 	onLevelHeightChanged(height) {
-		this.modifyLevel('Change level height', (level) => {
+		this.modifyLevel((level) => {
 			level.height = height;
+			return 'Change level height to ' + height;
 		})
 	}
 
 	onLayerNameChanged(name) {
-		this.modifyLevel('Change layer name', (level) => {
+		this.modifyLevel((level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
+			let oldName = layer.name;
 			layer.name = name;
+			return 'Rename "' + oldName + '" to "' + name + '"';
 		})
 	}
 
 	onLayerMovedUp() {
 		if (this.state.selectedLayerIndex > 0) {
-			this.modifyLevel('Move layer up', (level) => {
+			this.modifyLevel((level) => {
 				let above = level.layers[this.state.selectedLayerIndex - 1];
 				let current = level.layers[this.state.selectedLayerIndex];
 				level.layers[this.state.selectedLayerIndex - 1] = current;
 				level.layers[this.state.selectedLayerIndex] = above;
+				return 'Move layer "' + current.name + '" up';
 			});
 		}
 	}
 
 	onLayerMovedDown() {
 		if (this.state.selectedLayerIndex < this.getCurrentLevelState().layers.length - 1) {
-			this.modifyLevel('Move layer down', (level) => {
+			this.modifyLevel((level) => {
 				let below = level.layers[this.state.selectedLayerIndex + 1];
 				let current = level.layers[this.state.selectedLayerIndex];
 				level.layers[this.state.selectedLayerIndex + 1] = current;
 				level.layers[this.state.selectedLayerIndex] = below;
+				return 'Move layer "' + current.name + '" down';
 			});
 		}
 	}
 
 	onLayerDeleted() {
 		if (this.getCurrentLevelState().layers.length > 1) {
-			this.modifyLevel('Delete layer', (level) => {
+			this.modifyLevel((level) => {
+				let layer = level.layers[this.state.selectedLayerIndex];
 				level.layers.splice(this.state.selectedLayerIndex, 1);
-			});
-			this.setState({
-				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.getCurrentLevelState().layers.length - 1),
+				this.setState({
+					selectedLayerIndex: Math.min(this.state.selectedLayerIndex, this.getCurrentLevelState().layers.length - 2),
+				});
+				return 'Delete layer "' + layer.name + '"';
 			});
 		}
 	}
 
 	onGeometryLayerAdded() {
-		this.modifyLevel('Add geometry layer', (level) => {
+		this.modifyLevel((level) => {
 			level.layers.splice(this.state.selectedLayerIndex, 0, {
 				type: 'geometry',
 				name: 'New Geometry Layer',
 				data: [],
 			});
+			return 'Add geometry layer';
 		});
 	}
 
 	onTileLayerAdded(tilesetName) {
-		this.modifyLevel('Add tile layer', (level) => {
+		this.modifyLevel((level) => {
 			level.layers.splice(this.state.selectedLayerIndex, 0, {
 				type: 'tile',
 				name: 'New Tile Layer',
 				tilesetName: tilesetName,
 				data: [],
 			});
+			return 'Add tile layer';
 		});
 	}
 
@@ -167,14 +177,15 @@ class App extends Component {
 	}
 
 	onRemove(x, y) {
-		this.modifyLevel('Remove tiles', (level) => {
+		this.modifyLevel((level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
 			layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
+			return 'Remove tiles from layer "' + layer.name + '"';
 		}, true)
 	}
 
 	onPlace(x, y) {
-		this.modifyLevel('Place tiles', (level) => {
+		this.modifyLevel((level) => {
 			let layer = level.layers[this.state.selectedLayerIndex];
 			layer.data = layer.data.filter((tile) => !(tile.x === x && tile.y === y));
 			switch (this.getCurrentLevelState().layers[this.state.selectedLayerIndex].type) {
@@ -192,6 +203,7 @@ class App extends Component {
 				default:
 					break;
 			}
+			return 'Places tiles on layer "' + layer.name + '"';
 		}, true)
 	}
 
