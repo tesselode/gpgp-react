@@ -12,6 +12,7 @@ const LayerProperties = (props) =>
 					onChange={(event) => {
 						props.onLayerNameChanged(event.target.value);
 					}}
+					onBlur={(event) => props.onInputBlurred()}
 				/>
 			</FormGroup>
 			<FormGroup>

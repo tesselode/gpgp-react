@@ -18,6 +18,7 @@ const LevelProperties = (props) =>
 						if (validateLevelSize(event.target.value))
 							props.onLevelWidthChanged(event.target.value)
 					}}
+					onBlur={(event) => props.onInputBlurred()}
 				/>
 			</FormGroup>
 			<FormGroup>
@@ -29,6 +30,7 @@ const LevelProperties = (props) =>
 						if (validateLevelSize(event.target.value))
 							props.onLevelHeightChanged(event.target.value)
 					}}
+					onBlur={(event) => props.onInputBlurred()}
 				/>
 			</FormGroup>
 		</Form>

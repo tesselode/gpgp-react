@@ -63,7 +63,7 @@ class App extends Component {
 		// create new level data
 		let newLevelData = JSON.parse(JSON.stringify(this.getCurrentLevelState()));
 		let description = f(newLevelData);
-		if (this.state.finishedAction) newLevelData.description = description;
+		newLevelData.description = description;
 
 		// update the history
 		let levelHistoryPosition = this.state.levelHistoryPosition;
@@ -90,14 +90,14 @@ class App extends Component {
 		this.modifyLevel((level) => {
 			level.width = width;
 			return 'Change level width to ' + width;
-		})
+		}, true)
 	}
 
 	onLevelHeightChanged(height) {
 		this.modifyLevel((level) => {
 			level.height = height;
 			return 'Change level height to ' + height;
-		})
+		}, true)
 	}
 
 	onLayerNameChanged(name) {
@@ -106,7 +106,7 @@ class App extends Component {
 			let oldName = layer.name;
 			layer.name = name;
 			return 'Rename "' + oldName + '" to "' + name + '"';
-		})
+		}, true)
 	}
 
 	onLayerMovedUp() {
@@ -246,6 +246,7 @@ class App extends Component {
 							level={this.getCurrentLevelState()}
 							onLevelWidthChanged={(width) => this.onLevelWidthChanged(width)}
 							onLevelHeightChanged={(height) => this.onLevelHeightChanged(height)}
+							onInputBlurred={() => this.finishAction()}
 						/>
 						<LayerList
 							layers={this.getCurrentLevelState().layers}
@@ -264,6 +265,7 @@ class App extends Component {
 							onLayerMovedUp={() => this.onLayerMovedUp()}
 							onLayerMovedDown={() => this.onLayerMovedDown()}
 							onLayerDeleted={() => this.onLayerDeleted()}
+							onInputBlurred={() => this.finishAction()}
 						/>
 						{selectedLayer.type === 'tile' ?
 							<TilePicker
