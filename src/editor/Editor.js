@@ -16,6 +16,32 @@ class Editor extends Component {
 		};
 	}
 
+	renderCanvas() {
+		const canvas = this.refs.canvas;
+		canvas.width = this.props.mapWidth * 16 * this.state.zoom;
+		canvas.height = this.props.mapHeight * 16 * this.state.zoom;
+		const context = canvas.getContext('2d');
+		context.strokeStyle = '#bbb';
+		for (let x = 1; x < this.props.mapWidth; x++) {
+			context.moveTo(x * 16 * this.state.zoom, 0);
+			context.lineTo(x * 16 * this.state.zoom, this.props.mapHeight * 16 * this.state.zoom);
+			context.stroke();
+		}
+		for (let y = 1; y < this.props.mapHeight; y++) {
+			context.moveTo(0, y * 16 * this.state.zoom);
+			context.lineTo(this.props.mapWidth * 16 * this.state.zoom, y * 16 * this.state.zoom);
+			context.stroke();
+		}
+	}
+
+	componentDidMount() {
+		this.renderCanvas();
+	}
+
+	componentDidUpdate() {
+		this.renderCanvas();
+	}
+
 	onMouseDown(event) {
 		this.setState({mouseDown: event.button});
 		switch (event.button) {
@@ -63,71 +89,17 @@ class Editor extends Component {
 	}
 
 	render() {
-		let gridSquares = [];
-		let i = -1;
-		for (let x = 0; x < this.props.mapWidth; x++) {
-			for (let y = 0; y < this.props.mapHeight; y++) {
-				i += 1;
-				gridSquares.push(<GridSquare
-					key={i}
-					x={x}
-					y={y}
-					onHover={() => this.onGridSquareHovered(x, y)}
-				/>);
-			}
-		}
-
-		return(
-			<div
+		return <div>
+			<canvas
+				ref='canvas'
+				width={this.props.mapWidth * 16 * this.state.zoom}
+				height={this.props.mapHeight * 16 * this.state.zoom}
 				onWheel={(event) => this.onWheel(event)}
-				onContextMenu={(event) => event.preventDefault()}
-				onDragStart={(event) => event.preventDefault()}
-				style={{userSelect: 'none'}}
-			>
-				<div
-					style={{
-						position: 'relative',
-						width: this.props.mapWidth + 'em',
-						height: this.props.mapHeight + 'em',
-						borderRight: '1px solid #bbb',
-						borderBottom: '1px solid #bbb',
-						fontSize: this.state.zoom + 'em',
-						transition: '.15s',
-					}}
-					onMouseDown={(event) => this.onMouseDown(event)}
-					onMouseUp={(event) => this.onMouseUp(event)}
-				>
-					{this.props.layers.map((layer, i) => {
-						switch (layer.type) {
-							case 'geometry':
-								return <GeometryLayer
-									data={layer.data}
-									order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
-									key={i}
-								/>;
-							case 'tile':
-								return <TileLayer
-									data={layer.data}
-									tileset={this.props.project.tilesets[layer.tilesetName]}
-									order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
-									key={i}
-								/>;
-							case 'tilePreview':
-								return <TilePreviewLayer
-									tileset={layer.tileset}
-									selectedTileX={layer.selectedTileX}
-									selectedTileY={layer.selectedTileY}
-									order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
-									key={i}
-								/>;
-							default:
-								return '';
-						}
-					})}
-					{gridSquares}
-				</div>
-			</div>
-		);
+				style={{
+					border: '1px solid black',
+				}}
+			/>
+		</div>;
 	}
 }
 
