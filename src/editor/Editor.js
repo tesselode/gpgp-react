@@ -91,6 +91,21 @@ class Editor extends Component {
 					transition: '.15s',
 				}}
 			>
+				{this.props.layers.map((layer, i) => {
+					switch (layer.type) {
+						case 'geometry':
+							return <GeometryLayer
+								data={layer.data}
+								mapWidth={this.props.mapWidth}
+								mapHeight={this.props.mapHeight}
+								tileSize={this.props.project.tileSize}
+								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
+								key={i}
+							/>;		
+						default:
+							return '';
+					}
+				})}
 				<Grid
 					mapWidth={this.props.mapWidth}
 					mapHeight={this.props.mapHeight}
@@ -99,18 +114,6 @@ class Editor extends Component {
 					onMouseEnter={(event) => this.setState({cursorOverGrid: true})}
 					onMouseLeave={(event) => this.setState({cursorOverGrid: false})}
 				/>
-				{this.props.layers.map((layer, i) => {
-					switch (layer.type) {
-						case 'geometry':
-							return <GeometryLayer
-								data={layer.data}
-								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
-								key={i}
-							/>;		
-						default:
-							return '';
-					}
-				})}
 				<div style={{
 					opacity: this.state.cursorOverGrid ? 1 : 0,
 					position: 'absolute',
