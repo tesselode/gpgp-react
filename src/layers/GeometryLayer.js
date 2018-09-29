@@ -11,7 +11,8 @@ const GeometryLayer = (props) =>
 					top: tile.y + 'em',
 					width: '1em',
 					height: '1em',
-					background: 'rgba(39, 187, 232, .33)'
+					background: 'rgba(39, 187, 232, .33)',
+					pointerEvents: 'none',
 				}}
 				key={i}
 			/>

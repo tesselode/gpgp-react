@@ -17,16 +17,31 @@ class Editor extends Component {
 		};
 	}
 
+	onCursorMove(x, y) {
+		this.setState({
+			cursorX: x,
+			cursorY: y,
+		});
+		switch (this.state.mouseDown) {
+			case 0:
+				this.props.onPlace(x, y);
+				break;
+			case 2:
+				this.props.onRemove(x, y);
+				break;
+			default:
+				break;
+		}
+	}
+
 	onMouseMove(x, y) {
 		let scale = this.state.zoom * this.props.project.tileSize
 		let relativeMouseX = x / scale;
 		let relativeMouseY = y / scale;
 		let cursorX = Math.min(Math.floor(relativeMouseX), this.props.mapWidth - 1);
 		let cursorY = Math.min(Math.floor(relativeMouseY), this.props.mapHeight - 1);
-		this.setState({
-			cursorX: cursorX,
-			cursorY: cursorY,
-		});
+		if (cursorX != this.state.cursorX || cursorY != this.state.cursorY)
+			this.onCursorMove(cursorX, cursorY);
 	}
 
 	onMouseDown(event) {
@@ -58,23 +73,6 @@ class Editor extends Component {
 		}
 	}
 
-	onGridSquareHovered(x, y) {
-		this.setState({
-			cursorX: x,
-			cursorY: y,
-		});
-		switch (this.state.mouseDown) {
-			case 0:
-				this.props.onPlace(x, y);
-				break;
-			case 2:
-				this.props.onRemove(x, y);
-				break;
-			default:
-				break;
-		}
-	}
-
 	render() {
 		return <div
 			onWheel={(event) => this.onWheel(event)}
@@ -82,6 +80,8 @@ class Editor extends Component {
 				width: '100%',
 				height: '100%',
 			}}
+			onMouseDown={(event) => this.onMouseDown(event)}
+			onMouseUp={(event) => this.onMouseUp(event)}
 		>
 			<div
 				style={{
@@ -99,6 +99,18 @@ class Editor extends Component {
 					onMouseEnter={(event) => this.setState({cursorOverGrid: true})}
 					onMouseLeave={(event) => this.setState({cursorOverGrid: false})}
 				/>
+				{this.props.layers.map((layer, i) => {
+					switch (layer.type) {
+						case 'geometry':
+							return <GeometryLayer
+								data={layer.data}
+								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
+								key={i}
+							/>;		
+						default:
+							return '';
+					}
+				})}
 				<div style={{
 					opacity: this.state.cursorOverGrid ? 1 : 0,
 					position: 'absolute',

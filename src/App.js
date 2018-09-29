@@ -203,7 +203,7 @@ class App extends Component {
 				default:
 					break;
 			}
-			return 'Places tiles on layer "' + layer.name + '"';
+			return 'Place tiles on layer "' + layer.name + '"';
 		}, true)
 	}
 
