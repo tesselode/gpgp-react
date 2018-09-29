@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Grid from './Grid';
 import GridSquare from './GridSquare';
 import GeometryLayer from '../layers/GeometryLayer';
 import TilePreviewLayer from '../layers/TilePreviewLayer';
@@ -14,32 +15,6 @@ class Editor extends Component {
 			cursorY: 0,
 			mouseDown: false,
 		};
-	}
-
-	renderCanvas() {
-		const canvas = this.refs.canvas;
-		canvas.width = this.props.mapWidth * 16 * this.state.zoom;
-		canvas.height = this.props.mapHeight * 16 * this.state.zoom;
-		const context = canvas.getContext('2d');
-		context.strokeStyle = '#bbb';
-		for (let x = 1; x < this.props.mapWidth; x++) {
-			context.moveTo(x * 16 * this.state.zoom, 0);
-			context.lineTo(x * 16 * this.state.zoom, this.props.mapHeight * 16 * this.state.zoom);
-			context.stroke();
-		}
-		for (let y = 1; y < this.props.mapHeight; y++) {
-			context.moveTo(0, y * 16 * this.state.zoom);
-			context.lineTo(this.props.mapWidth * 16 * this.state.zoom, y * 16 * this.state.zoom);
-			context.stroke();
-		}
-	}
-
-	componentDidMount() {
-		this.renderCanvas();
-	}
-
-	componentDidUpdate() {
-		this.renderCanvas();
 	}
 
 	onMouseDown(event) {
@@ -89,16 +64,27 @@ class Editor extends Component {
 	}
 
 	render() {
-		return <div>
-			<canvas
-				ref='canvas'
-				width={this.props.mapWidth * 16 * this.state.zoom}
-				height={this.props.mapHeight * 16 * this.state.zoom}
-				onWheel={(event) => this.onWheel(event)}
+		return <div
+			onWheel={(event) => this.onWheel(event)}
+			style={{
+				width: '100%',
+				height: '100%',
+			}}
+		>
+			<div
 				style={{
-					border: '1px solid black',
+					transformOrigin: '0% 0%',
+					transform: 'scale(' + this.state.zoom + ')',
+					imageRendering: 'pixelated',
+					transition: '.15s',
 				}}
-			/>
+			>
+				<Grid
+					mapWidth={this.props.mapWidth}
+					mapHeight={this.props.mapHeight}
+					tileSize={this.props.project.tileSize}
+				/>
+			</div>
 		</div>;
 	}
 }

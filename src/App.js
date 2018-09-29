@@ -16,12 +16,12 @@ class App extends Component {
 
 		this.state = {
 			project: {
+				tileSize: 16,
 				tilesets: {
 					main: {
 						image: 'sheet.png',
 						imageWidth: 272,
 						imageHeight: 128,
-						tileSize: 16,
 					},
 				},
 			},
