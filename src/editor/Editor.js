@@ -18,9 +18,14 @@ class Editor extends Component {
 	}
 
 	onMouseMove(x, y) {
+		let scale = this.state.zoom * this.props.project.tileSize
+		let relativeMouseX = x / scale;
+		let relativeMouseY = y / scale;
+		let cursorX = Math.min(Math.floor(relativeMouseX), this.props.mapWidth - 1);
+		let cursorY = Math.min(Math.floor(relativeMouseY), this.props.mapHeight - 1);
 		this.setState({
-			cursorX: Math.floor(x / (this.state.zoom * this.props.project.tileSize)),
-			cursorY: Math.floor(y / (this.state.zoom * this.props.project.tileSize)),
+			cursorX: cursorX,
+			cursorY: cursorY,
 		});
 	}
 
@@ -94,17 +99,16 @@ class Editor extends Component {
 					onMouseEnter={(event) => this.setState({cursorOverGrid: true})}
 					onMouseLeave={(event) => this.setState({cursorOverGrid: false})}
 				/>
-				{this.state.cursorOverGrid ? <div
-					style={{
-						position: 'absolute',
-						left: this.state.cursorX * this.props.project.tileSize + 1 + 'px',
-						top: this.state.cursorY * this.props.project.tileSize + 1 + 'px',
-						width: this.props.project.tileSize + 'px',
-						height: this.props.project.tileSize + 'px',
-						background: 'rgba(0, 0, 0, .1)',
-						pointerEvents: 'none',
-					}}
-				/> : ''}
+				<div style={{
+					opacity: this.state.cursorOverGrid ? 1 : 0,
+					position: 'absolute',
+					left: this.state.cursorX * this.props.project.tileSize + 1 + 'px',
+					top: this.state.cursorY * this.props.project.tileSize + 1 + 'px',
+					width: this.props.project.tileSize + 'px',
+					height: this.props.project.tileSize + 'px',
+					background: 'rgba(0, 0, 0, .1)',
+					pointerEvents: 'none',
+				}}/>
 			</div>
 		</div>;
 	}
