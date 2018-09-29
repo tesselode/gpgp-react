@@ -33,6 +33,12 @@ export default class Grid extends Component {
 			style={{
 				border: '1px solid black',
 			}}
+			onMouseMove={(event) => {
+				let rect = this.refs.canvas.getBoundingClientRect();
+				this.props.onMouseMove(event.clientX - rect.left, event.clientY - rect.top);
+			}}
+			onMouseEnter={(event) => this.props.onMouseEnter()}
+			onMouseLeave={(event) => this.props.onMouseLeave()}
 		/>;
 	}
 }

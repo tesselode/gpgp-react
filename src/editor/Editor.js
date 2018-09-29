@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Grid from './Grid';
-import GridSquare from './GridSquare';
 import GeometryLayer from '../layers/GeometryLayer';
 import TilePreviewLayer from '../layers/TilePreviewLayer';
 import TileLayer from '../layers/TileLayer';
@@ -13,8 +12,16 @@ class Editor extends Component {
 			zoom: 2 * (props.startingZoom ? props.startingZoom : 1),
 			cursorX: 0,
 			cursorY: 0,
+			cursorOverGrid: false,
 			mouseDown: false,
 		};
+	}
+
+	onMouseMove(x, y) {
+		this.setState({
+			cursorX: Math.floor(x / (this.state.zoom * this.props.project.tileSize)),
+			cursorY: Math.floor(y / (this.state.zoom * this.props.project.tileSize)),
+		});
 	}
 
 	onMouseDown(event) {
@@ -83,7 +90,21 @@ class Editor extends Component {
 					mapWidth={this.props.mapWidth}
 					mapHeight={this.props.mapHeight}
 					tileSize={this.props.project.tileSize}
+					onMouseMove={(x, y) => this.onMouseMove(x, y)}
+					onMouseEnter={(event) => this.setState({cursorOverGrid: true})}
+					onMouseLeave={(event) => this.setState({cursorOverGrid: false})}
 				/>
+				{this.state.cursorOverGrid ? <div
+					style={{
+						position: 'absolute',
+						left: this.state.cursorX * this.props.project.tileSize + 1 + 'px',
+						top: this.state.cursorY * this.props.project.tileSize + 1 + 'px',
+						width: this.props.project.tileSize + 'px',
+						height: this.props.project.tileSize + 'px',
+						background: 'rgba(0, 0, 0, .1)',
+						pointerEvents: 'none',
+					}}
+				/> : ''}
 			</div>
 		</div>;
 	}
