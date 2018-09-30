@@ -14,14 +14,40 @@ import {
 	Label,
 	Input,
 	Row,
-	Col } from 'reactstrap';
+	Col,
+	ListGroup,
+	ListGroupItem } from 'reactstrap';
+import Octicon, { Plus, Trashcan } from '@githubprimer/octicons-react';
 
 export default class ProjectEditor extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			project: {
+				tilesets: [],
+			},
 			activeTab: 'settings',
+			selectedTilesetIndex: 0,
 		};
+	}
+
+	onTilesetAdded() {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		project.tilesets.push({
+			name: 'New tileset',
+			image: '',
+		})
+		this.setState({project: project});
+	}
+
+	onTilesetRemoved() {
+		if (this.state.project.tilesets.length === 0) return;
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		project.tilesets.splice(this.selectedTilesetIndex, 1);
+		this.setState({
+			project: project,
+			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, this.state.project.tilesets.length - 2),
+		});
 	}
 
 	render() {
@@ -82,7 +108,40 @@ export default class ProjectEditor extends Component {
 					</Form>
 				</TabPane>
 				<TabPane tabId='tilesets'>
-					hello!
+					<Row>
+						<Col sm={3}>
+							<Navbar color='light'>
+								<NavbarBrand>Tilesets</NavbarBrand>
+								<ButtonGroup>
+									<Button
+										color='danger'
+										disabled={this.state.project.tilesets.length === 0}
+										onClick={() => this.onTilesetRemoved()}
+									>
+										<Octicon icon={Trashcan} ariaLabel='Remove tileset' />
+									</Button>
+									<Button
+										onClick={() => this.onTilesetAdded()}
+									>
+										<Octicon icon={Plus} ariaLabel='Add tileset' />
+									</Button>
+								</ButtonGroup>
+							</Navbar>
+							<ListGroup flush>
+								{this.state.project.tilesets.map((tileset, i) => {
+									return <ListGroupItem
+										active={this.state.selectedTilesetIndex === i}
+										key={i}
+										onClick={() => this.setState({selectedTilesetIndex: i})}
+									>
+										{tileset.name}
+									</ListGroupItem>;
+								})}
+							</ListGroup>
+						</Col>
+						<Col sm={9}>
+						</Col>
+					</Row>
 				</TabPane>
 			</TabContent>
 		</div>
