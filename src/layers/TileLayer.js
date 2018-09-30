@@ -11,8 +11,8 @@ export default class TileLayer extends Component {
 			const tile = this.props.data[i];
 			let sx = tile.tileX * this.props.tileSize;
 			let sy = tile.tileY * this.props.tileSize;
-			let x = tile.x * this.props.tileSize + 1;
-			let y = tile.y * this.props.tileSize + 1;
+			let x = tile.x * this.props.tileSize;
+			let y = tile.y * this.props.tileSize;
 			context.drawImage(image, sx, sy, this.props.tileSize, this.props.tileSize,
 				x, y, this.props.tileSize, this.props.tileSize);
 		}

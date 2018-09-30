@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
 
+const gridRenderingScale = 2;
+
 export default class Grid extends Component {
 	renderCanvas() {
 		const canvas = this.refs.canvas;
-		canvas.width = this.props.mapWidth * this.props.tileSize;
-		canvas.height = this.props.mapHeight * this.props.tileSize;
+		canvas.width = this.props.mapWidth * this.props.tileSize * gridRenderingScale;
+		canvas.height = this.props.mapHeight * this.props.tileSize * gridRenderingScale;
 		const context = canvas.getContext('2d');
 		context.strokeStyle = '#bbb';
 		for (let x = 1; x < this.props.mapWidth; x++) {
-			context.moveTo(x * this.props.tileSize, 0);
-			context.lineTo(x * this.props.tileSize, this.props.mapHeight * this.props.tileSize);
+			context.moveTo(x * this.props.tileSize * gridRenderingScale, 0);
+			context.lineTo(x * this.props.tileSize * gridRenderingScale, this.props.mapHeight * this.props.tileSize * gridRenderingScale);
 			context.stroke();
 		}
 		for (let y = 1; y < this.props.mapHeight; y++) {
-			context.moveTo(0, y * this.props.tileSize);
-			context.lineTo(this.props.mapWidth * this.props.tileSize, y * this.props.tileSize);
+			context.moveTo(0, y * this.props.tileSize * gridRenderingScale);
+			context.lineTo(this.props.mapWidth * this.props.tileSize * gridRenderingScale, y * this.props.tileSize * gridRenderingScale);
 			context.stroke();
 		}
 	}
@@ -34,6 +36,8 @@ export default class Grid extends Component {
 				position: 'relative',
 				zIndex: 1,
 				border: '1px solid black',
+				transform: 'scale(' + (1 / gridRenderingScale) + ')',
+				transformOrigin: '0% 0%',
 			}}
 			onMouseMove={(event) => {
 				let rect = this.refs.canvas.getBoundingClientRect();

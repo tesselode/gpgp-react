@@ -9,8 +9,8 @@ export default class GeometryLayer extends Component {
 		context.fillStyle = 'rgba(39, 187, 232, .33)';
 		for (let i = 0; i < this.props.data.length; i++) {
 			const tile = this.props.data[i];
-			context.fillRect(tile.x * this.props.tileSize + 1,
-				tile.y * this.props.tileSize + 1,
+			context.fillRect(tile.x * this.props.tileSize,
+				tile.y * this.props.tileSize,
 				this.props.tileSize,
 				this.props.tileSize);
 		}
