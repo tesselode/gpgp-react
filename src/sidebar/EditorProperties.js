@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, FormGroup, Input, Label, ButtonGroup, Button } from 'reactstrap';
-import { GridModes } from '../editor/Editor';
+import { GridModes } from '../level/GridEditor';
 import SidebarSection from './SidebarSection';
 
 const EditorProperties = (props) =>

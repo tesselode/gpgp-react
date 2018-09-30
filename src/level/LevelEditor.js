@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import LayerList from '../sidebar/LayerList';
-import Editor, { GridModes } from './Editor';
+import Editor, { GridModes } from './GridEditor';
 import TilePicker from '../sidebar/TilePicker';
 import LevelProperties from '../sidebar/LevelProperties';
 import LayerProperties from '../sidebar/LayerProperties';

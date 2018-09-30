@@ -1,6 +1,6 @@
 import React from 'react';
 import SidebarSection from './SidebarSection';
-import Editor from '../editor/Editor';
+import Editor from '../level/GridEditor';
 
 const TilePicker = (props) =>
 	<SidebarSection
