@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Navbar, Button, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroup, ListGroupItem } from 'reactstrap';
 import SidebarSection from './SidebarSection';
+import Octicon, { Eye, Plus } from '@githubprimer/octicons-react';
 
 export default class LayerList extends Component {
 	constructor(props) {
@@ -19,7 +20,9 @@ export default class LayerList extends Component {
 					isOpen={this.state.dropdownOpen}
 					toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
 				>
-					<DropdownToggle caret color='link' size='sm'>New...</DropdownToggle>
+					<DropdownToggle color='link' size='sm'>
+						<Octicon icon={Plus} ariaLabel='Add new layer' />
+					</DropdownToggle>
 					<DropdownMenu>
 						<DropdownItem
 							style={{fontSize: '.875em'}}
@@ -58,7 +61,7 @@ export default class LayerList extends Component {
 								outline={layer.hidden}
 								onClick={() => this.props.onLayerVisibilityToggled(i)}
 							>
-								{layer.hidden ? 'H' : 'V'}
+								<Octicon icon={Eye} ariaLabel='Toggle layer visibility' />
 							</Button>
 						</Navbar>
 					</ListGroupItem>

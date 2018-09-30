@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, FormGroup, Label, Input, ButtonGroup, Button, Navbar } from 'reactstrap';
 import SidebarSection from './SidebarSection';
+import Octicon, { ChevronUp, ChevronDown, Trashcan } from '@githubprimer/octicons-react';
 
 const LayerProperties = (props) =>
 	<SidebarSection title='Layer properties'>
@@ -24,14 +25,14 @@ const LayerProperties = (props) =>
 							disabled={!props.allowMovingUp}
 							onClick={() => props.onLayerMovedUp()}
 						>
-							▲
+							<Octicon icon={ChevronUp} ariaLabel='Move layer up' />
 						</Button>
 						<Button
 							size='sm'
 							disabled={!props.allowMovingDown}
 							onClick={() => props.onLayerMovedDown()}
 						>
-							▼
+							<Octicon icon={ChevronDown} ariaLabel='Move layer down' />
 						</Button>
 					</ButtonGroup>
 					<Button
@@ -40,7 +41,7 @@ const LayerProperties = (props) =>
 						disabled={!props.allowDeleting}
 						onClick={() => props.onLayerDeleted()}
 					>
-						Delete
+						<Octicon icon={Trashcan} ariaLabel='Delete layer' />
 					</Button>
 				</Navbar>
 			</FormGroup>
