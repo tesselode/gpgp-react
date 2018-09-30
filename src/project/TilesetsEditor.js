@@ -15,70 +15,24 @@ import {
 	ListGroup,
 	ListGroupItem } from 'reactstrap';
 import Octicon, { Plus, Trashcan, FileDirectory } from '@githubprimer/octicons-react';
-const fs = window.require('fs');
-const { dialog } = window.require('electron').remote;
 
 export default class TilesetsEditor extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			project: {
-				tilesets: [],
-			},
-			tilesetImagePaths: [],
-			tilesetImages: [],
 			selectedTilesetIndex: 0,
 		};
 	}
 
-	onTilesetAdded() {
-		let project = JSON.parse(JSON.stringify(this.state.project));
-		project.tilesets.push({
-			name: 'New tileset',
-			image: '',
-		})
-		this.setState({project: project});
-	}
-
 	onTilesetRemoved() {
-		if (this.state.project.tilesets.length === 0) return;
-		let project = JSON.parse(JSON.stringify(this.state.project));
-		project.tilesets.splice(this.selectedTilesetIndex, 1);
+		this.props.onTilesetRemoved(this.state.selectedTilesetIndex);
 		this.setState({
-			project: project,
-			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, this.state.project.tilesets.length - 2),
+			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, this.props.tilesets.length - 2),
 		});
 	}
 
-	onTilesetNameChanged(name) {
-		let project = JSON.parse(JSON.stringify(this.state.project));
-		project.tilesets[this.state.selectedTilesetIndex].name = name;
-		this.setState({project: project})
-	}
-
-	onLocateTilesetImage() {
-		let path = dialog.showOpenDialog()[0];
-		if (path) {
-			fs.readFile(path, 'base64', (error, data) => {
-				if (error)
-					dialog.showErrorBox('Error opening image', 'The image could not be opened.')
-				else {
-					let tilesetName = this.state.project.tilesets[this.state.selectedTilesetIndex].name;
-					let tilesetImagePaths = JSON.parse(JSON.stringify(this.state.tilesetImagePaths));
-					tilesetImagePaths[tilesetName] = path;
-					let tilesetImages = JSON.parse(JSON.stringify(this.state.project));
-					tilesetImages[tilesetName] = 'data:image/png;base64,' + data;
-					this.setState({
-						tilesetImagePaths: tilesetImagePaths,
-						tilesetImages: tilesetImages,
-					})
-				}
-			});
-		}
-	}
-
 	render() {
-		let selectedTileset = this.state.project.tilesets[this.state.selectedTilesetIndex];
+		let selectedTileset = this.props.tilesets[this.state.selectedTilesetIndex];
 
 		return <Row>
 			<Col sm={3}>
@@ -87,20 +41,20 @@ export default class TilesetsEditor extends Component {
 					<ButtonGroup>
 						<Button
 							color='danger'
-							disabled={this.state.project.tilesets.length === 0}
+							disabled={this.props.tilesets.length === 0}
 							onClick={() => this.onTilesetRemoved()}
 						>
 							<Octicon icon={Trashcan} ariaLabel='Remove tileset' />
 						</Button>
 						<Button
-							onClick={() => this.onTilesetAdded()}
+							onClick={() => this.props.onTilesetAdded()}
 						>
 							<Octicon icon={Plus} ariaLabel='Add tileset' />
 						</Button>
 					</ButtonGroup>
 				</Navbar>
 				<ListGroup flush>
-					{this.state.project.tilesets.map((tileset, i) => {
+					{this.props.tilesets.map((tileset, i) => {
 						return <ListGroupItem
 							active={this.state.selectedTilesetIndex === i}
 							key={i}
@@ -118,7 +72,7 @@ export default class TilesetsEditor extends Component {
 						<Col sm={10}>
 							<Input
 								value={selectedTileset.name}
-								onChange={(event) => this.onTilesetNameChanged(event.target.value)}
+								onChange={(event) => this.props.onTilesetNameChanged(this.state.selectedTilesetIndex, event.target.value)}
 							/>
 						</Col>
 					</FormGroup>
@@ -128,19 +82,19 @@ export default class TilesetsEditor extends Component {
 							<InputGroup>
 								<InputGroupAddon addonType='append' >
 									<Button
-										onClick={() => this.onLocateTilesetImage()}
+										onClick={() => this.props.onLocateTilesetImage(this.state.selectedTilesetIndex)}
 									>
 										<Octicon icon={FileDirectory} ariaLabel='Locate tileset image' />
 									</Button>
 								</InputGroupAddon>
-								<Input readOnly value={this.state.tilesetImagePaths[selectedTileset.name]} />
+								<Input readOnly value={selectedTileset.imagePath} />
 							</InputGroup>
 						</Col>
 					</FormGroup>
 				</Form>
-				{this.state.tilesetImages[selectedTileset.name] ? <div>
+				{this.props.tilesetImages[this.state.selectedTilesetIndex] ? <div>
 					<img
-						src={this.state.tilesetImages[selectedTileset.name]}
+						src={this.props.tilesetImages[this.state.selectedTilesetIndex]}
 						alt=''
 					/>
 				</div> : ''}
