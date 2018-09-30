@@ -45,6 +45,7 @@ class App extends Component {
 			selectedTileX: 0,
 			selectedTileY: 0,
 			gridMode: GridModes.OnTop,
+			showSelectedLayerOnTop: true,
 		};
 
 		ipcRenderer.on('save', (event, saveAs) => this.save(saveAs));
@@ -249,6 +250,8 @@ class App extends Component {
 						<EditorProperties
 							gridMode={this.state.gridMode}
 							onGridModeChanged={(gridMode) => this.setState({gridMode: gridMode})}
+							showSelectedLayerOnTop={this.state.showSelectedLayerOnTop}
+							onToggle={() => this.setState({showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop})}
 						/>
 						<LevelProperties
 							level={this.getCurrentLevelState()}
@@ -295,6 +298,7 @@ class App extends Component {
 					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
 						<Editor
 							gridMode={this.state.gridMode}
+							showSelectedLayerOnTop={this.state.showSelectedLayerOnTop}
 							project={this.state.project}
 							mapWidth={this.getCurrentLevelState().width}
 							mapHeight={this.getCurrentLevelState().height}

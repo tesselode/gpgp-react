@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, FormGroup, Label, ButtonGroup, Button } from 'reactstrap';
+import { Form, FormGroup, Input, Label, ButtonGroup, Button } from 'reactstrap';
 import { GridModes } from '../editor/Editor';
 import SidebarSection from './SidebarSection';
 
@@ -34,6 +34,17 @@ const EditorProperties = (props) =>
 						Hide
 					</Button>
 				</ButtonGroup>
+			</FormGroup>
+
+			<FormGroup check>
+				<Label check size='sm'>
+					<Input
+						type='checkbox'
+						checked={props.showSelectedLayerOnTop}
+						onChange={(event) => props.onToggle()}
+					/>
+					Show selected layer on top
+				</Label>
 			</FormGroup>
 		</Form>
 	</SidebarSection>
