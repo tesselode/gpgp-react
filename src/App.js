@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import LayerList from './ui/LayerList';
+import LayerList from './sidebar/LayerList';
 import Editor from './editor/Editor';
-import TilePicker from './ui/TilePicker';
-import LevelProperties from './ui/LevelProperties';
-import LayerProperties from './ui/LayerProperties';
-import History from './ui/History';
+import TilePicker from './sidebar/TilePicker';
+import LevelProperties from './sidebar/LevelProperties';
+import LayerProperties from './sidebar/LayerProperties';
+import History from './sidebar/History';
 const fs = window.require('fs');
 const { ipcRenderer } = window.require('electron');
 const { dialog } = window.require('electron').remote;
