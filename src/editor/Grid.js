@@ -7,6 +7,7 @@ export default class Grid extends Component {
 		const canvas = this.refs.canvas;
 		canvas.width = this.props.mapWidth * this.props.tileSize * gridRenderingScale;
 		canvas.height = this.props.mapHeight * this.props.tileSize * gridRenderingScale;
+		if (!this.props.visible) return;
 		const context = canvas.getContext('2d');
 		context.strokeStyle = '#bbb';
 		for (let x = 1; x < this.props.mapWidth; x++) {
@@ -34,7 +35,7 @@ export default class Grid extends Component {
 			ref='canvas'
 			style={{
 				position: 'relative',
-				zIndex: 1,
+				zIndex: this.props.order,
 				border: '1px solid black',
 				transform: 'scale(' + (1 / gridRenderingScale) + ')',
 				transformOrigin: '0% 0%',

@@ -4,6 +4,12 @@ import GeometryLayer from '../layers/GeometryLayer';
 import TilePreviewLayer from '../layers/TilePreviewLayer';
 import TileLayer from '../layers/TileLayer';
 
+export const GridModes = Object.freeze({
+	'OnTop': 0,
+	'OnBottom': 1,
+	'Hide': 2,
+});
+
 class Editor extends Component {
 	constructor(props) {
 		super(props);
@@ -92,6 +98,8 @@ class Editor extends Component {
 				}}
 			>
 				{this.props.layers.map((layer, i) => {
+					let order = i === this.props.selectedLayerIndex ? this.props.layers.length :
+						this.props.layers.length - i;
 					switch (layer.type) {
 						case 'geometry':
 							return <GeometryLayer
@@ -99,7 +107,7 @@ class Editor extends Component {
 								mapWidth={this.props.mapWidth}
 								mapHeight={this.props.mapHeight}
 								tileSize={this.props.project.tileSize}
-								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
+								order={order}
 								key={i}
 							/>;
 						case 'tile':
@@ -109,7 +117,7 @@ class Editor extends Component {
 								mapHeight={this.props.mapHeight}
 								tileSize={this.props.project.tileSize}
 								tileset={this.props.project.tilesets[layer.tilesetName]}
-								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
+								order={order}
 								key={i}
 							/>;
 						case 'tilePreview':
@@ -117,7 +125,7 @@ class Editor extends Component {
 								tileset={layer.tileset}
 								selectedTileX={layer.selectedTileX}
 								selectedTileY={layer.selectedTileY}
-								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
+								order={order}
 								key={i}
 							/>;
 						default:
@@ -125,6 +133,8 @@ class Editor extends Component {
 					}
 				})}
 				<Grid
+					visible={this.props.gridMode != GridModes.Hide}
+					order={this.props.gridMode == GridModes.OnTop ? this.props.layers.length : 0}
 					mapWidth={this.props.mapWidth}
 					mapHeight={this.props.mapHeight}
 					tileSize={this.props.project.tileSize}

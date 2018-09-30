@@ -16,7 +16,7 @@ const TilePreviewLayer = (props) => {
 		<div
 			style={{
 				position: 'absolute',
-				zIndex: 1,
+				zIndex: 2,
 				width: '1em',
 				height: '1em',
 				left: props.selectedTileX + 'em',

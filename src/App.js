@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import LayerList from './sidebar/LayerList';
-import Editor from './editor/Editor';
+import Editor, { GridModes } from './editor/Editor';
 import TilePicker from './sidebar/TilePicker';
 import LevelProperties from './sidebar/LevelProperties';
 import LayerProperties from './sidebar/LayerProperties';
 import History from './sidebar/History';
+import EditorProperties from './sidebar/EditorProperties';
 const fs = window.require('fs');
 const { ipcRenderer } = window.require('electron');
 const { dialog } = window.require('electron').remote;
@@ -43,6 +44,7 @@ class App extends Component {
 			selectedLayerIndex: 0,
 			selectedTileX: 0,
 			selectedTileY: 0,
+			gridMode: GridModes.OnTop,
 		};
 
 		ipcRenderer.on('save', (event, saveAs) => this.save(saveAs));
@@ -244,6 +246,10 @@ class App extends Component {
 			<Container fluid style={{padding: '1em'}}>
 				<Row>
 					<Col xs='3' style={{height: '95vh', overflowY: 'auto'}}>
+						<EditorProperties
+							gridMode={this.state.gridMode}
+							onGridModeChanged={(gridMode) => this.setState({gridMode: gridMode})}
+						/>
 						<LevelProperties
 							level={this.getCurrentLevelState()}
 							onLevelWidthChanged={(width) => this.onLevelWidthChanged(width)}
@@ -271,6 +277,7 @@ class App extends Component {
 						/>
 						{selectedLayer.type === 'tile' ?
 							<TilePicker
+								gridMode={this.state.gridMode}
 								project={this.state.project}
 								tilesetName={selectedLayer.tilesetName}
 								tileset={this.state.project.tilesets[selectedLayer.tilesetName]}
@@ -287,6 +294,7 @@ class App extends Component {
 					</Col>
 					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
 						<Editor
+							gridMode={this.state.gridMode}
 							project={this.state.project}
 							mapWidth={this.getCurrentLevelState().width}
 							mapHeight={this.getCurrentLevelState().height}
