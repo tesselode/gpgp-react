@@ -102,6 +102,15 @@ class Editor extends Component {
 								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
 								key={i}
 							/>;
+						case 'tile':
+							return <TileLayer
+								data={layer.data}
+								mapWidth={this.props.mapWidth}
+								mapHeight={this.props.mapHeight}
+								tileSize={this.props.project.tileSize}
+								tileset={this.props.project.tilesets[layer.tilesetName]}
+								key={i}
+							/>;
 						case 'tilePreview':
 							return <TilePreviewLayer
 								tileset={layer.tileset}
