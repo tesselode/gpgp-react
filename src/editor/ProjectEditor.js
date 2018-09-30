@@ -91,27 +91,48 @@ export default class ProjectEditor extends Component {
 				<TabPane tabId='settings'>
 					<Form>
 						<FormGroup row>
+							<Label sm={2}>Tile size</Label>
+							<Col sm={10}>
+								<InputGroup>
+									<Input type='number' />
+									<InputGroupAddon addonType='append'>pixels</InputGroupAddon>
+								</InputGroup>
+							</Col>
+						</FormGroup>
+						<FormGroup row>
 							<Label sm={2}>Default level width</Label>
 							<Col sm={10}>
-								<Input type='number'></Input>
+								<InputGroup>
+									<Input type='number' />
+									<InputGroupAddon addonType='append'>tiles</InputGroupAddon>
+								</InputGroup>
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label sm={2}>Default level height</Label>
 							<Col sm={10}>
-								<Input type='number'></Input>
+								<InputGroup>
+									<Input type='number' />
+									<InputGroupAddon addonType='append'>tiles</InputGroupAddon>
+								</InputGroup>
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label sm={2}>Max level width</Label>
 							<Col sm={10}>
-								<Input type='number'></Input>
+								<InputGroup>
+									<Input type='number' />
+									<InputGroupAddon addonType='append'>tiles</InputGroupAddon>
+								</InputGroup>
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label sm={2}>Max level height</Label>
 							<Col sm={10}>
-								<Input type='number'></Input>
+								<InputGroup>
+									<Input type='number' />
+									<InputGroupAddon addonType='append'>tiles</InputGroupAddon>
+								</InputGroup>
 							</Col>
 						</FormGroup>
 					</Form>
