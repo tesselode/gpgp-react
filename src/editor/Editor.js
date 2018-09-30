@@ -98,6 +98,7 @@ class Editor extends Component {
 				}}
 			>
 				{this.props.layers.map((layer, i) => {
+					if (layer.hidden) return '';
 					let order = this.props.layers.length - i;
 					if (this.props.showSelectedLayerOnTop && i === this.props.selectedLayerIndex)
 						order = this.props.layers.length;

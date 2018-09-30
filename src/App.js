@@ -112,6 +112,15 @@ class App extends Component {
 		}, true)
 	}
 
+	onLayerVisibilityToggled(layerIndex) {
+		this.modifyLevel((level) => {
+			let layer = level.layers[layerIndex];
+			layer.hidden = !layer.hidden;
+			return layer.hidden ? 'Hide layer "' + layer.name + '"' :
+				'Show layer "' + layer.name + '"';
+		})
+	}
+
 	onLayerMovedUp() {
 		if (this.state.selectedLayerIndex > 0) {
 			this.modifyLevel((level) => {
@@ -266,6 +275,7 @@ class App extends Component {
 							onSelectLayer={(i) => this.setState({selectedLayerIndex: i})}
 							onGeometryLayerAdded={() => this.onGeometryLayerAdded()}
 							onTileLayerAdded={(tilesetName) => this.onTileLayerAdded(tilesetName)}
+							onLayerVisibilityToggled={(layerIndex) => this.onLayerVisibilityToggled(layerIndex)}
 						/>
 						<LayerProperties
 							layer={selectedLayer}

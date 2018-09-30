@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroup, ListGroupItem } from 'reactstrap';
+import { Navbar, Button, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroup, ListGroupItem } from 'reactstrap';
 import SidebarSection from './SidebarSection';
 
 export default class LayerList extends Component {
@@ -48,9 +48,19 @@ export default class LayerList extends Component {
 						style={{padding: '.5em', fontSize: '.875em'}}
 						onClick={() => this.props.onSelectLayer(i)}
 					>
-						{layer.type === 'tile' ?
-							layer.name + ' (' + layer.type + ' - ' + layer.tilesetName + ')' :
-							layer.name + ' (' + layer.type + ')'}
+						<Navbar style={{padding: 0}}>
+							{layer.type === 'tile' ?
+								layer.name + ' (' + layer.type + ' - ' + layer.tilesetName + ')' :
+								layer.name + ' (' + layer.type + ')'}
+							<Button
+								size='sm'
+								color={this.props.selectedLayer === i ? 'light' : 'dark'}
+								outline={layer.hidden}
+								onClick={() => this.props.onLayerVisibilityToggled(i)}
+							>
+								{layer.hidden ? 'H' : 'V'}
+							</Button>
+						</Navbar>
 					</ListGroupItem>
 				)}
 			</ListGroup>
