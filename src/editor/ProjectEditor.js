@@ -21,6 +21,8 @@ import {
 	ListGroup,
 	ListGroupItem } from 'reactstrap';
 import Octicon, { Plus, Trashcan, FileDirectory } from '@githubprimer/octicons-react';
+const fs = window.require('fs');
+const { dialog } = window.require('electron').remote;
 
 export default class ProjectEditor extends Component {
 	constructor(props) {
@@ -29,6 +31,8 @@ export default class ProjectEditor extends Component {
 			project: {
 				tilesets: [],
 			},
+			tilesetImagePaths: [],
+			tilesetImages: [],
 			activeTab: 'settings',
 			selectedTilesetIndex: 0,
 		};
@@ -59,7 +63,30 @@ export default class ProjectEditor extends Component {
 		this.setState({project: project})
 	}
 
+	onLocateTilesetImage() {
+		let path = dialog.showOpenDialog()[0];
+		if (path) {
+			fs.readFile(path, 'base64', (error, data) => {
+				if (error)
+					dialog.showErrorBox('Error opening image', 'The image could not be opened.')
+				else {
+					let tilesetName = this.state.project.tilesets[this.state.selectedTilesetIndex].name;
+					let tilesetImagePaths = JSON.parse(JSON.stringify(this.state.tilesetImagePaths));
+					tilesetImagePaths[tilesetName] = path;
+					let tilesetImages = JSON.parse(JSON.stringify(this.state.project));
+					tilesetImages[tilesetName] = 'data:image/png;base64,' + data;
+					this.setState({
+						tilesetImagePaths: tilesetImagePaths,
+						tilesetImages: tilesetImages,
+					})
+				}
+			});
+		}
+	}
+
 	render() {
+		let selectedTileset = this.state.project.tilesets[this.state.selectedTilesetIndex];
+		
 		return <div>
 			<Navbar color='light'>
 				<NavbarBrand>New project...</NavbarBrand>
@@ -169,13 +196,13 @@ export default class ProjectEditor extends Component {
 								})}
 							</ListGroup>
 						</Col>
-						{this.state.project.tilesets[this.state.selectedTilesetIndex] ? <Col sm={9}>
+						{selectedTileset ? <Col sm={9}>
 							<Form>
 								<FormGroup row>
 									<Label sm={2}>Tileset name</Label>
 									<Col sm={10}>
 										<Input
-											value={this.state.project.tilesets[this.state.selectedTilesetIndex].name}
+											value={selectedTileset.name}
 											onChange={(event) => this.onTilesetNameChanged(event.target.value)}
 										/>
 									</Col>
@@ -185,15 +212,23 @@ export default class ProjectEditor extends Component {
 									<Col sm={10}>
 										<InputGroup>
 											<InputGroupAddon addonType='append' >
-												<Button>
+												<Button
+													onClick={() => this.onLocateTilesetImage()}
+												>
 													<Octicon icon={FileDirectory} ariaLabel='Locate tileset image' />
 												</Button>
 											</InputGroupAddon>
-											<Input readOnly />
+											<Input readOnly value={this.state.tilesetImagePaths[selectedTileset.name]} />
 										</InputGroup>
 									</Col>
 								</FormGroup>
 							</Form>
+							{this.state.tilesetImages[selectedTileset.name] ? <div>
+								<img
+									src={this.state.tilesetImages[selectedTileset.name]}
+									alt=''
+								/>
+							</div> : ''}
 						</Col> : ''}
 					</Row>
 				</TabPane>
