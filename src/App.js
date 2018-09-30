@@ -118,6 +118,7 @@ class App extends Component {
 				level.layers[this.state.selectedLayerIndex] = above;
 				return 'Move layer "' + current.name + '" up';
 			});
+			this.setState({selectedLayerIndex: this.state.selectedLayerIndex - 1});
 		}
 	}
 
@@ -130,6 +131,7 @@ class App extends Component {
 				level.layers[this.state.selectedLayerIndex] = below;
 				return 'Move layer "' + current.name + '" down';
 			});
+			this.setState({selectedLayerIndex: this.state.selectedLayerIndex + 1});
 		}
 	}
 
