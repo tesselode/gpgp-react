@@ -109,6 +109,7 @@ class Editor extends Component {
 								mapHeight={this.props.mapHeight}
 								tileSize={this.props.project.tileSize}
 								tileset={this.props.project.tilesets[layer.tilesetName]}
+								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
 								key={i}
 							/>;
 						case 'tilePreview':

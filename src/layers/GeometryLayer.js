@@ -29,6 +29,7 @@ export default class GeometryLayer extends Component {
 			ref='canvas'
 			style={{
 				position: 'absolute',
+				zIndex: this.props.order,
 				left: 0,
 				top: 0,
 				pointerEvents: 'none',

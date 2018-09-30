@@ -31,6 +31,8 @@ export default class Grid extends Component {
 		return <canvas
 			ref='canvas'
 			style={{
+				position: 'relative',
+				zIndex: 1,
 				border: '1px solid black',
 			}}
 			onMouseMove={(event) => {
