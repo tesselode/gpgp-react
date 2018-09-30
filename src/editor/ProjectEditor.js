@@ -13,11 +13,14 @@ import {
 	FormGroup,
 	Label,
 	Input,
+	InputGroup,
+	InputGroupAddon,
+	InputGroupText,
 	Row,
 	Col,
 	ListGroup,
 	ListGroupItem } from 'reactstrap';
-import Octicon, { Plus, Trashcan } from '@githubprimer/octicons-react';
+import Octicon, { Plus, Trashcan, FileDirectory } from '@githubprimer/octicons-react';
 
 export default class ProjectEditor extends Component {
 	constructor(props) {
@@ -48,6 +51,12 @@ export default class ProjectEditor extends Component {
 			project: project,
 			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, this.state.project.tilesets.length - 2),
 		});
+	}
+
+	onTilesetNameChanged(name) {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		project.tilesets[this.state.selectedTilesetIndex].name = name;
+		this.setState({project: project})
 	}
 
 	render() {
@@ -139,8 +148,32 @@ export default class ProjectEditor extends Component {
 								})}
 							</ListGroup>
 						</Col>
-						<Col sm={9}>
-						</Col>
+						{this.state.project.tilesets[this.state.selectedTilesetIndex] ? <Col sm={9}>
+							<Form>
+								<FormGroup row>
+									<Label sm={2}>Tileset name</Label>
+									<Col sm={10}>
+										<Input
+											value={this.state.project.tilesets[this.state.selectedTilesetIndex].name}
+											onChange={(event) => this.onTilesetNameChanged(event.target.value)}
+										/>
+									</Col>
+								</FormGroup>
+								<FormGroup row>
+									<Label sm={2}>Image path</Label>
+									<Col sm={10}>
+										<InputGroup>
+											<InputGroupAddon addonType='append' >
+												<Button>
+													<Octicon icon={FileDirectory} ariaLabel='Locate tileset image' />
+												</Button>
+											</InputGroupAddon>
+											<Input readOnly />
+										</InputGroup>
+									</Col>
+								</FormGroup>
+							</Form>
+						</Col> : ''}
 					</Row>
 				</TabPane>
 			</TabContent>
