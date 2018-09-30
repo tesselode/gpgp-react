@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Card, CardHeader, CardBody, Collapse, Navbar } from 'reactstrap';
+import Octicon, { ChevronUp, ChevronDown } from '@githubprimer/octicons-react';
 
 export default class SidebarSection extends Component {
 	constructor(props) {
@@ -18,7 +19,7 @@ export default class SidebarSection extends Component {
 						color='link'
 						onClick={() => this.setState({expanded: !this.state.expanded})}
 					>
-						{this.props.title}
+						{this.props.title} <Octicon icon={this.state.expanded ? ChevronDown : ChevronUp} />
 					</Button>
 					{this.props.headerContent}
 				</Navbar>
