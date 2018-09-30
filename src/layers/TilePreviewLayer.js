@@ -10,6 +10,7 @@ const TilePreviewLayer = (props) => {
 				position: 'absolute',
 				width: scale + 'em',
 				imageRendering: 'pixelated',
+				pointerEvents: 'none',
 			}}
 		/>
 		<div
@@ -21,6 +22,7 @@ const TilePreviewLayer = (props) => {
 				left: props.selectedTileX + 'em',
 				top: props.selectedTileY + 'em',
 				border: '1px solid red',
+				pointerEvents: 'none',
 			}}
 		/>
 	</div>;

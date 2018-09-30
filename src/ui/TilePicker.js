@@ -15,8 +15,9 @@ const TilePicker = (props) =>
 		>
 			<Editor
 				startingZoom={.5}
-				mapWidth={props.tileset.imageWidth / props.tileset.tileSize}
-				mapHeight={props.tileset.imageHeight / props.tileset.tileSize}
+				project={props.project}
+				mapWidth={props.tileset.imageWidth / props.project.tileSize}
+				mapHeight={props.tileset.imageHeight / props.project.tileSize}
 				project={props.project}
 				layers={[
 					{

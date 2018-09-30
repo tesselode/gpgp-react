@@ -269,6 +269,7 @@ class App extends Component {
 						/>
 						{selectedLayer.type === 'tile' ?
 							<TilePicker
+								project={this.state.project}
 								tilesetName={selectedLayer.tilesetName}
 								tileset={this.state.project.tilesets[selectedLayer.tilesetName]}
 								selectedTileX={this.state.selectedTileX}

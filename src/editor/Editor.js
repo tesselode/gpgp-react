@@ -101,7 +101,15 @@ class Editor extends Component {
 								tileSize={this.props.project.tileSize}
 								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
 								key={i}
-							/>;		
+							/>;
+						case 'tilePreview':
+							return <TilePreviewLayer
+								tileset={layer.tileset}
+								selectedTileX={layer.selectedTileX}
+								selectedTileY={layer.selectedTileY}
+								order={i === this.props.selectedLayerIndex ? 0 : -i - 1}
+								key={i}
+							/>;
 						default:
 							return '';
 					}
