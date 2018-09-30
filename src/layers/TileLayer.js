@@ -41,6 +41,7 @@ export default class TileLayer extends Component {
 			<img
 				ref='image'
 				src={this.props.tileset.image}
+				alt=''
 				style={{display: 'none'}}
 			/>
 		</div>;

@@ -8,7 +8,7 @@ const LayerProperties = (props) =>
 			<FormGroup>
 				<Label size='sm'>Layer name</Label>
 				<Input
-					size='sm'
+					bsSize='sm'
 					value={props.layer.name}
 					onChange={(event) => {
 						props.onLayerNameChanged(event.target.value);

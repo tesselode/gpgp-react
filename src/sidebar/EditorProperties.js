@@ -1,13 +1,13 @@
 import React from 'react';
-import { Form, FormGroup, Label, Input, ButtonGroup, Button } from 'reactstrap';
+import { Form, FormGroup, Label, ButtonGroup, Button } from 'reactstrap';
 import { GridModes } from '../editor/Editor';
 import SidebarSection from './SidebarSection';
 
 const EditorProperties = (props) =>
 	<SidebarSection title='Editor properties'>
 		<Form>
+			<Label size='sm'>Show grid</Label>
 			<FormGroup>
-				<Label size='sm'>Show grid</Label>
 				<ButtonGroup>
 					<Button
 						size='sm'

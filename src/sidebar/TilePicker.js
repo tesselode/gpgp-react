@@ -19,7 +19,6 @@ const TilePicker = (props) =>
 				project={props.project}
 				mapWidth={props.tileset.imageWidth / props.project.tileSize}
 				mapHeight={props.tileset.imageHeight / props.project.tileSize}
-				project={props.project}
 				layers={[
 					{
 						name: 'Tileset',

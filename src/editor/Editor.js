@@ -46,7 +46,7 @@ class Editor extends Component {
 		let relativeMouseY = y / scale;
 		let cursorX = Math.min(Math.floor(relativeMouseX), this.props.mapWidth - 1);
 		let cursorY = Math.min(Math.floor(relativeMouseY), this.props.mapHeight - 1);
-		if (cursorX != this.state.cursorX || cursorY != this.state.cursorY)
+		if (cursorX !== this.state.cursorX || cursorY !== this.state.cursorY)
 			this.onCursorMove(cursorX, cursorY);
 	}
 
@@ -133,8 +133,8 @@ class Editor extends Component {
 					}
 				})}
 				<Grid
-					visible={this.props.gridMode != GridModes.Hide}
-					order={this.props.gridMode == GridModes.OnTop ? this.props.layers.length : 0}
+					visible={this.props.gridMode !== GridModes.Hide}
+					order={this.props.gridMode === GridModes.OnTop ? this.props.layers.length : 0}
 					mapWidth={this.props.mapWidth}
 					mapHeight={this.props.mapHeight}
 					tileSize={this.props.project.tileSize}

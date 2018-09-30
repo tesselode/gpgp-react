@@ -12,7 +12,7 @@ const LevelProperties = (props) =>
 			<FormGroup>
 				<Label size='sm'>Level width</Label>
 				<Input
-					size='sm'
+					bsSize='sm'
 					type='number'
 					value={props.level.width}
 					onChange={(event) => {
@@ -25,7 +25,7 @@ const LevelProperties = (props) =>
 			<FormGroup>
 				<Label size='sm'>Level height</Label>
 				<Input
-					size='sm'
+					bsSize='sm'
 					type='number'
 					value={props.level.height}
 					onChange={(event) => {
