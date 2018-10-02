@@ -75,7 +75,7 @@ export default class ProjectEditor extends Component {
 
 	render() {
 		return <div>
-			<Navbar color='light'>
+			<Navbar>
 				<NavbarBrand>New project...</NavbarBrand>
 				<ButtonGroup>
 					<Button>Save project</Button>
@@ -83,7 +83,7 @@ export default class ProjectEditor extends Component {
 					<Button color='primary'>New level</Button>
 				</ButtonGroup>
 			</Navbar>
-			<Nav tabs style={{padding: '1em', paddingBottom: '0'}}>
+			<Nav tabs fill style={{padding: '1em', paddingBottom: '0'}}>
 				<NavItem>
 					<NavLink
 						active={this.state.activeTab === 'settings'}

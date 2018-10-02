@@ -253,9 +253,9 @@ export default class LevelEditor extends Component {
 		let selectedLayer = this.getCurrentLevelState().layers[this.state.selectedLayerIndex];
 
 		return (
-			<Container fluid style={{padding: '1em'}}>
+			<Container fluid>
 				<Row>
-					<Col xs='3' style={{height: '95vh', overflowY: 'auto'}}>
+					<Col md='3' style={{height: '100vh', overflowY: 'auto', paddingTop: '1em'}}>
 						<EditorProperties
 							gridMode={this.state.gridMode}
 							onGridModeChanged={(gridMode) => this.setState({gridMode: gridMode})}
@@ -305,7 +305,7 @@ export default class LevelEditor extends Component {
 							onHistoryPositionChanged={(position) => this.setState({levelHistoryPosition: position})}
 						/>
 					</Col>
-					<Col xs='9' style={{height: '95vh', overflowY: 'auto'}}>
+					<Col md='9' style={{height: '100vh', overflowY: 'auto', paddingTop: '1em'}}>
 						<Editor
 							gridMode={this.state.gridMode}
 							showSelectedLayerOnTop={this.state.showSelectedLayerOnTop}
