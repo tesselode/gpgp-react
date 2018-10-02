@@ -11,6 +11,7 @@ import {
 	TabPane } from 'reactstrap';
 import ProjectSettingsEditor from './ProjectSettingsEditor';
 import TilesetsEditor from './TilesetsEditor';
+const path = window.require('path');
 const fs = window.require('fs');
 const { dialog } = window.require('electron').remote;
 const Jimp = window.require('jimp');
@@ -25,6 +26,7 @@ export default class ProjectEditor extends Component {
 			},
 			tilesetImages: [],
 			activeTab: 'settings',
+			projectFilePath: null,
 		};
 	}
 
@@ -56,9 +58,10 @@ export default class ProjectEditor extends Component {
 	}
 
 	onLocateTilesetImage(tilesetIndex) {
-		let path = dialog.showOpenDialog();
-		if (path) {
-			Jimp.read(path[0], (error, image) => {
+		let openPaths = dialog.showOpenDialog();
+		if (openPaths) {
+			let tilesetImagePath = openPaths[0];
+			Jimp.read(tilesetImagePath, (error, image) => {
 				if (error)
 					dialog.showErrorBox('Error opening image', 'The image could not be opened.')
 				else
@@ -67,7 +70,7 @@ export default class ProjectEditor extends Component {
 							dialog.showErrorBox('Error reading image data', 'The image data could not be read.')
 						else {
 							let project = JSON.parse(JSON.stringify(this.state.project));
-							project.tilesets[tilesetIndex].imagePath = path;
+							project.tilesets[tilesetIndex].imagePath = tilesetImagePath;
 							let tilesetImages = JSON.parse(JSON.stringify(this.state.tilesetImages));
 							tilesetImages[tilesetIndex] = {
 								data: data,
@@ -84,14 +87,41 @@ export default class ProjectEditor extends Component {
 		}
 	}
 
+	save(saveAs) {
+		let projectFilePath = this.state.projectFilePath;
+		if (!projectFilePath || saveAs) projectFilePath = dialog.showSaveDialog();
+		if (projectFilePath) {
+			let project = JSON.parse(JSON.stringify(this.state.project));
+			for (let i = 0; i < project.tilesets.length; i++) {
+				const tileset = project.tilesets[i];
+				tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
+			}
+			fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
+				if (error)
+					dialog.showErrorBox('Error saving project', 'The project was not saved successfully.')
+				else
+					this.setState({projectFilePath: projectFilePath})
+			});
+		}
+	}
+
 	render() {
 		return <div>
 			<Navbar>
 				<NavbarBrand>New project...</NavbarBrand>
 				<ButtonGroup>
-					<Button>Save project</Button>
-					<Button>Save project as...</Button>
-					<Button color='primary'>New level</Button>
+					{this.state.projectFilePath ? <Button
+						onClick={() => this.save()}
+					>
+						Save project
+					</Button> : ''}
+					<Button
+						color={!this.state.projectFilePath ? 'primary' : 'secondary'}
+						onClick={() => this.save(true)}
+					>
+						Save project as...
+					</Button>
+					{this.state.projectFilePath ? <Button color='primary'>New level</Button> : ''}
 				</ButtonGroup>
 			</Navbar>
 			<Nav tabs fill style={{padding: '1em', paddingBottom: '0'}}>
