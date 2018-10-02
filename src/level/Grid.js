@@ -34,7 +34,7 @@ export default class Grid extends Component {
 		return <canvas
 			ref='canvas'
 			style={{
-				position: 'absolute',
+				position: 'relative',
 				zIndex: this.props.order,
 				border: '1px solid black',
 				transform: 'scale(' + (1 / gridRenderingScale) + ')',

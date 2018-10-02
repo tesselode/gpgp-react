@@ -101,22 +101,22 @@ export default class TilesetsEditor extends Component {
 						imageRendering: 'pixelated',
 					}}
 				>
-					<Grid
-						visible
-						order={0}
-						mapWidth={Math.ceil(selectedTilesetImage.width / this.props.tileSize)}
-						mapHeight={Math.ceil(selectedTilesetImage.height / this.props.tileSize)}
-						tileSize={this.props.tileSize}
-						onMouseMove={() => {}}
-						onMouseEnter={() => {}}
-						onMouseLeave={() => {}}
-					/>
 					<img
 						src={selectedTilesetImage.data}
 						alt=''
 						style={{
 							position: 'absolute',
 						}}
+					/>
+					<Grid
+						visible
+						order={-1}
+						mapWidth={Math.ceil(selectedTilesetImage.width / this.props.tileSize)}
+						mapHeight={Math.ceil(selectedTilesetImage.height / this.props.tileSize)}
+						tileSize={this.props.tileSize}
+						onMouseMove={() => {}}
+						onMouseEnter={() => {}}
+						onMouseLeave={() => {}}
 					/>
 				</div> : ''}
 			</Col> : ''}
