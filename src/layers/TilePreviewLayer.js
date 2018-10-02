@@ -1,31 +1,27 @@
 import React from 'react';
 
 const TilePreviewLayer = (props) => {
-	let scale = props.tileset.imageWidth / props.tileset.tileSize;
 	return <div>
 		<img
 			src={props.tileset.image}
 			alt=''
 			style={{
 				position: 'absolute',
-				width: scale + 'em',
-				imageRendering: 'pixelated',
-				pointerEvents: 'none',
 			}}
 		/>
 		<div
 			style={{
 				position: 'absolute',
 				zIndex: 2,
-				width: '1em',
-				height: '1em',
-				left: props.selectedTileX + 'em',
-				top: props.selectedTileY + 'em',
+				width: props.tileSize + 1 + 'px',
+				height: props.tileSize + 1 + 'px',
+				left: props.selectedTileX * props.tileSize + 'px',
+				top: props.selectedTileY * props.tileSize + 'px',
 				border: '1px solid red',
 				pointerEvents: 'none',
 			}}
 		/>
-	</div>;
+	</div>
 }
 
 export default TilePreviewLayer;

@@ -124,6 +124,7 @@ class Editor extends Component {
 							/>;
 						case 'tilePreview':
 							return <TilePreviewLayer
+								tileSize={this.props.project.tileSize}
 								tileset={layer.tileset}
 								selectedTileX={layer.selectedTileX}
 								selectedTileY={layer.selectedTileY}
@@ -151,7 +152,7 @@ class Editor extends Component {
 					top: this.state.cursorY * this.props.project.tileSize + 1 + 'px',
 					width: this.props.project.tileSize + 'px',
 					height: this.props.project.tileSize + 'px',
-					background: 'rgba(0, 0, 0, .1)',
+					background: 'rgba(255, 255, 255, .1)',
 					pointerEvents: 'none',
 				}}/>
 			</div>
