@@ -13,12 +13,14 @@ import ProjectSettingsEditor from './ProjectSettingsEditor';
 import TilesetsEditor from './TilesetsEditor';
 const fs = window.require('fs');
 const { dialog } = window.require('electron').remote;
+const Jimp = window.require('jimp');
 
 export default class ProjectEditor extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			project: {
+				tileSize: 16,
 				tilesets: [],
 			},
 			tilesetImages: [],
@@ -54,21 +56,30 @@ export default class ProjectEditor extends Component {
 	}
 
 	onLocateTilesetImage(tilesetIndex) {
-		let path = dialog.showOpenDialog()[0];
+		let path = dialog.showOpenDialog();
 		if (path) {
-			fs.readFile(path, 'base64', (error, data) => {
+			Jimp.read(path[0], (error, image) => {
 				if (error)
 					dialog.showErrorBox('Error opening image', 'The image could not be opened.')
-				else {
-					let project = JSON.parse(JSON.stringify(this.state.project));
-					project.tilesets[tilesetIndex].imagePath = path;
-					let tilesetImages = JSON.parse(JSON.stringify(this.state.tilesetImages));
-					tilesetImages[tilesetIndex] = 'data:image/png;base64,' + data;
-					this.setState({
-						project: project,
-						tilesetImages: tilesetImages,
+				else
+					image.getBase64(Jimp.AUTO, (error, data) => {
+						if (error)
+							dialog.showErrorBox('Error reading image data', 'The image data could not be read.')
+						else {
+							let project = JSON.parse(JSON.stringify(this.state.project));
+							project.tilesets[tilesetIndex].imagePath = path;
+							let tilesetImages = JSON.parse(JSON.stringify(this.state.tilesetImages));
+							tilesetImages[tilesetIndex] = {
+								data: data,
+								width: image.bitmap.width,
+								height: image.bitmap.height,
+							};
+							this.setState({
+								project: project,
+								tilesetImages: tilesetImages,
+							});
+						}
 					});
-				}
 			});
 		}
 	}
@@ -107,6 +118,7 @@ export default class ProjectEditor extends Component {
 				</TabPane>
 				<TabPane tabId='tilesets'>
 					<TilesetsEditor
+						tileSize={this.state.project.tileSize}
 						tilesets={this.state.project.tilesets}
 						tilesetImages={this.state.tilesetImages}
 						onTilesetAdded={() => this.onTilesetAdded()}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Grid from '../level/Grid';
 import {
 	Navbar,
 	NavbarBrand,
@@ -33,6 +34,7 @@ export default class TilesetsEditor extends Component {
 
 	render() {
 		let selectedTileset = this.props.tilesets[this.state.selectedTilesetIndex];
+		let selectedTilesetImage = this.props.tilesetImages[this.state.selectedTilesetIndex];
 
 		return <Row>
 			<Col sm={3}>
@@ -92,10 +94,29 @@ export default class TilesetsEditor extends Component {
 						</Col>
 					</FormGroup>
 				</Form>
-				{this.props.tilesetImages[this.state.selectedTilesetIndex] ? <div>
+				{selectedTilesetImage ? <div
+					style={{
+						transform: 'scale(2)',
+						transformOrigin: '0% 0%',
+						imageRendering: 'pixelated',
+					}}
+				>
+					<Grid
+						visible
+						order={0}
+						mapWidth={Math.ceil(selectedTilesetImage.width / this.props.tileSize)}
+						mapHeight={Math.ceil(selectedTilesetImage.height / this.props.tileSize)}
+						tileSize={this.props.tileSize}
+						onMouseMove={() => {}}
+						onMouseEnter={() => {}}
+						onMouseLeave={() => {}}
+					/>
 					<img
-						src={this.props.tilesetImages[this.state.selectedTilesetIndex]}
+						src={selectedTilesetImage.data}
 						alt=''
+						style={{
+							position: 'absolute',
+						}}
 					/>
 				</div> : ''}
 			</Col> : ''}
