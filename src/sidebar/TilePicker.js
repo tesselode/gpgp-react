@@ -9,7 +9,7 @@ const TilePicker = (props) =>
 	>
 		<div
 			style={{
-				maxHeight: '20em',
+				height: '20em',
 				overflow: 'auto',
 			}}
 		>
