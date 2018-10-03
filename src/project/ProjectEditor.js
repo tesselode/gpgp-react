@@ -70,6 +70,8 @@ export default class ProjectEditor extends Component {
 							dialog.showErrorBox('Error reading image data', 'The image data could not be read.')
 						else {
 							let project = JSON.parse(JSON.stringify(this.state.project));
+							if (this.state.projectFilePath)
+								tilesetImagePath = path.relative(path.dirname(this.state.projectFilePath), tilesetImagePath);
 							project.tilesets[tilesetIndex].imagePath = tilesetImagePath;
 							let tilesetImages = JSON.parse(JSON.stringify(this.state.tilesetImages));
 							tilesetImages[tilesetIndex] = {
@@ -88,21 +90,29 @@ export default class ProjectEditor extends Component {
 	}
 
 	save(saveAs) {
-		let projectFilePath = this.state.projectFilePath;
-		if (!projectFilePath || saveAs) projectFilePath = dialog.showSaveDialog();
-		if (projectFilePath) {
-			let project = JSON.parse(JSON.stringify(this.state.project));
-			for (let i = 0; i < project.tilesets.length; i++) {
-				const tileset = project.tilesets[i];
-				tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
-			}
-			fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
-				if (error)
-					dialog.showErrorBox('Error saving project', 'The project was not saved successfully.')
-				else
-					this.setState({projectFilePath: projectFilePath})
-			});
+		let newProjectFilePath = this.state.projectFilePath;
+		if (!newProjectFilePath || saveAs) {
+			let chosenSaveLocation = dialog.showSaveDialog();
+			if (!chosenSaveLocation) return;
+			newProjectFilePath = chosenSaveLocation;
 		}
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		for (let i = 0; i < project.tilesets.length; i++) {
+			const tileset = project.tilesets[i];
+			let tilesetImageAbsolutePath = this.state.projectFilePath ?
+				path.join(path.dirname(this.state.projectFilePath), tileset.imagePath) :
+				tileset.imagePath;
+			tileset.imagePath = path.relative(path.dirname(newProjectFilePath), tilesetImageAbsolutePath);
+		}
+		fs.writeFile(newProjectFilePath, JSON.stringify(project), (error) => {
+			if (error)
+				dialog.showErrorBox('Error saving project', 'The project was not saved successfully.')
+			else
+				this.setState({
+					project: project,
+					projectFilePath: newProjectFilePath,
+				})
+		});
 	}
 
 	render() {
