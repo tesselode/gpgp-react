@@ -19,22 +19,23 @@ const Jimp = window.require('jimp');
 export default class ProjectEditor extends Component {
 	constructor(props) {
 		super(props);
+
+		let project = props.project ? props.project : {
+			tileSize: 16,
+			tilesets: [],
+		};
+		for (let i = 0; i < project.tilesets.length; i++) {
+			const tileset = project.tilesets[i];
+			tileset.imagePath = path.join(path.dirname(props.projectFilePath), tileset.imagePath);
+			this.loadTilesetImage(i, tileset.imagePath);
+		}
+
 		this.state = {
-			project: props.project ? props.project : {
-				tileSize: 16,
-				tilesets: [],
-			},
+			project: project,
 			tilesetImages: [],
 			activeTab: 'settings',
 			projectFilePath: props.projectFilePath,
 		};
-
-		if (props.project) {
-			for (let i = 0; i < this.state.project.tilesets.length; i++) {
-				const tileset = this.state.project.tilesets[i];
-				this.loadTilesetImage(i, path.join(path.dirname(props.projectFilePath), tileset.imagePath));
-			}
-		}
 	}
 
 	onTilesetAdded() {
@@ -89,39 +90,30 @@ export default class ProjectEditor extends Component {
 		let openPaths = dialog.showOpenDialog();
 		if (openPaths) {
 			let project = JSON.parse(JSON.stringify(this.state.project));
-			let tilesetImagePath = openPaths[0];
-			this.loadTilesetImage(tilesetIndex, tilesetImagePath);
-			if (this.state.projectFilePath)
-				tilesetImagePath = path.relative(path.dirname(this.state.projectFilePath), tilesetImagePath);
-			project.tilesets[tilesetIndex].imagePath = tilesetImagePath;
-			this.setState({project: project});
+			this.loadTilesetImage(tilesetIndex, openPaths[0]);
+			project.tilesets[tilesetIndex].imagePath = openPaths[0];
 		}
 	}
 
 	save(saveAs) {
-		let newProjectFilePath = this.state.projectFilePath;
-		if (!newProjectFilePath || saveAs) {
+		let projectFilePath = this.state.projectFilePath;
+		if (!projectFilePath || saveAs) {
 			let chosenSaveLocation = dialog.showSaveDialog();
 			if (!chosenSaveLocation) return;
-			newProjectFilePath = chosenSaveLocation;
+			projectFilePath = chosenSaveLocation;
 		}
 		let project = JSON.parse(JSON.stringify(this.state.project));
 		for (let i = 0; i < project.tilesets.length; i++) {
 			const tileset = project.tilesets[i];
-			let tilesetImageAbsolutePath = this.state.projectFilePath ?
-				path.join(path.dirname(this.state.projectFilePath), tileset.imagePath) :
-				tileset.imagePath;
-			tileset.imagePath = path.relative(path.dirname(newProjectFilePath), tilesetImageAbsolutePath);
+			tileset.imagePath = path.join(path.dirname(this.state.projectFilePath), tileset.imagePath);
 		}
-		fs.writeFile(newProjectFilePath, JSON.stringify(project), (error) => {
-			if (error)
-				dialog.showErrorBox('Error saving project', 'The project was not saved successfully.')
-			else
-				this.setState({
-					project: project,
-					projectFilePath: newProjectFilePath,
-				})
-		});
+		fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
+			if (error) {
+				dialog.showErrorBox('Error saving project', 'The project was not saved successfully.');
+				return;
+			}
+			this.setState({projectFilePath: projectFilePath});
+		})			
 	}
 
 	render() {
