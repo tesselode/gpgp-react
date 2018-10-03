@@ -20,14 +20,21 @@ export default class ProjectEditor extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			project: {
+			project: props.project ? props.project : {
 				tileSize: 16,
 				tilesets: [],
 			},
 			tilesetImages: [],
 			activeTab: 'settings',
-			projectFilePath: null,
+			projectFilePath: props.projectFilePath,
 		};
+
+		if (props.project) {
+			for (let i = 0; i < this.state.project.tilesets.length; i++) {
+				const tileset = this.state.project.tilesets[i];
+				this.loadTilesetImage(i, path.join(path.dirname(props.projectFilePath), tileset.imagePath));
+			}
+		}
 	}
 
 	onTilesetAdded() {
@@ -57,35 +64,37 @@ export default class ProjectEditor extends Component {
 		this.setState({project: project})
 	}
 
+	loadTilesetImage(tilesetIndex, tilesetImagePath) {
+		Jimp.read(tilesetImagePath, (error, image) => {
+			if (error)
+				dialog.showErrorBox('Error opening image', 'The image could not be opened.')
+			else
+				image.getBase64(Jimp.AUTO, (error, data) => {
+					if (error)
+						dialog.showErrorBox('Error reading image data', 'The image data could not be read.')
+					else {						
+						let tilesetImages = JSON.parse(JSON.stringify(this.state.tilesetImages));
+						tilesetImages[tilesetIndex] = {
+							data: data,
+							width: image.bitmap.width,
+							height: image.bitmap.height,
+						};
+						this.setState({tilesetImages: tilesetImages});
+					}
+				});
+		});
+	}
+
 	onLocateTilesetImage(tilesetIndex) {
 		let openPaths = dialog.showOpenDialog();
 		if (openPaths) {
+			let project = JSON.parse(JSON.stringify(this.state.project));
 			let tilesetImagePath = openPaths[0];
-			Jimp.read(tilesetImagePath, (error, image) => {
-				if (error)
-					dialog.showErrorBox('Error opening image', 'The image could not be opened.')
-				else
-					image.getBase64(Jimp.AUTO, (error, data) => {
-						if (error)
-							dialog.showErrorBox('Error reading image data', 'The image data could not be read.')
-						else {
-							let project = JSON.parse(JSON.stringify(this.state.project));
-							if (this.state.projectFilePath)
-								tilesetImagePath = path.relative(path.dirname(this.state.projectFilePath), tilesetImagePath);
-							project.tilesets[tilesetIndex].imagePath = tilesetImagePath;
-							let tilesetImages = JSON.parse(JSON.stringify(this.state.tilesetImages));
-							tilesetImages[tilesetIndex] = {
-								data: data,
-								width: image.bitmap.width,
-								height: image.bitmap.height,
-							};
-							this.setState({
-								project: project,
-								tilesetImages: tilesetImages,
-							});
-						}
-					});
-			});
+			this.loadTilesetImage(tilesetIndex, tilesetImagePath);
+			if (this.state.projectFilePath)
+				tilesetImagePath = path.relative(path.dirname(this.state.projectFilePath), tilesetImagePath);
+			project.tilesets[tilesetIndex].imagePath = tilesetImagePath;
+			this.setState({project: project});
 		}
 	}
 
