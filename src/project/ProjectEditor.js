@@ -8,7 +8,8 @@ import {
 	Button,
 	ButtonGroup,
 	TabContent,
-	TabPane } from 'reactstrap';
+	TabPane,
+	Label } from 'reactstrap';
 import ProjectSettingsEditor from './ProjectSettingsEditor';
 import TilesetsEditor from './TilesetsEditor';
 const path = window.require('path');
@@ -16,13 +17,22 @@ const fs = window.require('fs');
 const { dialog } = window.require('electron').remote;
 const Jimp = window.require('jimp');
 
+function validateLevelSize(value) {
+	return !isNaN(value) && value > 0;
+}
+
 export default class ProjectEditor extends Component {
 	constructor(props) {
 		super(props);
 
 		let project = props.project ? props.project : {
+			name: 'New project',
 			tileSize: 16,
 			tilesets: [],
+			defaultLevelWidth: 16,
+			defaultLevelHeight: 9,
+			maxLevelWidth: 1000,
+			maxLevelHeight: 1000,
 		};
 		for (let i = 0; i < project.tilesets.length; i++) {
 			const tileset = project.tilesets[i];
@@ -36,6 +46,42 @@ export default class ProjectEditor extends Component {
 			activeTab: 'settings',
 			projectFilePath: props.projectFilePath,
 		};
+	}
+
+	onProjectNameChanged(name) {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		project.name = name;
+		this.setState({project: project});	
+	}
+
+	onTileSizeChanged(tileSize) {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		if (validateLevelSize(tileSize)) project.tileSize = tileSize;
+		this.setState({project: project});	
+	}
+
+	onDefaultLevelWidthChanged(width) {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		if (validateLevelSize(width)) project.defaultLevelWidth = width;
+		this.setState({project: project});	
+	}
+
+	onDefaultLevelHeightChanged(height) {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		if (validateLevelSize(height)) project.defaultLevelHeight = height;
+		this.setState({project: project});	
+	}
+
+	onMaxLevelWidthChanged(width) {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		if (validateLevelSize(width)) project.maxLevelWidth = width;
+		this.setState({project: project});	
+	}
+
+	onMaxLevelHeightChanged(height) {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		if (validateLevelSize(height)) project.maxLevelHeight = height;
+		this.setState({project: project});	
 	}
 
 	onTilesetAdded() {
@@ -119,7 +165,13 @@ export default class ProjectEditor extends Component {
 	render() {
 		return <div>
 			<Navbar>
-				<NavbarBrand>New project...</NavbarBrand>
+				<NavbarBrand>
+					{this.state.project.name}
+					&nbsp;&nbsp;
+					<Label size='sm' className='text-muted'>
+						({this.state.projectFilePath ? this.state.projectFilePath : 'Unsaved'})
+					</Label>
+				</NavbarBrand>
 				<ButtonGroup>
 					{this.state.projectFilePath ? <Button
 						onClick={() => this.save()}
@@ -155,7 +207,21 @@ export default class ProjectEditor extends Component {
 			</Nav>
 			<TabContent activeTab={this.state.activeTab} style={{padding: '1em'}}>
 				<TabPane tabId='settings'>
-					<ProjectSettingsEditor />
+					<ProjectSettingsEditor
+						projectName={this.state.project.name}
+						tileSize={this.state.project.tileSize}
+						defaultLevelWidth={this.state.project.defaultLevelWidth}
+						defaultLevelHeight={this.state.project.defaultLevelHeight}
+						maxLevelWidth={this.state.project.maxLevelWidth}
+						maxLevelHeight={this.state.project.maxLevelHeight}
+						onProjectNameChanged={(name) => this.onProjectNameChanged(name)}
+						onTileSizeChanged={(tileSize) => this.onTileSizeChanged(tileSize)}
+						onDefaultLevelWidthChanged={(width) => this.onDefaultLevelWidthChanged(width)}
+						onDefaultLevelHeightChanged={(height) => this.onDefaultLevelHeightChanged(height)}
+						onMaxLevelWidthChanged={(width) => this.onMaxLevelWidthChanged(width)}
+						onMaxLevelHeightChanged={(height) => this.onMaxLevelHeightChanged(height)}
+						onChangeTabTitle={(title) => this.props.onChangeTabTitle(title)}
+					/>
 				</TabPane>
 				<TabPane tabId='tilesets'>
 					<TilesetsEditor

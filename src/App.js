@@ -18,7 +18,10 @@ export default class App extends Component {
 	newProject() {
 		let tab = {title: 'New project'};
 		tab.content = <ProjectEditor
-			onChangeTabTitle={(title) => tab.title = title}
+			onChangeTabTitle={(title) => {
+				tab.title = title;
+				this.setState({tabs: this.state.tabs});
+			}}
 		/>;
 		this.setState({
 			tabs: this.state.tabs.concat(tab),
@@ -34,7 +37,10 @@ export default class App extends Component {
 				else {
 					let tab = {title: 'Open project'};
 					tab.content = <ProjectEditor
-						onChangeTabTitle={(title) => tab.title = title}
+						onChangeTabTitle={(title) => {
+							tab.title = title;
+							this.setState({tabs: this.state.tabs});
+						}}
 						project={JSON.parse(data)}
 						projectFilePath={path[0]}
 					/>;
