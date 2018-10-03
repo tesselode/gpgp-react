@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { Button, Nav, NavItem, NavLink, TabContent, TabPane, Jumbotron, Row, Col } from 'reactstrap';
 import Octicon, { Plus } from '@githubprimer/octicons-react';
 import LevelEditor from './level/LevelEditor';
 import ProjectEditor from './project/ProjectEditor';
@@ -7,29 +7,24 @@ import ProjectEditor from './project/ProjectEditor';
 export default class App extends Component {
 	constructor(props) {
 		super(props);
-
-		let projectEditorTab = {title: 'New project'};
-		projectEditorTab.content = <ProjectEditor
-			onChangeTabTitle={(title) => {
-				projectEditorTab.title = title;
-			}}
-		/>
-
-		let levelEditorTab = {title: 'New level'};
-		levelEditorTab.content = <LevelEditor
-			onChangeTabTitle={(title) => {
-				levelEditorTab.title = title;
-			}}
-		/>
-
 		this.state = {
-			tabs: [projectEditorTab, levelEditorTab],
+			tabs: [],
 			selectedTabIndex: 0,
 		};
 	}
 
+	newProject() {
+		let tab = {title: 'New project'};
+		tab.content = <ProjectEditor
+			onChangeTabTitle={(title) => tab.title = title}
+		/>;
+		this.setState({
+			tabs: this.state.tabs.concat(tab),
+		});
+	}
+
 	render() {
-		return <div>
+		return this.state.tabs.length > 0 ? <div>
 			<Nav tabs>
 				{this.state.tabs.map((tab, i) =>
 					<NavItem key={i}>
@@ -56,6 +51,30 @@ export default class App extends Component {
 					</TabPane>
 				)}
 			</TabContent>
+		</div> : <div>
+			<Jumbotron>
+				<h1>Welcome to GPGP</h1>
+				<p>Open an existing project or level, or create a new project.</p>
+				<Row>
+					<Col md={4}>
+						<Button
+							block
+							onClick={() => this.newProject()}
+						>
+							New project
+						</Button>
+						<br />
+						<Row>
+							<Col md={6}>
+								<Button block>Open project</Button>
+							</Col>
+							<Col md={6}>
+								<Button block>Open level</Button>
+							</Col>
+						</Row>
+					</Col>
+				</Row>
+			</Jumbotron>
 		</div>
 	}
 }
