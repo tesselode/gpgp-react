@@ -16,7 +16,7 @@ export default class App extends Component {
 	}
 
 	newProject() {
-		let tab = {title: 'New project'};
+		let tab = {};
 		tab.content = <ProjectEditor
 			onChangeTabTitle={(title) => {
 				tab.title = title;
@@ -35,7 +35,7 @@ export default class App extends Component {
 				if (error)
 					dialog.showErrorBox('Error opening project', 'The project could not be opened.')
 				else {
-					let tab = {title: 'Open project'};
+					let tab = {};
 					tab.content = <ProjectEditor
 						onChangeTabTitle={(title) => {
 							tab.title = title;

@@ -46,6 +46,8 @@ export default class ProjectEditor extends Component {
 			activeTab: 'settings',
 			projectFilePath: props.projectFilePath,
 		};
+
+		this.props.onChangeTabTitle(project.name);
 	}
 
 	onProjectNameChanged(name) {
