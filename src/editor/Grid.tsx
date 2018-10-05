@@ -41,6 +41,14 @@ export default class Grid extends React.Component<Props> {
 	render() {
 		return <canvas
 			ref={this.canvasRef}
+			style={{
+				position: 'absolute',
+				left: 0,
+				top: 0,
+				border: '1px solid black',
+				transform: 'scale(' + (1 / gridRenderingScale) + ')',
+				transformOrigin: '0% 0%',
+			}}
 		/>;
 	}
 }
