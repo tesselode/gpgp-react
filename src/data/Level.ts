@@ -8,11 +8,11 @@ export default class Level {
 		new GeometryLayer(),
 	];
 
-	place(layerIndex: number, x: number, y: number, data?: object) {
+	place(layerIndex: number, x: number, y: number, data?: object): void {
 		this.layers[layerIndex].place(x, y);
 	}
 
-	remove(layerIndex: number, x: number, y: number) {
+	remove(layerIndex: number, x: number, y: number): void {
 		this.layers[layerIndex].remove(x, y);
 	}
 }

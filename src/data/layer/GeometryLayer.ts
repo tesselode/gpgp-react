@@ -13,7 +13,7 @@ export default class GeometryLayer extends Layer {
 	name: string = 'New geometry layer';
 	data: Array<Tile> = [];
 
-	place(x: number, y: number) {
+	place(x: number, y: number): void {
 		for (let i = 0; i < this.data.length; i++) {
 			const tile = this.data[i];
 			if (tile.x === x && tile.y === y) return;
@@ -21,7 +21,7 @@ export default class GeometryLayer extends Layer {
 		this.data.push(new Tile(x, y));
 	}
 
-	remove(x: number, y: number) {
+	remove(x: number, y: number): void {
 		this.data = this.data.filter(tile => tile.x !== x && tile.y !== y);
 	}
 }
