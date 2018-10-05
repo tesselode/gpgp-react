@@ -11,9 +11,16 @@ export interface State {
 export default class LevelEditor extends React.Component<{}, State> {
 	constructor(props) {
 		super(props);
+
+		let level = new Level();
+		level.place(0, 0, 0);
+		level.place(0, 1, 1);
+		level.place(0, 1, 2);
+		level.remove(0, 0, 0);
+
 		this.state = {
 			project: new Project(),
-			level: new Level(),
+			level: level,
 		}
 	}
 
