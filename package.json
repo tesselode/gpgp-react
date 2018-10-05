@@ -1,0 +1,29 @@
+{
+  "name": "gpgp-react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "electron": "^3.0.2",
+    "react-dom": "^16.5.2",
+    "react": "^16.5.2",
+    "ts-loader": "^5.2.1",
+    "typescript": "^3.1.1",
+    "webpack-cli": "^3.1.2",
+    "webpack": "^4.20.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "webpack && electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tesselode/gpgp-react.git"
+  },
+  "author": "tesselode",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tesselode/gpgp-react/issues"
+  },
+  "homepage": "https://github.com/tesselode/gpgp-react#readme"
+}
