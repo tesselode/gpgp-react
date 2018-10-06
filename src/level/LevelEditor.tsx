@@ -23,19 +23,21 @@ export default class LevelEditor extends React.Component<{}, State> {
 	}
 
 	onPlace(x, y) {
-		this.state.levelHistory.do((level: Level) => {
-			level.place(this.state.selectedLayerIndex, x, y);
-			return 'Place tiles';
-		})
-		this.setState({levelHistory: this.state.levelHistory});
+		this.setState({
+			levelHistory: this.state.levelHistory.do((level: Level) => {
+				level.place(this.state.selectedLayerIndex, x, y);
+				return 'Place tiles';
+			}),
+		});
 	}
 
 	onRemove(x, y) {
-		this.state.levelHistory.do((level: Level) => {
-			level.remove(this.state.selectedLayerIndex, x, y);
-			return 'Remove tiles';
-		})
-		this.setState({levelHistory: this.state.levelHistory});
+		this.setState({
+			levelHistory: this.state.levelHistory.do((level: Level) => {
+				level.remove(this.state.selectedLayerIndex, x, y);
+				return 'Remove tiles';
+			}),
+		});
 	}
 
 	render() {

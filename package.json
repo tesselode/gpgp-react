@@ -22,7 +22,7 @@
     "style-loader": "^0.23.0"
   },
   "scripts": {
-    "start": "webpack && electron ."
+    "start": "cls && webpack && electron ."
   },
   "repository": {
     "type": "git",
