@@ -22,6 +22,6 @@ export default class GeometryLayer extends Layer {
 	}
 
 	remove(x: number, y: number): void {
-		this.data = this.data.filter(tile => tile.x !== x && tile.y !== y);
+		this.data = this.data.filter(tile => !(tile.x === x && tile.y === y));
 	}
 }

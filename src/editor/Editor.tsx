@@ -8,12 +8,15 @@ import GeometryLayerDisplay from './layer/GeometryLayerDisplay';
 export interface Props {
 	project: Project,
 	level: Level,
+	onPlace: (x: number, y: number) => void,
+	onRemove: (x: number, y: number) => void,
 }
 
 export interface State {
 	cursorX: number,
 	cursorY: number,
 	cursorOverGrid: boolean,
+	mouseDown: number | boolean,
 }
 
 export default class Editor extends React.Component<Props, State> {
@@ -23,11 +26,23 @@ export default class Editor extends React.Component<Props, State> {
 			cursorX: 0,
 			cursorY: 0,
 			cursorOverGrid: false,
+			mouseDown: false,
 		};
 	}
 
 	onCursorMove(x, y) {
 		this.setState({cursorX: x, cursorY: y});
+		if (!this.state.cursorOverGrid) return;
+		switch (this.state.mouseDown) {
+			case 0:
+				this.props.onPlace(x, y);
+				break;
+			case 2:
+				this.props.onRemove(x, y);
+				break;
+			default:
+				break;
+		}
 	}
 
 	onMouseMove(x, y) {
@@ -40,8 +55,35 @@ export default class Editor extends React.Component<Props, State> {
 			this.onCursorMove(cursorX, cursorY);
 	}
 
+	onMouseDown(event) {
+		this.setState({mouseDown: event.button});
+		if (!this.state.cursorOverGrid) return;
+		switch (event.button) {
+			case 0:
+				this.props.onPlace(this.state.cursorX, this.state.cursorY);
+				break;
+			case 2:
+				this.props.onRemove(this.state.cursorX, this.state.cursorY);
+				break;
+			default:
+				break;
+		}
+	}
+
+	onMouseUp(event) {
+		this.setState({mouseDown: false});
+	}
+
 	render() {
-		return <div>
+		return <div
+			style={{
+				width: '100%',
+				height: '100%',
+				position: 'relative',
+			}}
+			onMouseDown={this.onMouseDown.bind(this)}
+			onMouseUp={this.onMouseUp.bind(this)}
+		>
 			<Grid
 				project={this.props.project}
 				level={this.props.level}

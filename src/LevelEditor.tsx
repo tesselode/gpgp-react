@@ -6,22 +6,25 @@ import Editor from './editor/Editor';
 export interface State {
 	project: Project,
 	level: Level,
+	selectedLayerIndex: number,
 }
 
 export default class LevelEditor extends React.Component<{}, State> {
 	constructor(props) {
 		super(props);
-
-		let level = new Level();
-		level.place(0, 0, 0);
-		level.place(0, 1, 1);
-		level.place(0, 1, 2);
-		level.remove(0, 0, 0);
-
 		this.state = {
 			project: new Project(),
-			level: level,
+			level: new Level(),
+			selectedLayerIndex: 0,
 		}
+	}
+
+	onPlace(x, y) {
+		this.state.level.place(this.state.selectedLayerIndex, x, y);
+	}
+
+	onRemove(x, y) {
+		this.state.level.remove(this.state.selectedLayerIndex, x, y);
 	}
 
 	render() {
@@ -29,6 +32,8 @@ export default class LevelEditor extends React.Component<{}, State> {
 			<Editor
 				project={this.state.project}
 				level={this.state.level}
+				onPlace={this.onPlace.bind(this)}
+				onRemove={this.onRemove.bind(this)}
 			/>
 		</div>;
 	}
