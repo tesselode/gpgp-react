@@ -4,7 +4,7 @@ import Level from '../data/Level';
 import Project from '../data/Project';
 import Editor from './GridEditor';
 import LayerList from './sidebar/LayerList';
-import HistoryManager from '../data/HistoryManager';
+import HistoryManager, { HistoryStep } from '../data/HistoryManager';
 
 export interface State {
 	project: Project,
@@ -17,7 +17,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 		super(props);
 		this.state = {
 			project: new Project(),
-			levelHistory: new HistoryManager<Level>(new Level(), 'New level'),
+			levelHistory: new HistoryManager<Level>([new HistoryStep<Level>(new Level(), 'New level')]),
 			selectedLayerIndex: 0,
 		}
 	}

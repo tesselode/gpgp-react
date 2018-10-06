@@ -1,35 +1,38 @@
 import Cloneable from "./Cloneable";
 
-interface HistoryStep<T extends Cloneable<T>> {
-	data: T;
-	description: string;
+export class HistoryStep<T extends Cloneable<T>> {
+	readonly data: T;
+	readonly description: string;
+
+	constructor(data: T, description: string) {
+		this.data = data;
+		this.description = description;
+	}
+
+	clone(): HistoryStep<T> {
+		return new HistoryStep<T>(this.data.clone(), this.description)
+	}
 }
 
 export default class HistoryManager<T extends Cloneable<T>> {
-	steps: Array<HistoryStep<T>> = [];
-	position: number = 0;
+	readonly steps: ReadonlyArray<HistoryStep<T>>;
+	readonly position: number;
 
-	constructor(data: T, description: string) {
-		this.steps.push({data: data, description: description});
-	}
-
-	private clone(position: number): HistoryManager<T> {
-		let historyManager = new HistoryManager<T>(this.steps[0].data.clone(), this.steps[0].description);
-		historyManager.position = position;
-		for (let i = 1; i <= position; i++) {
-			const step = this.steps[i];
-			historyManager.steps.push({data: step.data.clone(), description: step.description});
-		}
-		return historyManager;
+	constructor(steps: Array<HistoryStep<T>>, position: number = 0) {
+		this.steps = steps;
+		this.position = position;
 	}
 
 	do(f: (data: T) => string): HistoryManager<T> {
-		let historyManager = this.clone(this.position);
-		let data: T = historyManager.current().clone();
+		let steps: Array<HistoryStep<T>> = [];
+		for (let i = 0; i <= this.position; i++) {
+			const step = this.steps[i];
+			steps.push(step.clone());			
+		}
+		let data: T = steps[steps.length - 1].data.clone();
 		let description: string = f(data);
-		historyManager.steps.push({data: data, description: description});
-		historyManager.position++;
-		return historyManager;
+		steps.push(new HistoryStep<T>(data, description));
+		return new HistoryManager<T>(steps, this.position + 1);
 	}
 
 	current(): T {
