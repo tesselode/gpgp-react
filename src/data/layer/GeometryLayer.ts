@@ -13,6 +13,11 @@ export default class GeometryLayer extends Layer {
 	name: string = 'New geometry layer';
 	tiles: Array<Tile> = [];
 
+	constructor(layerData?: LayerData) {
+		super();
+		if (layerData) this.load(layerData);
+	}
+
 	place(x: number, y: number): void {
 		for (let i = 0; i < this.tiles.length; i++) {
 			const tile = this.tiles[i];

@@ -20,16 +20,19 @@ export default class LevelEditor extends React.Component<{}, State> {
 	}
 
 	onPlace(x, y) {
-		this.state.level.place(this.state.selectedLayerIndex, x, y);
+		let level = this.state.level.clone();
+		level.place(this.state.selectedLayerIndex, x, y);
+		this.setState({level: level});
 	}
 
 	onRemove(x, y) {
-		this.state.level.remove(this.state.selectedLayerIndex, x, y);
+		let level = this.state.level.clone();
+		level.remove(this.state.selectedLayerIndex, x, y);
+		this.setState({level: level});
 	}
 
 	render() {
 		return <div>
-			<button onClick={() => {console.log(this.state.level.save())}}>save!</button>
 			<Editor
 				project={this.state.project}
 				level={this.state.level}

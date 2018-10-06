@@ -17,11 +17,7 @@ export default abstract class Layer {
 	name: string = 'New layer';
 	tiles: Array<object> = [];
 
-	constructor(layerData?: LayerData) {
-		if (layerData) this.load(layerData);
-	}
-
-	abstract place(x: number, y: number, tiles?: object): void;
+	abstract place(x: number, y: number, tile?: object): void;
 	abstract remove(x: number, y: number): void;
 	abstract save(): LayerData;
 	abstract load(layerData: LayerData): void;

@@ -1,4 +1,4 @@
-import Layer, { LayerData } from "./layer/Layer";
+import Layer, { LayerData, LayerType } from "./layer/Layer";
 import GeometryLayer from "./layer/GeometryLayer";
 
 export interface LevelData {
@@ -13,6 +13,10 @@ export default class Level {
 	layers: Array<Layer> = [
 		new GeometryLayer(),
 	];
+
+	constructor(levelData?: LevelData) {
+		if (levelData) this.load(levelData);
+	}
 
 	place(layerIndex: number, x: number, y: number, data?: object): void {
 		this.layers[layerIndex].place(x, y);
@@ -33,5 +37,25 @@ export default class Level {
 			height: this.height,
 			layerData: layerData,
 		}
+	}
+
+	load(levelData: LevelData) {
+		this.width = levelData.width;
+		this.height = levelData.height;
+		this.layers = [];
+		for (let i = 0; i < levelData.layerData.length; i++) {
+			const layerData = levelData.layerData[i];
+			switch (layerData.type) {
+				case LayerType.Geometry:
+					this.layers.push(new GeometryLayer(layerData));					
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	clone(): Level {
+		return new Level(this.save());
 	}
 }
