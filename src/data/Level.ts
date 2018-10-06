@@ -21,4 +21,20 @@ export default class Level {
 		this.height = height;
 		this.layers = layers;
 	}
+
+	place(layerIndex: number, x: number, y: number, data?: Object): Level {
+		let layers: Array<Layer> = [];
+		this.layers.forEach((layer, i) => {
+			layers.push(i === layerIndex ? layer.place(x, y, data) : layer.clone())
+		})
+		return new Level(this.project.clone(), this.width, this.height, layers);
+	}
+	
+	remove(layerIndex: number, x: number, y: number): Level {
+		let layers: Array<Layer> = [];
+		this.layers.forEach((layer, i) => {
+			layers.push(i === layerIndex ? layer.remove(x, y) : layer.clone())
+		})
+		return new Level(this.project.clone(), this.width, this.height, layers);
+	}
 }

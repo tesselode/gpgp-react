@@ -4,4 +4,8 @@ export default class Project {
 	constructor(tileSize: number) {
 		this.tileSize = tileSize;
 	}
+
+	clone(): Project {
+		return new Project(this.tileSize);
+	}
 }

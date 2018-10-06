@@ -11,7 +11,15 @@ export default class GeometryLayer extends Layer {
 		this.tiles = tiles;
 	}
 
-	place(x, y): GeometryLayer {
+	clone(): GeometryLayer {
+		let tiles: Array<Tile> = [];
+		this.tiles.forEach(tile => {
+			tiles.push({x: tile.x, y: tile.y});
+		});
+		return new GeometryLayer(this.name, tiles);
+	}
+
+	place(x: number, y: number): GeometryLayer {
 		let tiles: Array<Tile> = [];
 		let tileAlreadyAtPosition: boolean = false;
 		this.tiles.forEach(tile => {
@@ -25,7 +33,7 @@ export default class GeometryLayer extends Layer {
 		return new GeometryLayer(this.name, tiles);
 	}
 
-	remove(x, y): GeometryLayer {
+	remove(x: number, y: number): GeometryLayer {
 		let tiles: Array<Tile> = [];
 		this.tiles.forEach(tile => {
 			if (!(tile.x === x && tile.y === y))
