@@ -13,6 +13,7 @@ export interface Props {
 }
 
 export interface State {
+	zoom: number,
 	cursorX: number,
 	cursorY: number,
 	cursorOverGrid: boolean,
@@ -23,6 +24,7 @@ export default class Editor extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
+			zoom: 2,
 			cursorX: 0,
 			cursorY: 0,
 			cursorOverGrid: false,
@@ -46,7 +48,7 @@ export default class Editor extends React.Component<Props, State> {
 	}
 
 	onMouseMove(x, y) {
-		let scale = this.props.project.tileSize;
+		let scale = this.props.project.tileSize * this.state.zoom;
 		let relativeMouseX = x / scale;
 		let relativeMouseY = y / scale;
 		let cursorX = Math.min(Math.floor(relativeMouseX), this.props.level.width - 1);
@@ -74,6 +76,16 @@ export default class Editor extends React.Component<Props, State> {
 		this.setState({mouseDown: false});
 	}
 
+	onWheel(event) {
+		event.preventDefault();
+		if (event.deltaY > 0) {
+			this.setState({zoom: this.state.zoom / 1.1});
+		}
+		if (event.deltaY < 0) {
+			this.setState({zoom: this.state.zoom * 1.1});
+		}
+	}
+
 	render() {
 		return <div
 			style={{
@@ -83,33 +95,45 @@ export default class Editor extends React.Component<Props, State> {
 			}}
 			onMouseDown={this.onMouseDown.bind(this)}
 			onMouseUp={this.onMouseUp.bind(this)}
+			onWheel={this.onWheel.bind(this)}
 		>
-			<Grid
-				project={this.props.project}
-				level={this.props.level}
-				onMouseMove={this.onMouseMove.bind(this)}
-				onMouseEnter={() => this.setState({cursorOverGrid: true})}
-				onMouseLeave={() => this.setState({cursorOverGrid: false})}
-			/>
-			{this.props.level.layers.map(layer => {
-				if (layer instanceof GeometryLayer) {
-					return <GeometryLayerDisplay
-						project={this.props.project}
-						level={this.props.level}
-						layer={layer}
-					/>;
-				}
-			})}
-			<div style={{
-				opacity: this.state.cursorOverGrid ? 1 : 0,
-				position: 'absolute',
-				left: this.state.cursorX * this.props.project.tileSize + 1 + 'px',
-				top: this.state.cursorY * this.props.project.tileSize + 1 + 'px',
-				width: this.props.project.tileSize + 'px',
-				height: this.props.project.tileSize + 'px',
-				background: 'rgba(0, 0, 0, .1)',
-				pointerEvents: 'none',
-			}}/>
+			<div
+				style={{
+					width: 0,
+					height: 0,
+					transformOrigin: '0% 0%',
+					transform: 'scale(' + this.state.zoom + ')',
+					imageRendering: 'pixelated',
+					transition: '.15s',
+				}}
+			>
+				<Grid
+					project={this.props.project}
+					level={this.props.level}
+					onMouseMove={this.onMouseMove.bind(this)}
+					onMouseEnter={() => this.setState({cursorOverGrid: true})}
+					onMouseLeave={() => this.setState({cursorOverGrid: false})}
+				/>
+				{this.props.level.layers.map(layer => {
+					if (layer instanceof GeometryLayer) {
+						return <GeometryLayerDisplay
+							project={this.props.project}
+							level={this.props.level}
+							layer={layer}
+						/>;
+					}
+				})}
+				<div style={{
+					opacity: this.state.cursorOverGrid ? 1 : 0,
+					position: 'absolute',
+					left: this.state.cursorX * this.props.project.tileSize + 1 + 'px',
+					top: this.state.cursorY * this.props.project.tileSize + 1 + 'px',
+					width: this.props.project.tileSize + 'px',
+					height: this.props.project.tileSize + 'px',
+					background: 'rgba(0, 0, 0, .1)',
+					pointerEvents: 'none',
+				}}/>
+			</div>
 		</div>;
 	}
 }
