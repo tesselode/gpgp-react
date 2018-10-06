@@ -11,17 +11,17 @@ class Tile {
 
 export default class GeometryLayer extends Layer {
 	name: string = 'New geometry layer';
-	data: Array<Tile> = [];
+	tiles: Array<Tile> = [];
 
 	place(x: number, y: number): void {
-		for (let i = 0; i < this.data.length; i++) {
-			const tile = this.data[i];
+		for (let i = 0; i < this.tiles.length; i++) {
+			const tile = this.tiles[i];
 			if (tile.x === x && tile.y === y) return;
 		}
-		this.data.push(new Tile(x, y));
+		this.tiles.push(new Tile(x, y));
 	}
 
 	remove(x: number, y: number): void {
-		this.data = this.data.filter(tile => !(tile.x === x && tile.y === y));
+		this.tiles = this.tiles.filter(tile => !(tile.x === x && tile.y === y));
 	}
 }
