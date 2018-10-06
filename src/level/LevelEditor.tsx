@@ -4,10 +4,11 @@ import Level from '../data/Level';
 import Project from '../data/Project';
 import Editor from './GridEditor';
 import LayerList from './sidebar/LayerList';
+import HistoryManager from '../data/HistoryManager';
 
 export interface State {
 	project: Project,
-	level: Level,
+	levelHistory: HistoryManager<Level>,
 	selectedLayerIndex: number,
 }
 
@@ -16,21 +17,25 @@ export default class LevelEditor extends React.Component<{}, State> {
 		super(props);
 		this.state = {
 			project: new Project(),
-			level: new Level(),
+			levelHistory: new HistoryManager<Level>(new Level(), 'New level'),
 			selectedLayerIndex: 0,
 		}
 	}
 
 	onPlace(x, y) {
-		let level = this.state.level.clone();
-		level.place(this.state.selectedLayerIndex, x, y);
-		this.setState({level: level});
+		this.state.levelHistory.do((level: Level) => {
+			level.place(this.state.selectedLayerIndex, x, y);
+			return 'Place tiles';
+		})
+		this.setState({levelHistory: this.state.levelHistory});
 	}
 
 	onRemove(x, y) {
-		let level = this.state.level.clone();
-		level.remove(this.state.selectedLayerIndex, x, y);
-		this.setState({level: level});
+		this.state.levelHistory.do((level: Level) => {
+			level.remove(this.state.selectedLayerIndex, x, y);
+			return 'Remove tiles';
+		})
+		this.setState({levelHistory: this.state.levelHistory});
 	}
 
 	render() {
@@ -38,7 +43,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 			<Row>
 				<Col md={3} style={{padding: '1em'}}>
 					<LayerList
-						level={this.state.level}
+						level={this.state.levelHistory.current()}
 						selectedLayerIndex={this.state.selectedLayerIndex}
 						onSelectLayer={(layerIndex) => this.setState({selectedLayerIndex: layerIndex})}
 					/>
@@ -46,7 +51,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 				<Col md={9} style={{padding: '1em'}}>
 					<Editor
 						project={this.state.project}
-						level={this.state.level}
+						level={this.state.levelHistory.current()}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
 					/>
