@@ -29,6 +29,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 
 	render() {
 		return <div>
+			<button onClick={() => {console.log(this.state.level.save())}}>save!</button>
 			<Editor
 				project={this.state.project}
 				level={this.state.level}

@@ -1,5 +1,11 @@
-import Layer from "./layer/Layer";
+import Layer, { LayerData } from "./layer/Layer";
 import GeometryLayer from "./layer/GeometryLayer";
+
+export interface LevelData {
+	width: number,
+	height: number,
+	layerData: Array<LayerData>,
+}
 
 export default class Level {
 	width: number = 16;
@@ -14,5 +20,18 @@ export default class Level {
 
 	remove(layerIndex: number, x: number, y: number): void {
 		this.layers[layerIndex].remove(x, y);
+	}
+
+	save(): LevelData {
+		let layerData: Array<LayerData> = [];
+		for (let i = 0; i < this.layers.length; i++) {
+			const layer = this.layers[i];
+			layerData.push(layer.save());
+		}
+		return {
+			width: this.width,
+			height: this.height,
+			layerData: layerData,
+		}
 	}
 }

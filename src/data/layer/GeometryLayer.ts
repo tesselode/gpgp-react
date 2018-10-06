@@ -1,4 +1,4 @@
-import Layer from "./Layer";
+import Layer, { TileData, LayerData, LayerType } from "./Layer";
 
 class Tile {
 	x: number;
@@ -23,5 +23,27 @@ export default class GeometryLayer extends Layer {
 
 	remove(x: number, y: number): void {
 		this.tiles = this.tiles.filter(tile => !(tile.x === x && tile.y === y));
+	}
+
+	save(): LayerData {
+		let tileData: Array<TileData> = [];
+		for (let i = 0; i < this.tiles.length; i++) {
+			const tile = this.tiles[i];
+			tileData.push({x: tile.x, y: tile.y});
+		}
+		return {
+			name: this.name,
+			type: LayerType.Geometry,
+			tileData: tileData,
+		};
+	}
+
+	load(layerData: LayerData) {
+		this.name = layerData.name;
+		this.tiles = [];
+		for (let i = 0; i < layerData.tileData.length; i++) {
+			const tileData = layerData.tileData[i];
+			this.tiles.push(new Tile(tileData.x, tileData.y));
+		}
 	}
 }
