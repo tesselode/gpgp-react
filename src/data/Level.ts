@@ -12,6 +12,7 @@ export default class Level {
 	height: number = 9;
 	layers: Array<Layer> = [
 		new GeometryLayer(),
+		new GeometryLayer(),
 	];
 
 	constructor(levelData?: LevelData) {
