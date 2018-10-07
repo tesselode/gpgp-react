@@ -1,6 +1,7 @@
 import React from 'react';
 import Level from '../data/Level';
 import Project from '../data/Project';
+import GridEditor from './GridEditor';
 
 export interface State {
 	level: Level;
@@ -18,7 +19,10 @@ export default class LevelEditor extends React.Component<{}, State> {
 	}
 
 	render() {
-		console.log(this.state.level);
-		return <div>hi!</div>;
+		return <div>
+			<GridEditor
+				level={this.state.level}
+			/>
+		</div>;
 	}
 }
