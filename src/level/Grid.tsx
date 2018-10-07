@@ -21,12 +21,18 @@ export default class Grid extends React.Component<Props> {
 		context.strokeStyle = '#bbb';
 		for (let x = 1; x < this.props.level.width; x++) {
 			context.moveTo(x * this.props.level.project.tileSize * gridRenderingScale, 0);
-			context.lineTo(x * this.props.level.project.tileSize * gridRenderingScale, this.props.level.height * this.props.level.project.tileSize * gridRenderingScale);
+			context.lineTo(
+				x * this.props.level.project.tileSize * gridRenderingScale,
+				this.props.level.height * this.props.level.project.tileSize * gridRenderingScale
+			);
 			context.stroke();
 		}
 		for (let y = 1; y < this.props.level.height; y++) {
 			context.moveTo(0, y * this.props.level.project.tileSize * gridRenderingScale);
-			context.lineTo(this.props.level.width * this.props.level.project.tileSize * gridRenderingScale, y * this.props.level.project.tileSize * gridRenderingScale);
+			context.lineTo(
+				this.props.level.width * this.props.level.project.tileSize * gridRenderingScale,
+				y * this.props.level.project.tileSize * gridRenderingScale
+			);
 			context.stroke();
 		}
 	}

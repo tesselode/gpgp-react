@@ -27,9 +27,7 @@ export default class GeometryLayer extends Layer {
 			if (tile.x === x && tile.y === y)
 				tileAlreadyAtPosition = true;
 		});
-		if (tileAlreadyAtPosition)
-			return new GeometryLayer(this.name, tiles);
-		tiles.push({x: x, y: y});
+		if (!tileAlreadyAtPosition) tiles.push({x: x, y: y});
 		return new GeometryLayer(this.name, tiles);
 	}
 
