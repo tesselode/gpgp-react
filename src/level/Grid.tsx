@@ -5,6 +5,9 @@ const gridRenderingScale = 2;
 
 export interface Props {
 	level: Level;
+	onMouseMove: (x: number, y: number) => void,
+	onMouseEnter: () => void,
+	onMouseLeave: () => void,
 }
 
 export default class Grid extends React.Component<Props> {
@@ -45,6 +48,12 @@ export default class Grid extends React.Component<Props> {
 				transform: 'scale(' + (1 / gridRenderingScale) + ')',
 				transformOrigin: '0% 0%',
 			}}
+			onMouseMove={(event) => {
+				let rect = this.canvasRef.current.getBoundingClientRect();
+				this.props.onMouseMove(event.clientX - rect.left, event.clientY - rect.top);
+			}}
+			onMouseEnter={this.props.onMouseEnter}
+			onMouseLeave={this.props.onMouseLeave}
 		/>;
 	}
 }
