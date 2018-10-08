@@ -6,16 +6,17 @@ import GeometryLayerDisplay from './layer/GeometryLayerDisplay';
 
 export interface Props {
 	level: Level;
-	onPlace: (x: number, y: number) => void,
-	onRemove: (x: number, y: number) => void,
+	onPlace: (x: number, y: number) => void;
+	onRemove: (x: number, y: number) => void;
+	onMouseUp: () => void;
 }
 
 export interface State {
-	zoom: number,
-	cursorX: number,
-	cursorY: number,
-	cursorOverGrid: boolean,
-	mouseDown: number | boolean,
+	zoom: number;
+	cursorX: number;
+	cursorY: number;
+	cursorOverGrid: boolean;
+	mouseDown: number | boolean;
 }
 
 export default class GridEditor extends React.Component<Props, State> {
@@ -71,6 +72,7 @@ export default class GridEditor extends React.Component<Props, State> {
 	}
 
 	onMouseUp() {
+		this.props.onMouseUp();
 		this.setState({mouseDown: false});
 	}
 

@@ -19,7 +19,7 @@ export default class HistoryManager<T extends Cloneable<T>> {
 		this.position = position;
 	}
 
-	do(f: (data: T) => HistoryStep<T>): HistoryManager<T> {
+	do(f: (data: T) => HistoryStep<T>, continuedAction = false): HistoryManager<T> {
 		let steps: Array<HistoryStep<T>> = [];
 		for (let i = 0; i <= this.position; i++) {
 			const step = this.steps[i];
@@ -28,8 +28,12 @@ export default class HistoryManager<T extends Cloneable<T>> {
 				description: step.description,
 			});
 		}
-		steps.push(f(steps[steps.length - 1].data));
-		return new HistoryManager<T>(steps, this.position + 1);
+		let newStep = f(steps[steps.length - 1].data);
+		if (continuedAction)
+			steps[steps.length - 1] = newStep;
+		else
+			steps.push(newStep);
+		return new HistoryManager<T>(steps, steps.length - 1);
 	}
 
 	current(): T {

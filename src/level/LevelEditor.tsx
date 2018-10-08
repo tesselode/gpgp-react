@@ -10,6 +10,7 @@ import HistoryBrowser from './sidebar/HistoryBrowser';
 export interface State {
 	levelHistory: HistoryManager<Level>;
 	selectedLayerIndex: number;
+	continuedAction: boolean;
 }
 
 export default class LevelEditor extends React.Component<{}, State> {
@@ -21,25 +22,32 @@ export default class LevelEditor extends React.Component<{}, State> {
 				description: 'New level',
 			}]),
 			selectedLayerIndex: 0,
+			continuedAction: false,
 		};
 	}
 
 	onPlace(x, y) {
-		this.setState({levelHistory: this.state.levelHistory.do(level => {
-			return {
-				data: level.place(this.state.selectedLayerIndex, x, y),
-				description: 'Place tiles',
-			};
-		})});
+		this.setState({
+			levelHistory: this.state.levelHistory.do(level => {
+				return {
+					data: level.place(this.state.selectedLayerIndex, x, y),
+					description: 'Place tiles',
+				};
+			}, this.state.continuedAction),
+			continuedAction: true,
+		});
 	}
 	
 	onRemove(x, y) {
-		this.setState({levelHistory: this.state.levelHistory.do(level => {
-			return {
-				data: level.remove(this.state.selectedLayerIndex, x, y),
-				description: 'Remove tiles',
-			};
-		})});
+		this.setState({
+			levelHistory: this.state.levelHistory.do(level => {
+				return {
+					data: level.remove(this.state.selectedLayerIndex, x, y),
+					description: 'Remove tiles',
+				};
+			}, this.state.continuedAction),
+			continuedAction: true,
+		});
 	}
 
 	render() {
@@ -67,6 +75,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 						level={this.state.levelHistory.current()}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
+						onMouseUp={() => this.setState({continuedAction: false})}
 					/>
 				</Col>
 			</Row>
