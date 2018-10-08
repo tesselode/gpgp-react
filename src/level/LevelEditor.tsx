@@ -26,6 +26,12 @@ export default class LevelEditor extends React.Component<{}, State> {
 		};
 	}
 
+	onHistoryPositionChanged(position: number) {
+		this.setState({
+			levelHistory: this.state.levelHistory.jumpTo(position),
+		});
+	}
+
 	onPlace(x, y) {
 		this.setState({
 			levelHistory: this.state.levelHistory.do(level => {
@@ -68,6 +74,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 					/>
 					<HistoryBrowser
 						historyManager={this.state.levelHistory}
+						onHistoryPositionChanged={this.onHistoryPositionChanged.bind(this)}
 					/>
 				</Col>
 				<Col md={9} style={{padding: '1em'}}>

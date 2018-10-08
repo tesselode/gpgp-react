@@ -6,6 +6,7 @@ import SidebarSection from './SidebarSection';
 
 export interface Props {
 	historyManager: HistoryManager<Level>;
+	onHistoryPositionChanged: (position: number) => void;
 }
 
 export default (props: Props) => {
@@ -14,6 +15,7 @@ export default (props: Props) => {
 		const step = props.historyManager.steps[i];
 		items.push(<ListGroupItem
 			active={props.historyManager.position === i}
+			onClick={() => props.onHistoryPositionChanged(i)}
 		>
 			{step.description}
 		</ListGroupItem>)
