@@ -5,6 +5,7 @@ import Project from '../data/Project';
 import GridEditor from './GridEditor';
 import HistoryManager from '../data/HistoryManager';
 import LayerList from './sidebar/LayerList';
+import HistoryBrowser from './sidebar/HistoryBrowser';
 
 export interface State {
 	levelHistory: HistoryManager<Level>;
@@ -44,11 +45,21 @@ export default class LevelEditor extends React.Component<{}, State> {
 	render() {
 		return <Container fluid>
 			<Row>
-				<Col md={3} style={{padding: '1em'}}>
+				<Col
+					md={3}
+					style={{
+						maxHeight: '100vh',
+						overflowY: 'auto',
+						padding: '1em',
+					}}
+				>
 					<LayerList
 						level={this.state.levelHistory.current()}
 						selectedLayerIndex={this.state.selectedLayerIndex}
 						onSelectLayer={(layerIndex) => this.setState({selectedLayerIndex: layerIndex})}
+					/>
+					<HistoryBrowser
+						historyManager={this.state.levelHistory}
 					/>
 				</Col>
 				<Col md={9} style={{padding: '1em'}}>

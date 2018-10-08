@@ -14,16 +14,16 @@ export default (props: Props) =>
 	<SidebarSection
 		name='Layers'
 		flush
+		startExpanded
 	>
 		<ListGroup flush>
-			{props.level.layers.map((layer, i) => {
-				let layerType = layer instanceof GeometryLayer && 'Geometry';
-				return <ListGroupItem
+			{props.level.layers.map((layer, i) =>
+				<ListGroupItem
 					active={props.selectedLayerIndex === i}
 					onClick={() => props.onSelectLayer(i)}
 				>
-					{layer.name + ' (' + layerType + ')'}
-				</ListGroupItem>;
-			})}
+					{layer.name + ' (' + layer.type + ')'}
+				</ListGroupItem>
+			)}
 		</ListGroup>
 	</SidebarSection>

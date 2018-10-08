@@ -20,7 +20,7 @@ export default class SidebarSection extends React.Component<Props, State> {
 	}
 
 	render() {
-		return <Card>
+		return <Card style={{marginBottom: '1em'}}>
 			<CardHeader
 				style={{padding: 0}}
 			>
