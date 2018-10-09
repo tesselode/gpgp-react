@@ -10,6 +10,7 @@ import HistoryBrowser from './sidebar/HistoryBrowser';
 export interface State {
 	levelHistory: HistoryList<Level>;
 	selectedLayerIndex: number;
+	continuedAction: boolean;
 }
 
 export default class LevelEditor extends React.Component<{}, State> {
@@ -39,26 +40,29 @@ export default class LevelEditor extends React.Component<{}, State> {
 				],
 			},
 			selectedLayerIndex: 0,
+			continuedAction: false,
 		}
 	}
 
 	onPlace(x: number, y: number) {
 		this.setState({
+			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
 				layer.tiles.push({x: x, y: y});
 				return 'Place tiles';
-			})
+			}, this.state.continuedAction)
 		})
 	}
 
 	onRemove(x: number, y: number) {
 		this.setState({
+			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
 				layer.tiles = layer.tiles.filter(tile => !(tile.x === x && tile.y === y));
 				return 'Remove tiles';
-			})
+			}, this.state.continuedAction)
 		})
 	}
 
@@ -89,6 +93,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 						level={level}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
+						onMouseUp={() => this.setState({continuedAction: false})}
 					/>
 				</Col>
 			</Row>

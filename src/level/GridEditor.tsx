@@ -8,6 +8,7 @@ export interface Props {
 	level: Level,
 	onPlace: (x: number, y: number) => void,
 	onRemove: (x: number, y: number) => void,
+	onMouseUp: () => void,
 }
 
 export interface State {
@@ -71,6 +72,7 @@ export default class GridEditor extends React.Component<Props, State> {
 	}
 
 	onMouseUp() {
+		this.props.onMouseUp();
 		this.setState({mouseDown: false});
 	}
 
