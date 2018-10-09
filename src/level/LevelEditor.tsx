@@ -31,20 +31,24 @@ export default class LevelEditor extends React.Component<{}, State> {
 	}
 
 	onPlace(x: number, y: number) {
-		let level = JSON.parse(JSON.stringify(this.state.level));
-		level.layers[this.state.selectedLayerIndex].tiles.push({
-			x: x,
-			y: y,
-		});
+		let level: Level = JSON.parse(JSON.stringify(this.state.level));
+		let layer = level.layers[this.state.selectedLayerIndex];
+		layer.tiles.push({x: x, y: y});
 		this.setState({level: level});
-		console.log(level);
+	}
+
+	onRemove(x: number, y: number) {
+		let level: Level = JSON.parse(JSON.stringify(this.state.level));
+		let layer = level.layers[this.state.selectedLayerIndex];
+		layer.tiles = layer.tiles.filter(tile => !(tile.x === x && tile.y === y));
+		this.setState({level: level});
 	}
 
 	render() {
 		return <GridEditor
 			level={this.state.level}
 			onPlace={this.onPlace.bind(this)}
-			onRemove={(x, y) => {}}
+			onRemove={this.onRemove.bind(this)}
 		/>
 	}
 }
