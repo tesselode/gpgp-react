@@ -25,6 +25,10 @@ export default class LevelEditor extends React.Component<{}, State> {
 						data: {
 							project: {
 								tileSize: 16,
+								defaultMapWidth: 16,
+								defaultMapHeight: 9,
+								maxMapWidth: 1000,
+								maxMapHeight: 1000,
 							},
 							width: 16,
 							height: 9,
