@@ -1,8 +1,11 @@
 import React from 'react';
+import { Container, Row, Col } from 'reactstrap';
 import Level from '../data/Level';
 import { LayerType } from '../data/layer/Layer';
 import GridEditor from './GridEditor';
-import HistoryList, { addHistory, getCurrentHistoryState } from '../data/HistoryList';
+import HistoryList, { addHistory, getCurrentHistoryState, changeHistoryPosition } from '../data/HistoryList';
+import LayerList from './sidebar/LayerList';
+import HistoryBrowser from './sidebar/HistoryBrowser';
 
 export interface State {
 	levelHistory: HistoryList<Level>;
@@ -60,13 +63,35 @@ export default class LevelEditor extends React.Component<{}, State> {
 	}
 
 	render() {
-		return <div>
-			<GridEditor
-				level={getCurrentHistoryState(this.state.levelHistory)}
-				onPlace={this.onPlace.bind(this)}
-				onRemove={this.onRemove.bind(this)}
-			/>
-			{this.state.levelHistory.position}
-		</div>;
+		let level = getCurrentHistoryState(this.state.levelHistory);
+		return <Container fluid>
+			<Row>
+				<Col md={3}>
+					<LayerList
+						level={level}
+						selectedLayerIndex={this.state.selectedLayerIndex}
+						onSelectLayer={(layerIndex: number) => {}}
+					/>
+					<HistoryBrowser
+						historyList={this.state.levelHistory}
+						onHistoryPositionChanged={(position: number) => {
+							this.setState({
+								levelHistory: changeHistoryPosition(
+									this.state.levelHistory,
+									position
+								),
+							})
+						}}
+					/>
+				</Col>
+				<Col md={9}>
+					<GridEditor
+						level={level}
+						onPlace={this.onPlace.bind(this)}
+						onRemove={this.onRemove.bind(this)}
+					/>
+				</Col>
+			</Row>
+		</Container>;
 	}
 }

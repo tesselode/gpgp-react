@@ -27,6 +27,15 @@ export function addHistory<T>(
 	return newHistory;
 }
 
+export function changeHistoryPosition<T>(
+	historyList: HistoryList<T>,
+	position: number
+): HistoryList<T> {
+	let newHistory: HistoryList<T> = JSON.parse(JSON.stringify(historyList));
+	newHistory.position = position;
+	return newHistory;
+}
+
 export function getCurrentHistoryState<T>(historyList: HistoryList<T>): T {
 	return historyList.steps[historyList.position].data;
 }
