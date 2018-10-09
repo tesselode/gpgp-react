@@ -1,19 +1,13 @@
 import React from 'react';
 import {
-	Col,
 	Nav,
 	NavItem,
 	NavLink,
 	TabPane,
 	TabContent,
 	Form,
-	FormGroup,
-	Label,
-	InputGroup,
-	Input,
-	FormFeedback,
 } from 'reactstrap';
-import InputGroupAddon from 'reactstrap/lib/InputGroupAddon';
+import ValidatedInput from '../ui/ValidatedInput';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -72,91 +66,51 @@ export default class ProjectEditor extends React.Component<{}, State> {
 			>
 				<TabPane tabId={ProjectEditorTab.Settings}>
 					<Form>
-						<FormGroup row>
-							<Label md={2}>Tile size</Label>
-							<Col md={10}>
-								<InputGroup>
-									<Input
-										type='number'
-										value={this.state.tileSize}
-										invalid={!isValidSize(this.state.tileSize)}
-										onChange={(event) => this.setState({tileSize: Number(event.target.value)})}
-									/>
-									<InputGroupAddon addonType='append'>pixels</InputGroupAddon>
-									<FormFeedback tooltip>
-										Tile size must be 1 pixel or greater
-									</FormFeedback>
-								</InputGroup>
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label md={2}>Default map width</Label>
-							<Col md={10}>
-								<InputGroup>
-									<Input
-										type='number'
-										value={this.state.defaultMapWidth}
-										invalid={!isValidSize(this.state.defaultMapWidth)}
-										onChange={(event) => this.setState({defaultMapWidth: Number(event.target.value)})}
-									/>
-									<InputGroupAddon addonType='append'>tile</InputGroupAddon>
-									<FormFeedback tooltip>
-										Default map width must be 1 tile or greater
-									</FormFeedback>
-								</InputGroup>
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label md={2}>Default map height</Label>
-							<Col md={10}>
-								<InputGroup>
-									<Input
-										type='number'
-										value={this.state.defaultMapHeight}
-										invalid={!isValidSize(this.state.defaultMapHeight)}
-										onChange={(event) => this.setState({defaultMapHeight: Number(event.target.value)})}
-									/>
-									<InputGroupAddon addonType='append'>tile</InputGroupAddon>
-									<FormFeedback tooltip>
-										Default map height must be 1 tile or greater
-									</FormFeedback>
-								</InputGroup>
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label md={2}>Max map width</Label>
-							<Col md={10}>
-								<InputGroup>
-									<Input
-										type='number'
-										value={this.state.maxMapWidth}
-										invalid={!isValidSize(this.state.maxMapWidth)}
-										onChange={(event) => this.setState({maxMapWidth: Number(event.target.value)})}
-									/>
-									<InputGroupAddon addonType='append'>tile</InputGroupAddon>
-									<FormFeedback tooltip>
-										Max map width must be 1 tile or greater
-									</FormFeedback>
-								</InputGroup>
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label md={2}>Max map height</Label>
-							<Col md={10}>
-								<InputGroup>
-									<Input
-										type='number'
-										value={this.state.maxMapHeight}
-										invalid={!isValidSize(this.state.maxMapHeight)}
-										onChange={(event) => this.setState({maxMapHeight: Number(event.target.value)})}
-									/>
-									<InputGroupAddon addonType='append'>tile</InputGroupAddon>
-									<FormFeedback tooltip>
-										Max map height must be 1 tile or greater
-									</FormFeedback>
-								</InputGroup>
-							</Col>
-						</FormGroup>
+						<ValidatedInput
+							label='Tile size'
+							type='number'
+							value={this.state.tileSize}
+							isValid={value => isValidSize(value)}
+							onChange={(tileSize) => this.setState({tileSize: tileSize})}
+							units='pixels'
+							errorMessage='Tile size must be 1 pixel or greater'
+						/>
+						<ValidatedInput
+							label='Default map width'
+							type='number'
+							value={this.state.defaultMapWidth}
+							isValid={value => isValidSize(value)}
+							onChange={(defaultMapWidth) => this.setState({defaultMapWidth: defaultMapWidth})}
+							units='tiles'
+							errorMessage='Default map width must be 1 tile or greater'
+						/>
+						<ValidatedInput
+							label='Default map height'
+							type='number'
+							value={this.state.defaultMapHeight}
+							isValid={value => isValidSize(value)}
+							onChange={(defaultMapHeight) => this.setState({defaultMapHeight: defaultMapHeight})}
+							units='tiles'
+							errorMessage='Default map height must be 1 tile or greater'
+						/>
+						<ValidatedInput
+							label='Max map width'
+							type='number'
+							value={this.state.maxMapWidth}
+							isValid={value => isValidSize(value)}
+							onChange={(maxMapWidth) => this.setState({maxMapWidth: maxMapWidth})}
+							units='tiles'
+							errorMessage='Max map width must be 1 tile or greater'
+						/>
+						<ValidatedInput
+							label='Max map height'
+							type='number'
+							value={this.state.maxMapHeight}
+							isValid={value => isValidSize(value)}
+							onChange={(maxMapHeight) => this.setState({maxMapHeight: maxMapHeight})}
+							units='tiles'
+							errorMessage='Max map height must be 1 tile or greater'
+						/>
 					</Form>
 				</TabPane>
 				<TabPane tabId={ProjectEditorTab.Tilesets}>
