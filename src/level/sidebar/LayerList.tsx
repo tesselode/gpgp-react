@@ -1,7 +1,6 @@
 import React from 'react';
 import Level from '../../data/Level';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import GeometryLayer from '../../data/layer/GeometryLayer';
 import SidebarSection from './SidebarSection';
 
 export interface Props {
