@@ -17,7 +17,7 @@ export interface Props {
 	isValid: (value: any) => boolean;
 	onChange: (value: any) => void;
 	units?: string;
-	errorMessage: string;
+	errorMessage?: string;
 }
 
 export default (props: Props) => <FormGroup row>
