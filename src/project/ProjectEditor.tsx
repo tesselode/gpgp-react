@@ -21,8 +21,9 @@ import {
 	Input,
 } from 'reactstrap';
 import Octicon, { Plus, Trashcan, FileDirectory } from '@githubprimer/octicons-react';
-import Tileset from '../data/Tileset';
+import Project from '../data/Project';
 import ValidatedInput from '../ui/ValidatedInput';
+import ProjectSettingsEditor from './ProjectSettingsEditor';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -30,111 +31,84 @@ export enum ProjectEditorTab {
 }
 
 export interface State {
-	tileSize: number;
-	defaultMapWidth: number;
-	defaultMapHeight: number;
-	maxMapWidth: number;
-	maxMapHeight: number;
-	tilesets: Array<Tileset>;
-	selectedTilesetIndex: number;
+	project: Project,
 	activeTab: ProjectEditorTab;
-}
-
-function isValidSize(size: number) {
-	return size !== NaN && size > 0;
+	selectedTilesetIndex: number;
 }
 
 export default class ProjectEditor extends React.Component<{}, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			tileSize: 16,
-			defaultMapWidth: 16,
-			defaultMapHeight: 9,
-			maxMapWidth: 1000,
-			maxMapHeight: 1000,
-			tilesets: [],
+			project: {
+				tileSize: 16,
+				defaultMapWidth: 16,
+				defaultMapHeight: 9,
+				maxMapWidth: 1000,
+				maxMapHeight: 1000,
+				tilesets: [],
+			},
 			selectedTilesetIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
 	}
 
+	onTileSizeChanged(tileSize: number) {
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.tileSize = tileSize;
+		this.setState({project: project});
+	}
+
+	onDefaultMapWidthChanged(defaultMapWidth: number) {
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.defaultMapWidth = defaultMapWidth;
+		this.setState({project: project});
+	}
+
+	onDefaultMapHeightChanged(defaultMapHeight: number) {
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.defaultMapHeight = defaultMapHeight;
+		this.setState({project: project});
+	}
+
+	onMaxMapWidthChanged(maxMapWidth: number) {
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.maxMapWidth = maxMapWidth;
+		this.setState({project: project});
+	}
+
+	onMaxMapHeightChanged(maxMapHeight: number) {
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.maxMapHeight = maxMapHeight;
+		this.setState({project: project});
+	}
+
 	onAddTileset() {
-		let tilesets: Array<Tileset> = JSON.parse(JSON.stringify(this.state.tilesets));
-		tilesets.push({
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.tilesets.push({
 			name: 'New tileset',
 			imagePath: '',
 		});
-		this.setState({tilesets: tilesets});
+		this.setState({project: project});
 	}
 
 	onRemoveTileset(tilesetIndex: number) {
-		let tilesets: Array<Tileset> = JSON.parse(JSON.stringify(this.state.tilesets));
-		tilesets.splice(tilesetIndex, 1);
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.tilesets.splice(tilesetIndex, 1);
 		this.setState({
-			tilesets: tilesets,
-			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, tilesets.length - 1),
+			project: project,
+			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, project.tilesets.length - 1),
 		});
 	}
 
 	onChangeTilesetName(tilesetIndex: number, name: string) {
-		let tilesets: Array<Tileset> = JSON.parse(JSON.stringify(this.state.tilesets));
-		tilesets[tilesetIndex].name = name;
-		this.setState({tilesets: tilesets});
-	}
-
-	renderSettingsTab() {
-		return <Form>
-			<ValidatedInput
-				label='Tile size'
-				type='number'
-				value={this.state.tileSize}
-				isValid={value => isValidSize(value)}
-				onChange={(tileSize) => this.setState({tileSize: tileSize})}
-				units='pixels'
-				errorMessage='Tile size must be 1 pixel or greater'
-			/>
-			<ValidatedInput
-				label='Default map width'
-				type='number'
-				value={this.state.defaultMapWidth}
-				isValid={value => isValidSize(value)}
-				onChange={(defaultMapWidth) => this.setState({defaultMapWidth: defaultMapWidth})}
-				units='tiles'
-				errorMessage='Default map width must be 1 tile or greater'
-			/>
-			<ValidatedInput
-				label='Default map height'
-				type='number'
-				value={this.state.defaultMapHeight}
-				isValid={value => isValidSize(value)}
-				onChange={(defaultMapHeight) => this.setState({defaultMapHeight: defaultMapHeight})}
-				units='tiles'
-				errorMessage='Default map height must be 1 tile or greater'
-			/>
-			<ValidatedInput
-				label='Max map width'
-				type='number'
-				value={this.state.maxMapWidth}
-				isValid={value => isValidSize(value)}
-				onChange={(maxMapWidth) => this.setState({maxMapWidth: maxMapWidth})}
-				units='tiles'
-				errorMessage='Max map width must be 1 tile or greater'
-			/>
-			<ValidatedInput
-				label='Max map height'
-				type='number'
-				value={this.state.maxMapHeight}
-				isValid={value => isValidSize(value)}
-				onChange={(maxMapHeight) => this.setState({maxMapHeight: maxMapHeight})}
-				units='tiles'
-				errorMessage='Max map height must be 1 tile or greater'
-			/>
-		</Form>;
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.tilesets[tilesetIndex].name = name;
+		this.setState({project: project});
 	}
 
 	renderTilesetsTab() {
-		let selectedTileset = this.state.tilesets[this.state.selectedTilesetIndex];
+		let selectedTileset = this.state.project.tilesets[this.state.selectedTilesetIndex];
 		return <Row>
 			<Col md={4}>
 				<Navbar color='light'>
@@ -153,7 +127,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 					</ButtonGroup>
 				</Navbar>
 				<ListGroup flush>
-					{this.state.tilesets.map((tileset, i) =>
+					{this.state.project.tilesets.map((tileset, i) =>
 						<ListGroupItem
 							active={i === this.state.selectedTilesetIndex}
 							onClick={() => this.setState({selectedTilesetIndex: i})}
@@ -216,7 +190,14 @@ export default class ProjectEditor extends React.Component<{}, State> {
 				style={{padding: '1em'}}
 			>
 				<TabPane tabId={ProjectEditorTab.Settings}>
-					{this.renderSettingsTab()}
+					<ProjectSettingsEditor
+						project={this.state.project}
+						onTileSizeChanged={this.onTileSizeChanged.bind(this)}
+						onDefaultMapWidthChanged={this.onDefaultMapWidthChanged.bind(this)}
+						onDefaultMapHeightChanged={this.onDefaultMapHeightChanged.bind(this)}
+						onMaxMapWidthChanged={this.onMaxMapWidthChanged.bind(this)}
+						onMaxMapHeightChanged={this.onMaxMapHeightChanged.bind(this)}
+					/>
 				</TabPane>
 				<TabPane tabId={ProjectEditorTab.Tilesets}>
 					{this.renderTilesetsTab()}
