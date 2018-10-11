@@ -15,7 +15,7 @@ import {
 	InputGroupAddon,
 	Input,
 } from 'reactstrap';
-import Octicon, { Plus, Trashcan, FileDirectory } from '@githubprimer/octicons-react';
+import Octicon, { Plus, Trashcan, FileDirectory, ArrowUp, ArrowDown } from '@githubprimer/octicons-react';
 import Project from '../data/Project';
 
 export interface Props {
@@ -23,6 +23,8 @@ export interface Props {
 	selectedTilesetIndex: number;
 	onAddTileset: () => void;
 	onRemoveTileset: (tilesetIndex: number) => void;
+	onMoveTilesetUp: (tilesetIndex: number) => void;
+	onMoveTilesetDown: (tilesetIndex: number) => void;
 	onChangeTilesetName: (tilesetIndex: number, name: string) => void;
 	onSelectTileset: (tilesetIndex: number) => void;
 }
@@ -35,6 +37,7 @@ export default (props: Props) => {
 				<NavbarBrand>Tilesets</NavbarBrand>
 				<ButtonGroup>
 					<Button
+						disabled={!selectedTileset}
 						onClick={() => props.onRemoveTileset(props.selectedTilesetIndex)}
 					>
 						<Octicon icon={Trashcan}/>
@@ -43,6 +46,18 @@ export default (props: Props) => {
 						onClick={() => props.onAddTileset()}
 					>
 						<Octicon icon={Plus}/>
+					</Button>
+					<Button
+						disabled={!(selectedTileset && props.selectedTilesetIndex !== 0)}
+						onClick={() => props.onMoveTilesetUp(props.selectedTilesetIndex)}
+					>
+						<Octicon icon={ArrowUp}/>
+					</Button>
+					<Button
+						disabled={!(selectedTileset && props.selectedTilesetIndex !== props.project.tilesets.length - 1)}
+						onClick={() => props.onMoveTilesetDown(props.selectedTilesetIndex)}
+						>
+						<Octicon icon={ArrowDown}/>
 					</Button>
 				</ButtonGroup>
 			</Navbar>

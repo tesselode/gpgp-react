@@ -74,7 +74,10 @@ export default class ProjectEditor extends React.Component<{}, State> {
 			name: 'New tileset',
 			imagePath: '',
 		});
-		this.setState({project: project});
+		this.setState({
+			project: project,
+			selectedTilesetIndex: Math.max(this.state.selectedTilesetIndex, 0),
+		});
 	}
 
 	onRemoveTileset(tilesetIndex: number) {
@@ -83,6 +86,32 @@ export default class ProjectEditor extends React.Component<{}, State> {
 		this.setState({
 			project: project,
 			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, project.tilesets.length - 1),
+		});
+	}
+
+	onMoveTilesetUp(tilesetIndex: number) {
+		if (tilesetIndex === 0) return;
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let above = project.tilesets[tilesetIndex - 1];
+		let current = project.tilesets[tilesetIndex];
+		project.tilesets[tilesetIndex - 1] = current;
+		project.tilesets[tilesetIndex] = above;
+		this.setState({
+			project: project,
+			selectedTilesetIndex: this.state.selectedTilesetIndex - 1,
+		});
+	}
+
+	onMoveTilesetDown(tilesetIndex: number) {
+		if (tilesetIndex === this.state.project.tilesets.length - 1) return;
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let below = project.tilesets[tilesetIndex + 1];
+		let current = project.tilesets[tilesetIndex];
+		project.tilesets[tilesetIndex + 1] = current;
+		project.tilesets[tilesetIndex] = below;
+		this.setState({
+			project: project,
+			selectedTilesetIndex: this.state.selectedTilesetIndex + 1,
 		});
 	}
 
@@ -132,6 +161,8 @@ export default class ProjectEditor extends React.Component<{}, State> {
 						selectedTilesetIndex={this.state.selectedTilesetIndex}
 						onAddTileset={this.onAddTileset.bind(this)}
 						onRemoveTileset={this.onRemoveTileset.bind(this)}
+						onMoveTilesetDown={this.onMoveTilesetDown.bind(this)}
+						onMoveTilesetUp={this.onMoveTilesetUp.bind(this)}
 						onChangeTilesetName={this.onChangeTilesetName.bind(this)}
 						onSelectTileset={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
 					/>
