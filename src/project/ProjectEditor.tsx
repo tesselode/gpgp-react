@@ -53,31 +53,31 @@ export default class ProjectEditor extends React.Component<{}, State> {
 		};
 	}
 
-	onTileSizeChanged(tileSize: number) {
+	onChangeTileSize(tileSize: number) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.tileSize = tileSize;
 		this.setState({project: project});
 	}
 
-	onDefaultMapWidthChanged(defaultMapWidth: number) {
+	onChangeDefaultMapWidth(defaultMapWidth: number) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.defaultMapWidth = defaultMapWidth;
 		this.setState({project: project});
 	}
 
-	onDefaultMapHeightChanged(defaultMapHeight: number) {
+	onChangeDefaultMapHeight(defaultMapHeight: number) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.defaultMapHeight = defaultMapHeight;
 		this.setState({project: project});
 	}
 
-	onMaxMapWidthChanged(maxMapWidth: number) {
+	onChangeMaxMapWidth(maxMapWidth: number) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.maxMapWidth = maxMapWidth;
 		this.setState({project: project});
 	}
 
-	onMaxMapHeightChanged(maxMapHeight: number) {
+	onChangeMaxMapHeight(maxMapHeight: number) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.maxMapHeight = maxMapHeight;
 		this.setState({project: project});
@@ -192,11 +192,11 @@ export default class ProjectEditor extends React.Component<{}, State> {
 				<TabPane tabId={ProjectEditorTab.Settings}>
 					<ProjectSettingsEditor
 						project={this.state.project}
-						onTileSizeChanged={this.onTileSizeChanged.bind(this)}
-						onDefaultMapWidthChanged={this.onDefaultMapWidthChanged.bind(this)}
-						onDefaultMapHeightChanged={this.onDefaultMapHeightChanged.bind(this)}
-						onMaxMapWidthChanged={this.onMaxMapWidthChanged.bind(this)}
-						onMaxMapHeightChanged={this.onMaxMapHeightChanged.bind(this)}
+						onChangeTileSize={this.onChangeTileSize.bind(this)}
+						onChangeDefaultMapWidth={this.onChangeDefaultMapWidth.bind(this)}
+						onChangeDefaultMapHeight={this.onChangeDefaultMapHeight.bind(this)}
+						onChangeMaxMapWidth={this.onChangeMaxMapWidth.bind(this)}
+						onChangeMaxMapHeight={this.onChangeMaxMapHeight.bind(this)}
 					/>
 				</TabPane>
 				<TabPane tabId={ProjectEditorTab.Tilesets}>

@@ -12,11 +12,11 @@ import Project from '../data/Project';
 
 export interface Props {
 	project: Project;
-	onTileSizeChanged: (tileSize: number) => void;
-	onDefaultMapWidthChanged: (defaultMapWidth: number) => void;
-	onDefaultMapHeightChanged: (defaultMapHeight: number) => void;
-	onMaxMapWidthChanged: (maxMapWidth: number) => void;
-	onMaxMapHeightChanged: (maxMapHeight: number) => void;
+	onChangeTileSize: (tileSize: number) => void;
+	onChangeDefaultMapWidth: (defaultMapWidth: number) => void;
+	onChangeDefaultMapHeight: (defaultMapHeight: number) => void;
+	onChangeMaxMapWidth: (maxMapWidth: number) => void;
+	onChangeMaxMapHeight: (maxMapHeight: number) => void;
 }
 
 export default (props: Props) => <Form>
@@ -30,7 +30,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						let value = Number(event.target.value);
 						if (value !== NaN && value > 0) {
-							props.onTileSizeChanged(value);
+							props.onChangeTileSize(value);
 						}
 					}}
 				/>
@@ -48,7 +48,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						let value = Number(event.target.value);
 						if (value !== NaN && value > 0) {
-							props.onDefaultMapWidthChanged(value);
+							props.onChangeDefaultMapWidth(value);
 						}
 					}}
 				/>
@@ -66,7 +66,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						let value = Number(event.target.value);
 						if (value !== NaN && value > 0) {
-							props.onDefaultMapHeightChanged(value);
+							props.onChangeDefaultMapHeight(value);
 						}
 					}}
 				/>
@@ -84,7 +84,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						let value = Number(event.target.value);
 						if (value !== NaN && value > 0) {
-							props.onMaxMapWidthChanged(value);
+							props.onChangeMaxMapWidth(value);
 						}
 					}}
 				/>
@@ -102,7 +102,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						let value = Number(event.target.value);
 						if (value !== NaN && value > 0) {
-							props.onMaxMapHeightChanged(value);
+							props.onChangeMaxMapHeight(value);
 						}
 					}}
 				/>
