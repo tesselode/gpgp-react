@@ -1,29 +1,14 @@
 import React from 'react';
 import {
-	Row,
-	Col,
-	Navbar,
-	NavbarBrand,
 	Nav,
 	NavItem,
 	NavLink,
 	TabPane,
 	TabContent,
-	Form,
-	ButtonGroup,
-	Button,
-	ListGroup,
-	ListGroupItem,
-	FormGroup,
-	Label,
-	InputGroup,
-	InputGroupAddon,
-	Input,
 } from 'reactstrap';
-import Octicon, { Plus, Trashcan, FileDirectory } from '@githubprimer/octicons-react';
 import Project from '../data/Project';
-import ValidatedInput from '../ui/ValidatedInput';
 import ProjectSettingsEditor from './ProjectSettingsEditor';
+import ProjectTilesetsEditor from './ProjectTilesetsEditor';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -107,64 +92,6 @@ export default class ProjectEditor extends React.Component<{}, State> {
 		this.setState({project: project});
 	}
 
-	renderTilesetsTab() {
-		let selectedTileset = this.state.project.tilesets[this.state.selectedTilesetIndex];
-		return <Row>
-			<Col md={4}>
-				<Navbar color='light'>
-					<NavbarBrand>Tilesets</NavbarBrand>
-					<ButtonGroup>
-						<Button
-							onClick={() => this.onRemoveTileset(this.state.selectedTilesetIndex)}
-						>
-							<Octicon icon={Trashcan}/>
-						</Button>
-						<Button
-							onClick={() => this.onAddTileset()}
-						>
-							<Octicon icon={Plus}/>
-						</Button>
-					</ButtonGroup>
-				</Navbar>
-				<ListGroup flush>
-					{this.state.project.tilesets.map((tileset, i) =>
-						<ListGroupItem
-							active={i === this.state.selectedTilesetIndex}
-							onClick={() => this.setState({selectedTilesetIndex: i})}
-						>
-							{tileset.name}
-						</ListGroupItem>)
-					}
-				</ListGroup>
-			</Col>
-			{selectedTileset && <Col md={8}>
-				<Form>
-					<ValidatedInput
-						label='Tileset name'
-						value={selectedTileset.name}
-						isValid={(value) => true}
-						onChange={(value) => this.onChangeTilesetName(this.state.selectedTilesetIndex, value)}
-					/>
-					<FormGroup row>
-						<Label md={2}>Image path</Label>
-						<Col md={10}>
-							<InputGroup>
-								<InputGroupAddon addonType='append'>
-									<Button>
-										<Octicon icon={FileDirectory} />
-									</Button>
-								</InputGroupAddon>
-								<Input
-									disabled
-								/>
-							</InputGroup>
-						</Col>
-					</FormGroup>
-				</Form>
-			</Col>}
-		</Row>
-	}
-
 	render() {
 		return <div>
 			<Nav tabs>
@@ -200,7 +127,14 @@ export default class ProjectEditor extends React.Component<{}, State> {
 					/>
 				</TabPane>
 				<TabPane tabId={ProjectEditorTab.Tilesets}>
-					{this.renderTilesetsTab()}
+					<ProjectTilesetsEditor
+						project={this.state.project}
+						selectedTilesetIndex={this.state.selectedTilesetIndex}
+						onAddTileset={this.onAddTileset.bind(this)}
+						onRemoveTileset={this.onRemoveTileset.bind(this)}
+						onChangeTilesetName={this.onChangeTilesetName.bind(this)}
+						onSelectTileset={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
+					/>
 				</TabPane>
 			</TabContent>
 		</div>;
