@@ -17,6 +17,7 @@ export enum ProjectEditorTab {
 
 export interface State {
 	project: Project,
+	resources: Object,
 	activeTab: ProjectEditorTab;
 	selectedTilesetIndex: number;
 }
@@ -32,6 +33,9 @@ export default class ProjectEditor extends React.Component<{}, State> {
 				maxMapWidth: 1000,
 				maxMapHeight: 1000,
 				tilesets: [],
+			},
+			resources: {
+				tilesetImages: {},
 			},
 			selectedTilesetIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
@@ -121,6 +125,11 @@ export default class ProjectEditor extends React.Component<{}, State> {
 		this.setState({project: project});
 	}
 
+	onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.tilesets[tilesetIndex].imagePath = imagePath;
+	}
+
 	render() {
 		return <div>
 			<Nav tabs>
@@ -165,6 +174,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 						onMoveTilesetUp={this.onMoveTilesetUp.bind(this)}
 						onChangeTilesetName={this.onChangeTilesetName.bind(this)}
 						onSelectTileset={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
+						onChooseTilesetImage={this.onChooseTilesetImage.bind(this)}
 					/>
 				</TabPane>
 			</TabContent>

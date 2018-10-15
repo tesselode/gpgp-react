@@ -17,6 +17,7 @@ import {
 } from 'reactstrap';
 import Octicon, { Plus, Trashcan, FileDirectory, ArrowUp, ArrowDown } from '@githubprimer/octicons-react';
 import Project from '../data/Project';
+import { remote } from 'electron';
 
 export interface Props {
 	project: Project;
@@ -27,6 +28,18 @@ export interface Props {
 	onMoveTilesetDown: (tilesetIndex: number) => void;
 	onChangeTilesetName: (tilesetIndex: number, name: string) => void;
 	onSelectTileset: (tilesetIndex: number) => void;
+	onChooseTilesetImage: (tilesetIndex: number, imagePath: string) => void;
+}
+
+function chooseTilesetImage(props: Props): void {
+	remote.dialog.showOpenDialog({
+		filters: [
+			{name: 'Images', extensions: ['jpg', 'png']},
+		]
+	}, paths => {
+		if (paths)
+			props.onChooseTilesetImage(props.selectedTilesetIndex, paths[0])
+	});
 }
 
 export default (props: Props) => {
@@ -88,7 +101,9 @@ export default (props: Props) => {
 					<Col md={10}>
 						<InputGroup>
 							<InputGroupAddon addonType='prepend'>
-								<Button>
+								<Button
+									onClick={() => chooseTilesetImage(props)}
+								>
 									<Octicon icon={FileDirectory} />
 								</Button>
 							</InputGroupAddon>
