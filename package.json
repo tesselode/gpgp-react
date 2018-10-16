@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "webpack --watch --mode=production",
     "start-electron": "electron .",
-    "start": "cls && webpack && electron ."
+    "start": "cls && webpack && run-p watch start-electron"
   },
   "repository": {
     "type": "git",

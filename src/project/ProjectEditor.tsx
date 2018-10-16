@@ -130,10 +130,9 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.tilesets[tilesetIndex].imagePath = imagePath;
-		loadProjectResources(project, resources => this.setState({
-			project: project,
-			resources: resources,
-		}));
+		this.setState({project: project});
+		loadProjectResources(project)
+			.then(resources => this.setState({resources: resources}))
 	}
 
 	render() {
