@@ -13,24 +13,33 @@ export interface ProjectResources {
 	tilesetImages: Map<Tileset, TilesetImage>;
 }
 
-export function loadProjectResources(project: Project): ProjectResources {
+export function loadProjectResources(project: Project, cb: (resources: ProjectResources) => void) {
 	let resources: ProjectResources = {
 		tilesetImages: new Map<Tileset, TilesetImage>(),
 	};
+
+	let tilesetsLoaded = 0;
+	function setTilesetImage(tileset: Tileset, image: TilesetImage) {
+		resources.tilesetImages.set(tileset, image);
+		tilesetsLoaded++;
+		if (tilesetsLoaded == project.tilesets.length)
+			cb(resources);
+	}
+	
 	project.tilesets.forEach(tileset => {
 		Jimp.read(tileset.imagePath, (error, image) => {
 			if (error)
-				resources.tilesetImages.set(tileset, {
+				setTilesetImage(tileset, {
 					error: "The tileset image could not be read.",
 				});
 			else {
 				image.getBase64(Jimp.AUTO, (error, data) => {
 					if (error)
-						resources.tilesetImages.set(tileset, {
+						setTilesetImage(tileset, {
 							error: "The image data could not be created."
 						});
 					else {
-						resources.tilesetImages.set(tileset, {
+						setTilesetImage(tileset, {
 							data: data,
 							width: image.bitmap.width,
 							height: image.bitmap.height,
@@ -40,5 +49,4 @@ export function loadProjectResources(project: Project): ProjectResources {
 			}
 		})
 	});
-	return resources;
 }

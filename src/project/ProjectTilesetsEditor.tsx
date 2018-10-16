@@ -17,10 +17,13 @@ import {
 } from 'reactstrap';
 import Octicon, { Plus, Trashcan, FileDirectory, ArrowUp, ArrowDown } from '@githubprimer/octicons-react';
 import Project from '../data/Project';
+import { ProjectResources, TilesetImage } from '../data/ProjectResources';
+import Grid from '../level/Grid';
 const { dialog } = (window as any).require('electron').remote;
 
 export interface Props {
 	project: Project;
+	resources: ProjectResources;
 	selectedTilesetIndex: number;
 	onAddTileset: () => void;
 	onRemoveTileset: (tilesetIndex: number) => void;
@@ -44,6 +47,8 @@ function chooseTilesetImage(props: Props): void {
 
 export default (props: Props) => {
 	let selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
+	let selectedTilesetImage: TilesetImage = props.resources.tilesetImages.get(selectedTileset);
+	console.log(props.resources);
 	return <Row>
 		<Col md={4}>
 			<Navbar color='light'>
@@ -115,6 +120,28 @@ export default (props: Props) => {
 					</Col>
 				</FormGroup>
 			</Form>
+			{selectedTilesetImage && (selectedTilesetImage.error ? <div>{selectedTilesetImage.error}</div> :
+				<div
+					style={{
+						width: 0,
+						height: 0,
+						transformOrigin: '0% 0%',
+						transform: 'scale(2)',
+						imageRendering: 'pixelated',
+						transition: '.15s',
+					}}
+				>
+					<Grid
+						tileSize={props.project.tileSize}
+						width={Math.ceil(selectedTilesetImage.width / props.project.tileSize)}
+						height={Math.ceil(selectedTilesetImage.height / props.project.tileSize)}
+						onMouseMove={(x, y) => {}}
+						onMouseEnter={() => {}}
+						onMouseLeave={() => {}}
+					/>
+					<img src={selectedTilesetImage.data} />
+				</div>
+			)}
 		</Col>}
 	</Row>;
 }

@@ -108,8 +108,9 @@ export default class GridEditor extends React.Component<Props, State> {
 				}}
 			>
 				<Grid
-					project={this.props.level.project}
-					level={this.props.level}
+					tileSize={this.props.level.project.tileSize}
+					width={this.props.level.width}
+					height={this.props.level.height}
 					onMouseMove={this.onMouseMove.bind(this)}
 					onMouseEnter={() => this.setState({cursorOverGrid: true})}
 					onMouseLeave={() => this.setState({cursorOverGrid: false})}

@@ -5,8 +5,9 @@ import Level from '../data/Level';
 const gridRenderingScale = 2;
 
 export interface Props {
-	project: Project,
-	level: Level,
+	tileSize: number,
+	width: number,
+	height: number,
 	onMouseMove: (x: number, y: number) => void,
 	onMouseEnter: () => void,
 	onMouseLeave: () => void,
@@ -17,20 +18,20 @@ export default class Grid extends React.Component<Props> {
 
 	renderCanvas() {
 		const canvas = this.canvasRef.current;
-		canvas.width = this.props.level.width * this.props.project.tileSize * gridRenderingScale;
-		canvas.height = this.props.level.height * this.props.project.tileSize * gridRenderingScale;
+		canvas.width = this.props.width * this.props.tileSize * gridRenderingScale;
+		canvas.height = this.props.height * this.props.tileSize * gridRenderingScale;
 		const context = canvas.getContext('2d');
 		context.strokeStyle = '#bbb';
-		for (let x = 1; x < this.props.level.width; x++) {
-			context.moveTo(x * this.props.project.tileSize * gridRenderingScale, 0);
-			context.lineTo(x * this.props.project.tileSize * gridRenderingScale,
-				this.props.level.height * this.props.project.tileSize * gridRenderingScale);
+		for (let x = 1; x < this.props.width; x++) {
+			context.moveTo(x * this.props.tileSize * gridRenderingScale, 0);
+			context.lineTo(x * this.props.tileSize * gridRenderingScale,
+				this.props.height * this.props.tileSize * gridRenderingScale);
 			context.stroke();
 		}
-		for (let y = 1; y < this.props.level.height; y++) {
-			context.moveTo(0, y * this.props.project.tileSize * gridRenderingScale);
-			context.lineTo(this.props.level.width * this.props.project.tileSize * gridRenderingScale,
-				y * this.props.project.tileSize * gridRenderingScale);
+		for (let y = 1; y < this.props.height; y++) {
+			context.moveTo(0, y * this.props.tileSize * gridRenderingScale);
+			context.lineTo(this.props.width * this.props.tileSize * gridRenderingScale,
+				y * this.props.tileSize * gridRenderingScale);
 			context.stroke();
 		}
 	}

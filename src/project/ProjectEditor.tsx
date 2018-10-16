@@ -130,10 +130,10 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.tilesets[tilesetIndex].imagePath = imagePath;
-		this.setState({
+		loadProjectResources(project, resources => this.setState({
 			project: project,
-			resources: loadProjectResources(project),
-		}, () => console.log(this.state.resources));
+			resources: resources,
+		}));
 	}
 
 	render() {
@@ -173,6 +173,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 				<TabPane tabId={ProjectEditorTab.Tilesets}>
 					<ProjectTilesetsEditor
 						project={this.state.project}
+						resources={this.state.resources}
 						selectedTilesetIndex={this.state.selectedTilesetIndex}
 						onAddTileset={this.onAddTileset.bind(this)}
 						onRemoveTileset={this.onRemoveTileset.bind(this)}
