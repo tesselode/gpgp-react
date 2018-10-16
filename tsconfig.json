@@ -9,7 +9,7 @@
 		"allowJs": true
 	},
 	"files": [
+		"node_modules/electron/electron.d.ts",
 		"node_modules/@githubprimer/octicons-react/dist/index.d.ts",
-		"node_modules/jimp/jimp.d.ts",
 	]
 }

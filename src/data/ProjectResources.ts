@@ -1,6 +1,6 @@
 import Tileset from "./Tileset";
 import Project from "./Project";
-const Jimp = (window as any).require('jimp');
+const Jimp = require('jimp');
 
 export interface TilesetImage {
 	data?: string;

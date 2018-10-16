@@ -19,7 +19,7 @@ import Octicon, { Plus, Trashcan, FileDirectory, ArrowUp, ArrowDown } from '@git
 import Project from '../data/Project';
 import { ProjectResources, TilesetImage } from '../data/ProjectResources';
 import Grid from '../level/Grid';
-const { dialog } = (window as any).require('electron').remote;
+import { remote } from 'electron';
 
 export interface Props {
 	project: Project;
@@ -35,7 +35,7 @@ export interface Props {
 }
 
 function chooseTilesetImage(props: Props): void {
-	dialog.showOpenDialog({
+	remote.dialog.showOpenDialog({
 		filters: [
 			{name: 'Images', extensions: ['jpg', 'png']},
 		]
@@ -48,7 +48,6 @@ function chooseTilesetImage(props: Props): void {
 export default (props: Props) => {
 	let selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
 	let selectedTilesetImage: TilesetImage = props.resources.tilesetImages.get(selectedTileset);
-	console.log(props.resources);
 	return <Row>
 		<Col md={4}>
 			<Navbar color='light'>
