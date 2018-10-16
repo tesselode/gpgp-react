@@ -1,8 +1,14 @@
 const path = require('path');
+const SimpleProgressWebpackPlugin = require( 'simple-progress-webpack-plugin' );
 
 module.exports = {
 	entry: './src/index.tsx',
+	mode: 'development',
 	devtool: 'inline-source-map',
+	target: 'electron-renderer',
+	resolve: {
+		extensions: [ '.tsx', '.ts', '.js', '.css' ]
+	},
 	module: {
 		rules: [
 			{
@@ -16,9 +22,6 @@ module.exports = {
 			},
 		]
 	},
-	resolve: {
-		extensions: [ '.tsx', '.ts', '.js', '.css' ]
-	},
 	output: {
 		filename: 'main.js',
 		path: path.resolve(__dirname, 'dist')
@@ -26,5 +29,8 @@ module.exports = {
 	performance: {
 		hints: false,
 	},
-	target: 'electron-renderer',
+	plugins: [
+		new SimpleProgressWebpackPlugin(),
+	],
+	stats: 'minimal',
 };
