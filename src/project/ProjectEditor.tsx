@@ -9,6 +9,8 @@ import {
 import Project from '../data/Project';
 import ProjectSettingsEditor from './ProjectSettingsEditor';
 import ProjectTilesetsEditor from './ProjectTilesetsEditor';
+import { ProjectResources, TilesetImage, loadProjectResources } from '../data/ProjectResources';
+import Tileset from '../data/Tileset';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -17,7 +19,7 @@ export enum ProjectEditorTab {
 
 export interface State {
 	project: Project,
-	resources: Object,
+	resources: ProjectResources,
 	activeTab: ProjectEditorTab;
 	selectedTilesetIndex: number;
 }
@@ -35,7 +37,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 				tilesets: [],
 			},
 			resources: {
-				tilesetImages: {},
+				tilesetImages: new Map<Tileset, TilesetImage>(),
 			},
 			selectedTilesetIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
@@ -128,6 +130,10 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.tilesets[tilesetIndex].imagePath = imagePath;
+		this.setState({
+			project: project,
+			resources: loadProjectResources(project),
+		}, () => console.log(this.state.resources));
 	}
 
 	render() {

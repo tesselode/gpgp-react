@@ -17,7 +17,7 @@ import {
 } from 'reactstrap';
 import Octicon, { Plus, Trashcan, FileDirectory, ArrowUp, ArrowDown } from '@githubprimer/octicons-react';
 import Project from '../data/Project';
-import { remote } from 'electron';
+const { dialog } = (window as any).require('electron').remote;
 
 export interface Props {
 	project: Project;
@@ -32,7 +32,7 @@ export interface Props {
 }
 
 function chooseTilesetImage(props: Props): void {
-	remote.dialog.showOpenDialog({
+	dialog.showOpenDialog({
 		filters: [
 			{name: 'Images', extensions: ['jpg', 'png']},
 		]
@@ -109,6 +109,7 @@ export default (props: Props) => {
 							</InputGroupAddon>
 							<Input
 								disabled
+								value={selectedTileset.imagePath}
 							/>
 						</InputGroup>
 					</Col>
