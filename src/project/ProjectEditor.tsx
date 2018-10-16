@@ -17,6 +17,7 @@ import ProjectTilesetsEditor from './ProjectTilesetsEditor';
 import { ProjectResources, TilesetImage, loadProjectResources } from '../data/ProjectResources';
 import Tileset from '../data/Tileset';
 import { remote } from 'electron';
+import path from 'path';
 import fs from 'fs';
 
 export enum ProjectEditorTab {
@@ -157,7 +158,12 @@ export default class ProjectEditor extends React.Component<{}, State> {
 			if (!chosenSaveLocation) return;
 			projectFilePath = chosenSaveLocation;
 		}
-		fs.writeFile(projectFilePath, JSON.stringify(this.state.project), (error) => {
+		let project = JSON.parse(JSON.stringify(this.state.project));
+		for (let i = 0; i < project.tilesets.length; i++) {
+			const tileset = project.tilesets[i];
+			tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
+		}
+		fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
 			if (error) {
 				remote.dialog.showErrorBox('Error saving project', 'The project could not be saved.');
 				return;
