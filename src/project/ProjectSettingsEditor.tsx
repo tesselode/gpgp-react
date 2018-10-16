@@ -12,6 +12,7 @@ import Project from '../data/Project';
 
 export interface Props {
 	project: Project;
+	onChangeProjectName: (name: string) => void;
 	onChangeTileSize: (tileSize: number) => void;
 	onChangeDefaultMapWidth: (defaultMapWidth: number) => void;
 	onChangeDefaultMapHeight: (defaultMapHeight: number) => void;
@@ -20,6 +21,15 @@ export interface Props {
 }
 
 export default (props: Props) => <Form>
+	<FormGroup row>
+		<Label md={2}>Project name</Label>
+		<Col md={10}>
+			<Input
+				value={props.project.name}
+				onChange={event => props.onChangeProjectName(event.target.value)}
+			/>
+		</Col>
+	</FormGroup>
 	<FormGroup row>
 		<Label md={2}>Tile size</Label>
 		<Col md={10}>

@@ -24,6 +24,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 						description: 'New level',
 						data: {
 							project: {
+								name: 'New project',
 								tileSize: 16,
 								defaultMapWidth: 16,
 								defaultMapHeight: 9,

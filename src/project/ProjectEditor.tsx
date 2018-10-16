@@ -1,8 +1,13 @@
 import React from 'react';
 import {
+	Navbar,
+	NavbarBrand,
 	Nav,
 	NavItem,
 	NavLink,
+	Label,
+	ButtonGroup,
+	Button,
 	TabPane,
 	TabContent,
 } from 'reactstrap';
@@ -11,6 +16,8 @@ import ProjectSettingsEditor from './ProjectSettingsEditor';
 import ProjectTilesetsEditor from './ProjectTilesetsEditor';
 import { ProjectResources, TilesetImage, loadProjectResources } from '../data/ProjectResources';
 import Tileset from '../data/Tileset';
+import { remote } from 'electron';
+import fs from 'fs';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -18,8 +25,9 @@ export enum ProjectEditorTab {
 }
 
 export interface State {
-	project: Project,
-	resources: ProjectResources,
+	project: Project;
+	resources: ProjectResources;
+	projectFilePath?: string;
 	activeTab: ProjectEditorTab;
 	selectedTilesetIndex: number;
 }
@@ -29,6 +37,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 		super(props);
 		this.state = {
 			project: {
+				name: 'New project',
 				tileSize: 16,
 				defaultMapWidth: 16,
 				defaultMapHeight: 9,
@@ -42,6 +51,12 @@ export default class ProjectEditor extends React.Component<{}, State> {
 			selectedTilesetIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
+	}
+
+	onChangeProjectName(name: string) {
+		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		project.name = name;
+		this.setState({project: project});
 	}
 
 	onChangeTileSize(tileSize: number) {
@@ -135,8 +150,47 @@ export default class ProjectEditor extends React.Component<{}, State> {
 			.then(resources => this.setState({resources: resources}))
 	}
 
+	save(saveAs = false) {
+		let projectFilePath = this.state.projectFilePath;
+		if (!projectFilePath || saveAs) {
+			let chosenSaveLocation = remote.dialog.showSaveDialog({});
+			if (!chosenSaveLocation) return;
+			projectFilePath = chosenSaveLocation;
+		}
+		fs.writeFile(projectFilePath, JSON.stringify(this.state.project), (error) => {
+			if (error) {
+				remote.dialog.showErrorBox('Error saving project', 'The project could not be saved.');
+				return;
+			}
+			this.setState({projectFilePath: projectFilePath});
+		})
+	}
+
 	render() {
 		return <div>
+			<Navbar>
+				<NavbarBrand>
+					{this.state.project.name}
+					&nbsp;&nbsp;
+					<Label size='sm' className='text-muted'>
+						({this.state.projectFilePath ? this.state.projectFilePath : 'Unsaved'})
+					</Label>
+				</NavbarBrand>
+				<ButtonGroup>
+					{this.state.projectFilePath ? <Button
+						onClick={() => this.save()}
+					>
+						Save project
+					</Button> : ''}
+					<Button
+						color={!this.state.projectFilePath ? 'primary' : 'secondary'}
+						onClick={() => this.save(true)}
+					>
+						Save project as...
+					</Button>
+					{this.state.projectFilePath ? <Button color='primary'>New level</Button> : ''}
+				</ButtonGroup>
+			</Navbar>
 			<Nav tabs>
 				<NavItem>
 					<NavLink
@@ -162,6 +216,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 				<TabPane tabId={ProjectEditorTab.Settings}>
 					<ProjectSettingsEditor
 						project={this.state.project}
+						onChangeProjectName={this.onChangeProjectName.bind(this)}
 						onChangeTileSize={this.onChangeTileSize.bind(this)}
 						onChangeDefaultMapWidth={this.onChangeDefaultMapWidth.bind(this)}
 						onChangeDefaultMapHeight={this.onChangeDefaultMapHeight.bind(this)}
