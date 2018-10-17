@@ -25,6 +25,10 @@ export enum ProjectEditorTab {
 	Tilesets,
 }
 
+export interface Props {
+	onChangeTabTitle: (title: string) => void;
+}
+
 export interface State {
 	project: Project;
 	resources: ProjectResources;
@@ -33,7 +37,7 @@ export interface State {
 	selectedTilesetIndex: number;
 }
 
-export default class ProjectEditor extends React.Component<{}, State> {
+export default class ProjectEditor extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -48,6 +52,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 		let project = deepCopyObject(this.state.project);
 		project.name = name;
 		this.setState({project: project});
+		this.props.onChangeTabTitle(name);
 	}
 
 	onChangeTileSize(tileSize: number) {
