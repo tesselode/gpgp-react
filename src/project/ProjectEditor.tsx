@@ -11,10 +11,10 @@ import {
 	TabPane,
 	TabContent,
 } from 'reactstrap';
-import Project from '../data/Project';
+import Project, { newProject } from '../data/Project';
 import ProjectSettingsEditor from './ProjectSettingsEditor';
 import ProjectTilesetsEditor from './ProjectTilesetsEditor';
-import { ProjectResources, TilesetImage, loadProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources } from '../data/ProjectResources';
+import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources } from '../data/ProjectResources';
 import { remote } from 'electron';
 import path from 'path';
 import fs from 'fs';
@@ -37,15 +37,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			project: {
-				name: 'New project',
-				tileSize: 16,
-				defaultMapWidth: 16,
-				defaultMapHeight: 9,
-				maxMapWidth: 1000,
-				maxMapHeight: 1000,
-				tilesets: [],
-			},
+			project: newProject(),
 			resources: newProjectResources(),
 			selectedTilesetIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
