@@ -14,6 +14,7 @@ export default (props: Props) => {
 	for (let i = props.historyList.steps.length - 1; i >= 0; i--) {
 		const step = props.historyList.steps[i];
 		items.push(<ListGroupItem
+			key={i}
 			active={props.historyList.position === i}
 			onClick={() => props.onHistoryPositionChanged(i)}
 		>

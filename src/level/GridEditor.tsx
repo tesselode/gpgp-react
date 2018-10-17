@@ -117,10 +117,11 @@ export default class GridEditor extends React.Component<Props, State> {
 					onMouseEnter={() => this.setState({cursorOverGrid: true})}
 					onMouseLeave={() => this.setState({cursorOverGrid: false})}
 				/>
-				{this.props.level.layers.map(layer => {
+				{this.props.level.layers.map((layer, i) => {
 					switch (layer.type) {
 						case LayerType.Geometry:
 							return <GeometryLayerDisplay
+								key={i}
 								project={this.props.project}
 								level={this.props.level}
 								layer={layer}

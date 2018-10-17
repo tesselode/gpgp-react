@@ -18,6 +18,7 @@ export default (props: Props) =>
 		<ListGroup flush>
 			{props.level.layers.map((layer, i) =>
 				<ListGroupItem
+					key={i}
 					active={props.selectedLayerIndex === i}
 					onClick={() => props.onSelectLayer(i)}
 				>
