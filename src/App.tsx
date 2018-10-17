@@ -3,6 +3,7 @@ import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import LevelEditor from './level/LevelEditor';
 import ProjectEditor from './project/ProjectEditor';
 import Welcome from './welcome';
+import Project from './data/Project';
 
 export interface Tab {
 	content?: JSX.Element,
@@ -23,9 +24,11 @@ export default class App extends React.Component<{}, State> {
 		}
 	}
 	
-	openProjectEditor() {
-		let newTab: Tab = {title: 'New project'};
+	openProjectEditor(project?: Project, projectFilePath?: string) {
+		let newTab: Tab = {title: project ? project.name : 'New project'};
 		newTab.content = <ProjectEditor
+			project={project}
+			projectFilePath={projectFilePath}
 			onChangeTabTitle={(name: string) => {
 				newTab.title = name;
 				this.setState({tabs: this.state.tabs});
@@ -40,7 +43,7 @@ export default class App extends React.Component<{}, State> {
 		if (this.state.tabs.length === 0)
 			return <Welcome
 				onCreateNewProject={() => this.openProjectEditor()}
-				onOpenProject={() => {}}
+				onOpenProject={(project: Project, projectFilePath: string) => this.openProjectEditor(project, projectFilePath)}
 			/>;
 		return <div>
 			<Nav tabs>

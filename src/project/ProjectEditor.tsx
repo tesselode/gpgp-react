@@ -11,10 +11,10 @@ import {
 	TabPane,
 	TabContent,
 } from 'reactstrap';
-import Project, { newProject } from '../data/Project';
+import Project, { newProject, exportProject } from '../data/Project';
 import ProjectSettingsEditor from './ProjectSettingsEditor';
 import ProjectTilesetsEditor from './ProjectTilesetsEditor';
-import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources } from '../data/ProjectResources';
+import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources, loadProjectResources } from '../data/ProjectResources';
 import { remote } from 'electron';
 import path from 'path';
 import fs from 'fs';
@@ -26,6 +26,8 @@ export enum ProjectEditorTab {
 }
 
 export interface Props {
+	project?: Project;
+	projectFilePath?: string;
 	onChangeTabTitle: (title: string) => void;
 }
 
@@ -41,11 +43,18 @@ export default class ProjectEditor extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			project: newProject(),
+			project: this.props.project ? this.props.project : newProject(),
 			resources: newProjectResources(),
+			projectFilePath: this.props.projectFilePath,
 			selectedTilesetIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
+		if (this.props.project)
+			loadProjectResources(this.props.project).then(resources => {
+				this.setState({
+					resources: resources,
+				});
+			})
 	}
 
 	onChangeProjectName(name: string) {
@@ -166,11 +175,7 @@ export default class ProjectEditor extends React.Component<Props, State> {
 			if (!chosenSaveLocation) return;
 			projectFilePath = chosenSaveLocation;
 		}
-		let project = deepCopyObject(this.state.project);
-		for (let i = 0; i < project.tilesets.length; i++) {
-			const tileset = project.tilesets[i];
-			tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
-		}
+		let project = exportProject(this.state.project, projectFilePath);
 		fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
 			if (error) {
 				remote.dialog.showErrorBox('Error saving project', 'The project could not be saved.');
