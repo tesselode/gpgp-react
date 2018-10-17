@@ -2,6 +2,7 @@ import React from 'react';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import LevelEditor from './level/LevelEditor';
 import ProjectEditor from './project/ProjectEditor';
+import Welcome from './welcome';
 
 export interface Tab {
 	content?: JSX.Element,
@@ -22,10 +23,6 @@ export default class App extends React.Component<{}, State> {
 		}
 	}
 	
-	componentDidMount() {
-		this.openProjectEditor();
-	}
-
 	openProjectEditor() {
 		let newTab: Tab = {title: 'New project'};
 		newTab.content = <ProjectEditor
@@ -40,6 +37,11 @@ export default class App extends React.Component<{}, State> {
 	}
 
 	render() {
+		if (this.state.tabs.length === 0)
+			return <Welcome
+				onCreateNewProject={() => this.openProjectEditor()}
+				onOpenProject={() => {}}
+			/>;
 		return <div>
 			<Nav tabs>
 				{this.state.tabs.map((tab, i) => <NavItem key={i}>
