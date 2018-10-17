@@ -35,6 +35,12 @@ export default class LevelEditor extends React.Component<{}, State> {
 	}
 
 	onPlace(x: number, y: number) {
+		let level = getCurrentHistoryState(this.state.levelHistory);
+		let layer = level.layers[this.state.selectedLayerIndex];
+		for (let i = 0; i < layer.tiles.length; i++) {
+			const tile = layer.tiles[i];
+			if (tile.x === x && tile.y === y) return;
+		}
 		this.setState({
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
