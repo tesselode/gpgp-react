@@ -3,9 +3,11 @@ import Level from '../data/Level';
 import Grid from './Grid';
 import { LayerType } from '../data/layer/Layer';
 import GeometryLayerDisplay from './layer/GeometryLayerDisplay';
+import Project from '../data/Project';
 
 export interface Props {
 	level: Level,
+	project: Project,
 	onPlace: (x: number, y: number) => void,
 	onRemove: (x: number, y: number) => void,
 	onMouseUp: () => void,
@@ -47,7 +49,7 @@ export default class GridEditor extends React.Component<Props, State> {
 	}
 
 	onMouseMove(x, y) {
-		let scale = this.props.level.project.tileSize * this.state.zoom;
+		let scale = this.props.project.tileSize * this.state.zoom;
 		let relativeMouseX = x / scale;
 		let relativeMouseY = y / scale;
 		let cursorX = Math.min(Math.floor(relativeMouseX), this.props.level.width - 1);
@@ -108,7 +110,7 @@ export default class GridEditor extends React.Component<Props, State> {
 				}}
 			>
 				<Grid
-					tileSize={this.props.level.project.tileSize}
+					tileSize={this.props.project.tileSize}
 					width={this.props.level.width}
 					height={this.props.level.height}
 					onMouseMove={this.onMouseMove.bind(this)}
@@ -119,6 +121,7 @@ export default class GridEditor extends React.Component<Props, State> {
 					switch (layer.type) {
 						case LayerType.Geometry:
 							return <GeometryLayerDisplay
+								project={this.props.project}
 								level={this.props.level}
 								layer={layer}
 							/>
@@ -129,10 +132,10 @@ export default class GridEditor extends React.Component<Props, State> {
 				<div style={{
 					opacity: this.state.cursorOverGrid ? 1 : 0,
 					position: 'absolute',
-					left: this.state.cursorX * this.props.level.project.tileSize + 1 + 'px',
-					top: this.state.cursorY * this.props.level.project.tileSize + 1 + 'px',
-					width: this.props.level.project.tileSize + 'px',
-					height: this.props.level.project.tileSize + 'px',
+					left: this.state.cursorX * this.props.project.tileSize + 1 + 'px',
+					top: this.state.cursorY * this.props.project.tileSize + 1 + 'px',
+					width: this.props.project.tileSize + 'px',
+					height: this.props.project.tileSize + 'px',
 					background: 'rgba(0, 0, 0, .1)',
 					pointerEvents: 'none',
 				}}/>

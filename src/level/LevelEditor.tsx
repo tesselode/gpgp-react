@@ -1,13 +1,15 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import Level from '../data/Level';
+import Level, { newLevel } from '../data/Level';
 import { LayerType } from '../data/layer/Layer';
 import GridEditor from './GridEditor';
 import HistoryList, { addHistory, getCurrentHistoryState, changeHistoryPosition } from '../data/HistoryList';
 import LayerList from './sidebar/LayerList';
 import HistoryBrowser from './sidebar/HistoryBrowser';
+import Project, { newProject } from '../data/Project';
 
 export interface State {
+	project: Project;
 	levelHistory: HistoryList<Level>;
 	selectedLayerIndex: number;
 	continuedAction: boolean;
@@ -17,31 +19,13 @@ export default class LevelEditor extends React.Component<{}, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
+			project: newProject(),
 			levelHistory: {
 				position: 0,
 				steps: [
 					{
 						description: 'New level',
-						data: {
-							project: {
-								name: 'New project',
-								tileSize: 16,
-								defaultMapWidth: 16,
-								defaultMapHeight: 9,
-								maxMapWidth: 1000,
-								maxMapHeight: 1000,
-								tilesets: [],
-							},
-							width: 16,
-							height: 9,
-							layers: [
-								{
-									name: 'Geometry',
-									type: LayerType.Geometry,
-									tiles: [],
-								},
-							],
-						},
+						data: newLevel(),
 					},
 				],
 			},
@@ -97,6 +81,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 				<Col md={9}>
 					<GridEditor
 						level={level}
+						project={this.state.project}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
 						onMouseUp={() => this.setState({continuedAction: false})}
