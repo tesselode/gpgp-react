@@ -47,7 +47,7 @@ function chooseTilesetImage(props: Props): void {
 
 export default (props: Props) => {
 	let selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
-	let selectedTilesetImage: TilesetImage = props.resources.tilesetImages.get(selectedTileset);
+	let selectedTilesetImage: TilesetImage = props.resources.tilesetImages[props.selectedTilesetIndex];
 	return <Row>
 		<Col md={4}>
 			<Navbar color='light'>
@@ -81,6 +81,7 @@ export default (props: Props) => {
 			<ListGroup flush>
 				{props.project.tilesets.map((tileset, i) =>
 					<ListGroupItem
+						key={i}
 						active={i === props.selectedTilesetIndex}
 						onClick={() => props.onSelectTileset(i)}
 					>

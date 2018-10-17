@@ -14,11 +14,11 @@ import {
 import Project from '../data/Project';
 import ProjectSettingsEditor from './ProjectSettingsEditor';
 import ProjectTilesetsEditor from './ProjectTilesetsEditor';
-import { ProjectResources, TilesetImage, loadProjectResources } from '../data/ProjectResources';
-import Tileset from '../data/Tileset';
+import { ProjectResources, TilesetImage, loadProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources } from '../data/ProjectResources';
 import { remote } from 'electron';
 import path from 'path';
 import fs from 'fs';
+import { shiftUp, shiftDown } from '../util';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -46,9 +46,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 				maxMapHeight: 1000,
 				tilesets: [],
 			},
-			resources: {
-				tilesetImages: new Map<Tileset, TilesetImage>(),
-			},
+			resources: newProjectResources(),
 			selectedTilesetIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
@@ -92,21 +90,27 @@ export default class ProjectEditor extends React.Component<{}, State> {
 
 	onAddTileset() {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let resources = shallowCopyProjectResources(this.state.resources);
 		project.tilesets.push({
 			name: 'New tileset',
 			imagePath: '',
 		});
+		resources.tilesetImages.push({});
 		this.setState({
 			project: project,
+			resources: resources,
 			selectedTilesetIndex: Math.max(this.state.selectedTilesetIndex, 0),
 		});
 	}
 
 	onRemoveTileset(tilesetIndex: number) {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let resources = shallowCopyProjectResources(this.state.resources);
 		project.tilesets.splice(tilesetIndex, 1);
+		resources.tilesetImages.splice(tilesetIndex, 1);
 		this.setState({
 			project: project,
+			resources: resources,
 			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, project.tilesets.length - 1),
 		});
 	}
@@ -114,12 +118,12 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	onMoveTilesetUp(tilesetIndex: number) {
 		if (tilesetIndex === 0) return;
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
-		let above = project.tilesets[tilesetIndex - 1];
-		let current = project.tilesets[tilesetIndex];
-		project.tilesets[tilesetIndex - 1] = current;
-		project.tilesets[tilesetIndex] = above;
+		let resources = shallowCopyProjectResources(this.state.resources);
+		shiftUp(project.tilesets, tilesetIndex);
+		shiftUp(resources.tilesetImages, tilesetIndex);
 		this.setState({
 			project: project,
+			resources: resources,
 			selectedTilesetIndex: this.state.selectedTilesetIndex - 1,
 		});
 	}
@@ -127,12 +131,12 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	onMoveTilesetDown(tilesetIndex: number) {
 		if (tilesetIndex === this.state.project.tilesets.length - 1) return;
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
-		let below = project.tilesets[tilesetIndex + 1];
-		let current = project.tilesets[tilesetIndex];
-		project.tilesets[tilesetIndex + 1] = current;
-		project.tilesets[tilesetIndex] = below;
+		let resources = shallowCopyProjectResources(this.state.resources);
+		shiftDown(project.tilesets, tilesetIndex);
+		shiftDown(resources.tilesetImages, tilesetIndex);
 		this.setState({
 			project: project,
+			resources: resources,
 			selectedTilesetIndex: this.state.selectedTilesetIndex + 1,
 		});
 	}
@@ -147,8 +151,11 @@ export default class ProjectEditor extends React.Component<{}, State> {
 		let project: Project = JSON.parse(JSON.stringify(this.state.project));
 		project.tilesets[tilesetIndex].imagePath = imagePath;
 		this.setState({project: project});
-		loadProjectResources(project)
-			.then(resources => this.setState({resources: resources}))
+		let resources = shallowCopyProjectResources(this.state.resources);
+		loadTilesetImage(imagePath).then(image => {
+			resources.tilesetImages[tilesetIndex] = image;
+			this.setState({resources: resources});
+		})
 	}
 
 	save(saveAs = false) {

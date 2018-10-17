@@ -1,6 +1,6 @@
-import Tileset from "./Tileset";
 import Project from "./Project";
 import Jimp from 'jimp';
+import Tileset from "./Tileset";
 
 export interface TilesetImage {
 	data?: string;
@@ -10,35 +10,41 @@ export interface TilesetImage {
 }
 
 export interface ProjectResources {
-	tilesetImages: Map<Tileset, TilesetImage>;
+	tilesetImages: Array<TilesetImage>;
+}
+
+export function newProjectResources(): ProjectResources {
+	return {
+		tilesetImages: [],
+	};
+}
+
+export function loadTilesetImage(imagePath: string): Promise<TilesetImage> {
+	return Jimp.read(imagePath)
+		.then(image =>
+			image.getBase64Async(image.getMIME())
+				.then(data => ({
+					data: data,
+					width: image.bitmap.width,
+					height: image.bitmap.height,
+				}))
+		)
+		.catch(error => ({
+			error: "The tileset image could not be loaded.",
+		}));
 }
 
 export function loadProjectResources(project: Project): Promise<ProjectResources> {
-	let resources: ProjectResources = {
-		tilesetImages: new Map<Tileset, TilesetImage>(),
-	};
+	let resources = newProjectResources();
+	return Promise.all(project.tilesets.map((tileset, i) =>
+		loadTilesetImage(tileset.imagePath).then(image => {
+			resources.tilesetImages[i] = image;
+		})
+	)).then(() => resources);
+}
 
-	let promises: Array<Promise<void>> = [];
-
-	project.tilesets.forEach(tileset => {
-		promises.push(Jimp.read(tileset.imagePath)
-			.then(image => {
-				image.getBase64Async(image.getMIME())
-					.then(data => {
-						resources.tilesetImages.set(tileset, {
-							data: data,
-							width: image.bitmap.width,
-							height: image.bitmap.height,
-						});
-					});
-			})
-			.catch(error => {
-				resources.tilesetImages.set(tileset, {
-					error: "The tileset image could not be loaded.",
-				});
-			})
-		);
-	});
-
-	return Promise.all(promises).then(() => resources);
+export function shallowCopyProjectResources(projectResources: ProjectResources): ProjectResources {
+	let resources = newProjectResources();
+	resources.tilesetImages = projectResources.tilesetImages;
+	return resources;
 }
