@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import Level, { newLevel } from '../data/Level';
-import { LayerType } from '../data/layer/Layer';
 import GridEditor from './GridEditor';
 import HistoryList, { addHistory, getCurrentHistoryState, changeHistoryPosition } from '../data/HistoryList';
 import LayerList from './sidebar/LayerList';
