@@ -18,7 +18,7 @@ import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyPro
 import { remote } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { shiftUp, shiftDown } from '../util';
+import { shiftUp, shiftDown, deepCopyObject } from '../util';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -45,43 +45,43 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	}
 
 	onChangeProjectName(name: string) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		project.name = name;
 		this.setState({project: project});
 	}
 
 	onChangeTileSize(tileSize: number) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		project.tileSize = tileSize;
 		this.setState({project: project});
 	}
 
 	onChangeDefaultMapWidth(defaultMapWidth: number) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		project.defaultMapWidth = defaultMapWidth;
 		this.setState({project: project});
 	}
 
 	onChangeDefaultMapHeight(defaultMapHeight: number) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		project.defaultMapHeight = defaultMapHeight;
 		this.setState({project: project});
 	}
 
 	onChangeMaxMapWidth(maxMapWidth: number) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		project.maxMapWidth = maxMapWidth;
 		this.setState({project: project});
 	}
 
 	onChangeMaxMapHeight(maxMapHeight: number) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		project.maxMapHeight = maxMapHeight;
 		this.setState({project: project});
 	}
 
 	onAddTileset() {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		let resources = shallowCopyProjectResources(this.state.resources);
 		project.tilesets.push({
 			name: 'New tileset',
@@ -96,7 +96,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	}
 
 	onRemoveTileset(tilesetIndex: number) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		let resources = shallowCopyProjectResources(this.state.resources);
 		project.tilesets.splice(tilesetIndex, 1);
 		resources.tilesetImages.splice(tilesetIndex, 1);
@@ -109,7 +109,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 
 	onMoveTilesetUp(tilesetIndex: number) {
 		if (tilesetIndex === 0) return;
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		let resources = shallowCopyProjectResources(this.state.resources);
 		shiftUp(project.tilesets, tilesetIndex);
 		shiftUp(resources.tilesetImages, tilesetIndex);
@@ -122,7 +122,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 
 	onMoveTilesetDown(tilesetIndex: number) {
 		if (tilesetIndex === this.state.project.tilesets.length - 1) return;
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		let resources = shallowCopyProjectResources(this.state.resources);
 		shiftDown(project.tilesets, tilesetIndex);
 		shiftDown(resources.tilesetImages, tilesetIndex);
@@ -134,13 +134,13 @@ export default class ProjectEditor extends React.Component<{}, State> {
 	}
 
 	onChangeTilesetName(tilesetIndex: number, name: string) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		project.tilesets[tilesetIndex].name = name;
 		this.setState({project: project});
 	}
 
 	onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
-		let project: Project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		project.tilesets[tilesetIndex].imagePath = imagePath;
 		this.setState({project: project});
 		let resources = shallowCopyProjectResources(this.state.resources);
@@ -161,7 +161,7 @@ export default class ProjectEditor extends React.Component<{}, State> {
 			if (!chosenSaveLocation) return;
 			projectFilePath = chosenSaveLocation;
 		}
-		let project = JSON.parse(JSON.stringify(this.state.project));
+		let project = deepCopyObject(this.state.project);
 		for (let i = 0; i < project.tilesets.length; i++) {
 			const tileset = project.tilesets[i];
 			tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);

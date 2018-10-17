@@ -1,3 +1,7 @@
+export function deepCopyObject<T extends Object>(object: T): T {
+	return JSON.parse(JSON.stringify(object));
+}
+
 export function shiftUp(array: Array<any>, position: number): void {
 	if (position === 0) return;
 	let above = array[position - 1];
