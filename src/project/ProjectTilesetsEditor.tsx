@@ -22,6 +22,7 @@ import Grid from '../level/Grid';
 import { remote } from 'electron';
 
 export interface Props {
+	focused: boolean;
 	project: Project;
 	resources: ProjectResources;
 	selectedTilesetIndex: number;
@@ -43,6 +44,33 @@ function chooseTilesetImage(props: Props): void {
 		if (paths)
 			props.onChooseTilesetImage(props.selectedTilesetIndex, paths[0])
 	});
+}
+
+function renderTilesetPreview(props: Props) {
+	if (!props.focused) return;
+	let selectedTilesetImage: TilesetImage = props.resources.tilesetImages[props.selectedTilesetIndex];
+	if (!selectedTilesetImage) return;
+	if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>
+	return <div
+		style={{
+			width: 0,
+			height: 0,
+			transformOrigin: '0% 0%',
+			transform: 'scale(2)',
+			imageRendering: 'pixelated',
+			transition: '.15s',
+		}}
+	>
+		<Grid
+			tileSize={props.project.tileSize}
+			width={Math.ceil(selectedTilesetImage.width / props.project.tileSize)}
+			height={Math.ceil(selectedTilesetImage.height / props.project.tileSize)}
+			onMouseMove={(x, y) => {}}
+			onMouseEnter={() => {}}
+			onMouseLeave={() => {}}
+		/>
+		<img src={selectedTilesetImage.data} />
+	</div>;
 }
 
 export default (props: Props) => {
@@ -120,28 +148,7 @@ export default (props: Props) => {
 					</Col>
 				</FormGroup>
 			</Form>
-			{selectedTilesetImage && (selectedTilesetImage.error ? <div>{selectedTilesetImage.error}</div> :
-				<div
-					style={{
-						width: 0,
-						height: 0,
-						transformOrigin: '0% 0%',
-						transform: 'scale(2)',
-						imageRendering: 'pixelated',
-						transition: '.15s',
-					}}
-				>
-					<Grid
-						tileSize={props.project.tileSize}
-						width={Math.ceil(selectedTilesetImage.width / props.project.tileSize)}
-						height={Math.ceil(selectedTilesetImage.height / props.project.tileSize)}
-						onMouseMove={(x, y) => {}}
-						onMouseEnter={() => {}}
-						onMouseLeave={() => {}}
-					/>
-					<img src={selectedTilesetImage.data} />
-				</div>
-			)}
+			{renderTilesetPreview(props)}
 		</Col>}
 	</Row>;
 }

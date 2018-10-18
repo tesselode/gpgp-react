@@ -16,7 +16,6 @@ import ProjectSettingsEditor from './ProjectSettingsEditor';
 import ProjectTilesetsEditor from './ProjectTilesetsEditor';
 import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources, loadProjectResources } from '../data/ProjectResources';
 import { remote } from 'electron';
-import path from 'path';
 import fs from 'fs';
 import { shiftUp, shiftDown, deepCopyObject } from '../util';
 
@@ -251,6 +250,7 @@ export default class ProjectEditor extends React.Component<Props, State> {
 				</TabPane>
 				<TabPane tabId={ProjectEditorTab.Tilesets}>
 					<ProjectTilesetsEditor
+						focused={this.state.activeTab === ProjectEditorTab.Tilesets}
 						project={this.state.project}
 						resources={this.state.resources}
 						selectedTilesetIndex={this.state.selectedTilesetIndex}
