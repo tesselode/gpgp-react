@@ -24,13 +24,29 @@ export default class App extends React.Component<{}, State> {
 		}
 	}
 	
-	openProjectEditor(project?: Project, projectFilePath?: string) {
+	onOpenProjectEditor(project?: Project, projectFilePath?: string) {
 		let newTab: Tab = {title: project ? project.name : 'New project'};
 		newTab.content = <ProjectEditor
 			project={project}
 			projectFilePath={projectFilePath}
-			onChangeTabTitle={(name: string) => {
-				newTab.title = name;
+			onChangeTabTitle={(title: string) => {
+				newTab.title = title;
+				this.setState({tabs: this.state.tabs});
+			}}
+			onCreateNewLevel={(project, projectFilePath) => this.onOpenNewLevel(project, projectFilePath)}
+		/>
+		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
+		tabs.push(newTab);
+		this.setState({tabs: tabs});
+	}
+
+	onOpenNewLevel(project?: Project, projectFilePath?: string) {
+		let newTab: Tab = {title: 'New level'};
+		newTab.content = <LevelEditor
+			project={project}
+			projectFilePath={projectFilePath}
+			onChangeTabTitle={(title: string) => {
+				newTab.title = title;
 				this.setState({tabs: this.state.tabs});
 			}}
 		/>
@@ -42,8 +58,8 @@ export default class App extends React.Component<{}, State> {
 	render() {
 		if (this.state.tabs.length === 0)
 			return <Welcome
-				onCreateNewProject={() => this.openProjectEditor()}
-				onOpenProject={(project: Project, projectFilePath: string) => this.openProjectEditor(project, projectFilePath)}
+				onCreateNewProject={() => this.onOpenProjectEditor()}
+				onOpenProject={(project: Project, projectFilePath: string) => this.onOpenProjectEditor(project, projectFilePath)}
 			/>;
 		return <div>
 			<Nav tabs>

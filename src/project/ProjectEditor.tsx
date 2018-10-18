@@ -29,6 +29,7 @@ export interface Props {
 	project?: Project;
 	projectFilePath?: string;
 	onChangeTabTitle: (title: string) => void;
+	onCreateNewLevel: (project: Project, projectFilePath: string) => void;
 }
 
 export interface State {
@@ -207,7 +208,12 @@ export default class ProjectEditor extends React.Component<Props, State> {
 					>
 						Save project as...
 					</Button>
-					{this.state.projectFilePath ? <Button color='primary'>New level</Button> : ''}
+					{this.state.projectFilePath ? <Button
+						color='primary'
+						onClick={() => this.props.onCreateNewLevel(this.state.project, this.state.projectFilePath)}
+					>
+						New level
+					</Button> : ''}
 				</ButtonGroup>
 			</Navbar>
 			<Nav tabs>

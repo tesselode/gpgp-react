@@ -7,27 +7,36 @@ import LayerList from './sidebar/LayerList';
 import HistoryBrowser from './sidebar/HistoryBrowser';
 import Project, { newProject } from '../data/Project';
 
-export interface State {
+export interface Props {
 	project: Project;
+	projectFilePath: string;
+	onChangeTabTitle: (title: string) => void;
+	level?: Level;
+	levelFilePath?: string;
+}
+
+export interface State {
 	levelHistory: HistoryList<Level>;
+	levelFilePath?: string;
 	selectedLayerIndex: number;
 	continuedAction: boolean;
 }
 
-export default class LevelEditor extends React.Component<{}, State> {
+export default class LevelEditor extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			project: newProject(),
 			levelHistory: {
 				position: 0,
 				steps: [
 					{
 						description: 'New level',
-						data: newLevel(),
+						data: this.props.level ? this.props.level :
+							newLevel(this.props.project, this.props.projectFilePath),
 					},
 				],
 			},
+			levelFilePath: this.props.levelFilePath,
 			selectedLayerIndex: 0,
 			continuedAction: false,
 		}
@@ -86,7 +95,7 @@ export default class LevelEditor extends React.Component<{}, State> {
 				<Col md={9}>
 					<GridEditor
 						level={level}
-						project={this.state.project}
+						project={this.props.project}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
 						onMouseUp={() => this.setState({continuedAction: false})}
