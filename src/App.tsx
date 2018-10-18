@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { Nav, NavItem, NavLink, TabContent, TabPane, Button } from 'reactstrap';
 import LevelEditor from './level/LevelEditor';
 import ProjectEditor from './project/ProjectEditor';
 import Welcome from './welcome';
@@ -37,7 +37,9 @@ export default class App extends React.Component<{}, State> {
 		/>
 		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
 		tabs.push(newTab);
-		this.setState({tabs: tabs});
+		this.setState({tabs: tabs}, () => {
+			this.setState({activeTab: this.state.tabs.length - 1})
+		});
 	}
 
 	onOpenNewLevel(project?: Project, projectFilePath?: string) {
@@ -52,7 +54,17 @@ export default class App extends React.Component<{}, State> {
 		/>
 		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
 		tabs.push(newTab);
-		this.setState({tabs: tabs});
+		this.setState({tabs: tabs}, () => {
+			this.setState({activeTab: this.state.tabs.length - 1})
+		});
+	}
+
+	onCloseTab(tabNumber: number) {
+		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
+		tabs.splice(tabNumber, 1);
+		this.setState({tabs: tabs}, () => {
+			this.setState({activeTab: Math.min(this.state.activeTab, this.state.tabs.length - 1)})
+		})
 	}
 
 	render() {
@@ -69,6 +81,14 @@ export default class App extends React.Component<{}, State> {
 						onClick={() => this.setState({activeTab: i})}
 					>
 						{tab.title}
+						<Button
+							close
+							onClick={() => this.onCloseTab(i)}
+							style={{
+								paddingLeft: '.25em',
+								marginTop: '-.1em',
+							}}
+						/>
 					</NavLink>
 				</NavItem>)}
 			</Nav>
