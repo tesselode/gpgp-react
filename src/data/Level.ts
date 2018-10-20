@@ -1,4 +1,4 @@
-import Layer, { LayerType } from "./layer/Layer";
+import Layer from "./layer/Layer";
 import { newGeometryLayer } from './layer/GeometryLayer';
 import { deepCopyObject } from "../util";
 import path from 'path';

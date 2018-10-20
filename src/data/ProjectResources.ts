@@ -1,6 +1,5 @@
 import Project from "./Project";
 import Jimp from 'jimp';
-import Tileset from "./Tileset";
 
 export interface TilesetImage {
 	data?: string;

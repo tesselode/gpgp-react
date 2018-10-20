@@ -1,6 +1,4 @@
 import React from 'react';
-import Project from '../data/Project';
-import Level from '../data/Level';
 
 const gridRenderingScale = 2;
 

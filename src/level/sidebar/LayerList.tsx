@@ -4,7 +4,7 @@ import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroup, 
 import SidebarSection from './SidebarSection';
 import Octicon, { Plus } from '@githubprimer/octicons-react';
 import Project from '../../data/Project';
-import TileLayer, { isTileLayer } from '../../data/layer/TileLayer';
+import { isTileLayer } from '../../data/layer/TileLayer';
 
 export interface Props {
 	project: Project;

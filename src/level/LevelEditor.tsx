@@ -5,7 +5,7 @@ import GridEditor from './GridEditor';
 import HistoryList, { addHistory, getCurrentHistoryState, changeHistoryPosition } from '../data/HistoryList';
 import LayerList from './sidebar/LayerList';
 import HistoryBrowser from './sidebar/HistoryBrowser';
-import Project, { newProject } from '../data/Project';
+import Project from '../data/Project';
 import { ProjectResources, loadProjectResources } from '../data/ProjectResources';
 import { newGeometryLayer } from '../data/layer/GeometryLayer';
 import { newTileLayer } from '../data/layer/TileLayer';
