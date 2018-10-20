@@ -6,6 +6,8 @@ import HistoryList, { addHistory, getCurrentHistoryState, changeHistoryPosition 
 import LayerList from './sidebar/LayerList';
 import HistoryBrowser from './sidebar/HistoryBrowser';
 import Project, { newProject } from '../data/Project';
+import { ProjectResources, loadProjectResources } from '../data/ProjectResources';
+import { newGeometryLayer } from '../data/layer/GeometryLayer';
 
 export interface Props {
 	project: Project;
@@ -16,6 +18,7 @@ export interface Props {
 }
 
 export interface State {
+	resources?: ProjectResources;
 	levelHistory: HistoryList<Level>;
 	levelFilePath?: string;
 	selectedLayerIndex: number;
@@ -40,6 +43,18 @@ export default class LevelEditor extends React.Component<Props, State> {
 			selectedLayerIndex: 0,
 			continuedAction: false,
 		}
+		loadProjectResources(this.props.project).then(resources =>
+			this.setState({resources: resources})
+		);
+	}
+
+	onAddGeometryLayer() {
+		this.setState({
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				level.layers.splice(this.state.selectedLayerIndex, 0, newGeometryLayer())
+				return 'Add geometry layer';
+			})
+		})
 	}
 
 	onPlace(x: number, y: number) {
@@ -78,7 +93,8 @@ export default class LevelEditor extends React.Component<Props, State> {
 					<LayerList
 						level={level}
 						selectedLayerIndex={this.state.selectedLayerIndex}
-						onSelectLayer={(layerIndex: number) => {}}
+						onSelectLayer={(layerIndex: number) => this.setState({selectedLayerIndex: layerIndex})}
+						onAddGeometryLayer={this.onAddGeometryLayer.bind(this)}
 					/>
 					<HistoryBrowser
 						historyList={this.state.levelHistory}

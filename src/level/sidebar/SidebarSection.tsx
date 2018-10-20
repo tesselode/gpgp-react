@@ -1,10 +1,11 @@
 import React from 'react';
-import { Collapse, Card, CardHeader, CardBody, Button } from 'reactstrap';
+import { Collapse, Card, CardHeader, CardBody, Navbar, Button } from 'reactstrap';
 
 export interface Props {
 	name: string,
 	startExpanded?: boolean,
 	flush?: boolean,
+	headerContent?: JSX.Element,
 }
 
 export interface State {
@@ -24,13 +25,15 @@ export default class SidebarSection extends React.Component<Props, State> {
 			<CardHeader
 				style={{padding: 0}}
 			>
-				<Button
-					color='link'
-					block
-					onClick={() => this.setState({expanded: !this.state.expanded})}
-				>
-					{this.props.name}
-				</Button>
+				<Navbar style={{padding: 0}}>
+					<Button
+						color='link'
+						onClick={() => this.setState({expanded: !this.state.expanded})}
+					>
+						{this.props.name}
+					</Button>
+					{this.props.headerContent}
+				</Navbar>
 			</CardHeader>
 			<Collapse isOpen={this.state.expanded} >
 				<CardBody

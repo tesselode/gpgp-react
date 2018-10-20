@@ -12,7 +12,7 @@ export default interface HistoryList<T> {
 
 export function addHistory<T>(
 	historyList: HistoryList<T>,
-	f: (T) => string,
+	f: (data: T) => string,
 	continuedAction = false,
 ): HistoryList<T> {
 	let newHistory = deepCopyObject(historyList);
