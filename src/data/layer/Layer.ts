@@ -1,5 +1,6 @@
 export enum LayerType {
 	Geometry = 'Geometry',
+	Tile = 'Tile',
 }
 
 export interface LayerItem {

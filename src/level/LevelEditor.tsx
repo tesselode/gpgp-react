@@ -8,6 +8,8 @@ import HistoryBrowser from './sidebar/HistoryBrowser';
 import Project, { newProject } from '../data/Project';
 import { ProjectResources, loadProjectResources } from '../data/ProjectResources';
 import { newGeometryLayer } from '../data/layer/GeometryLayer';
+import { newTileLayer } from '../data/layer/TileLayer';
+import { LayerType } from '../data/layer/Layer';
 
 export interface Props {
 	project: Project;
@@ -57,17 +59,28 @@ export default class LevelEditor extends React.Component<Props, State> {
 		})
 	}
 
+	onAddTileLayer(tilesetName: string) {
+		this.setState({
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				level.layers.splice(this.state.selectedLayerIndex, 0, newTileLayer(tilesetName))
+				return 'Add tile layer';
+			})
+		})
+	}
+
 	onPlace(x: number, y: number) {
 		let level = getCurrentHistoryState(this.state.levelHistory);
 		let layer = level.layers[this.state.selectedLayerIndex];
 		for (let i = 0; i < layer.items.length; i++) {
-			const tile = layer.items[i];
-			if (tile.x === x && tile.y === y) return;
+			const item = layer.items[i];
+			if (item.x === x && item.y === y) return;
 		}
 		this.setState({
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
+				if (layer.type === LayerType.Tile)
+					return false;
 				layer.items.push({x: x, y: y});
 				return 'Place tiles';
 			}, this.state.continuedAction)
@@ -91,10 +104,12 @@ export default class LevelEditor extends React.Component<Props, State> {
 			<Row>
 				<Col md={3}>
 					<LayerList
+						project={this.props.project}
 						level={level}
 						selectedLayerIndex={this.state.selectedLayerIndex}
 						onSelectLayer={(layerIndex: number) => this.setState({selectedLayerIndex: layerIndex})}
 						onAddGeometryLayer={this.onAddGeometryLayer.bind(this)}
+						onAddTileLayer={this.onAddTileLayer.bind(this)}
 					/>
 					<HistoryBrowser
 						historyList={this.state.levelHistory}

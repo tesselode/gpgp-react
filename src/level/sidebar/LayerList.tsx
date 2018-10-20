@@ -3,12 +3,16 @@ import Level from '../../data/Level';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroup, ListGroupItem } from 'reactstrap';
 import SidebarSection from './SidebarSection';
 import Octicon, { Plus } from '@githubprimer/octicons-react';
+import Project from '../../data/Project';
+import TileLayer, { isTileLayer } from '../../data/layer/TileLayer';
 
 export interface Props {
+	project: Project;
 	level: Level;
 	selectedLayerIndex: number;
 	onSelectLayer: (layerIndex: number) => void;
 	onAddGeometryLayer: () => void;
+	onAddTileLayer: (tilesetName: string) => void;
 }
 
 export interface State {
@@ -44,6 +48,14 @@ export default class LayerList extends React.Component<Props, State> {
 					>
 						Geometry
 					</DropdownItem>
+					{this.props.project.tilesets.map((tileset, i) =>
+						<DropdownItem
+							key={i}
+							onClick={() => this.props.onAddTileLayer(tileset.name)}
+						>
+							Tile - {tileset.name}
+						</DropdownItem>
+					)}
 				</DropdownMenu>
 			</ButtonDropdown>}
 		>
@@ -54,7 +66,10 @@ export default class LayerList extends React.Component<Props, State> {
 						active={this.props.selectedLayerIndex === i}
 						onClick={() => this.props.onSelectLayer(i)}
 					>
-						{layer.name + ' (' + layer.type + ')'}
+						{
+							isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + layer.tilesetName + ')'
+							: layer.name + ' (' + layer.type + ')'
+						}
 					</ListGroupItem>
 				)}
 			</ListGroup>
