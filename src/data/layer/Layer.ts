@@ -2,7 +2,7 @@ export enum LayerType {
 	Geometry = 'Geometry',
 }
 
-export interface Tile {
+export interface LayerItem {
 	x: number;
 	y: number;
 }
@@ -10,5 +10,5 @@ export interface Tile {
 export default interface Layer {
 	name: string;
 	type: LayerType;
-	tiles: Array<Tile>;
+	items: Array<LayerItem>;
 }

@@ -1,4 +1,5 @@
 import Layer, { LayerType } from "./layer/Layer";
+import { newGeometryLayer } from './layer/GeometryLayer';
 import { deepCopyObject } from "../util";
 import path from 'path';
 import Project from "./Project";
@@ -15,13 +16,7 @@ export function newLevel(project: Project, projectFilePath: string): Level {
 		projectFilePath: projectFilePath,
 		width: project.defaultMapWidth,
 		height: project.defaultMapHeight,
-		layers: [
-			{
-				name: 'Geometry',
-				type: LayerType.Geometry,
-				tiles: [],
-			},
-		],
+		layers: [newGeometryLayer()],
 	}
 }
 

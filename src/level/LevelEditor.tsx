@@ -60,15 +60,15 @@ export default class LevelEditor extends React.Component<Props, State> {
 	onPlace(x: number, y: number) {
 		let level = getCurrentHistoryState(this.state.levelHistory);
 		let layer = level.layers[this.state.selectedLayerIndex];
-		for (let i = 0; i < layer.tiles.length; i++) {
-			const tile = layer.tiles[i];
+		for (let i = 0; i < layer.items.length; i++) {
+			const tile = layer.items[i];
 			if (tile.x === x && tile.y === y) return;
 		}
 		this.setState({
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
-				layer.tiles.push({x: x, y: y});
+				layer.items.push({x: x, y: y});
 				return 'Place tiles';
 			}, this.state.continuedAction)
 		})
@@ -79,7 +79,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
-				layer.tiles = layer.tiles.filter(tile => !(tile.x === x && tile.y === y));
+				layer.items = layer.items.filter(tile => !(tile.x === x && tile.y === y));
 				return 'Remove tiles';
 			}, this.state.continuedAction)
 		})

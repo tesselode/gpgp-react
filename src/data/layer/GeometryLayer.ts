@@ -1,15 +1,15 @@
-import Layer, { Tile, LayerType } from "./Layer";
+import Layer, { LayerItem, LayerType } from "./Layer";
 
-export interface GeometryTile extends Tile {}
+export interface GeometryLayerItem extends LayerItem {}
 
 export default interface GeometryLayer extends Layer {
-	tiles: Array<GeometryTile>;
+	items: Array<GeometryLayerItem>;
 }
 
 export function newGeometryLayer(): GeometryLayer {
 	return {
 		name: 'New geometry layer',
 		type: LayerType.Geometry,
-		tiles: new Array<GeometryTile>(),
+		items: new Array<GeometryLayerItem>(),
 	}
 }
