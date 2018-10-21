@@ -177,9 +177,9 @@ export default class LevelEditor extends React.Component<Props, State> {
 	render() {
 		let level = getCurrentHistoryState(this.state.levelHistory);
 		let selectedLayer = level.layers[this.state.selectedLayerIndex];
-		return <Container fluid>
+		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
-				<Col md={3}>
+				<Col md={3} style={{height: '90vh', overflowY: 'auto'}}>
 					<LayerList
 						project={this.props.project}
 						level={level}
@@ -225,7 +225,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 						}}
 					/>
 				</Col>
-				<Col md={9}>
+				<Col md={9} style={{height: '90vh', overflowY: 'auto'}}>
 					<Grid
 						tileSize={this.props.project.tileSize}
 						width={level.width}
