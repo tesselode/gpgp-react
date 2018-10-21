@@ -29,6 +29,7 @@ export interface State {
 	resources?: ProjectResources;
 	levelHistory: HistoryList<Level>;
 	levelFilePath?: string;
+	showSelectedLayerOnTop: boolean;
 	selectedLayerIndex: number;
 	selectedTileX: number;
 	selectedTileY: number;
@@ -50,6 +51,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 				],
 			},
 			levelFilePath: this.props.levelFilePath,
+			showSelectedLayerOnTop: true,
 			selectedLayerIndex: 0,
 			selectedTileX: 0,
 			selectedTileY: 0,
@@ -211,10 +213,25 @@ export default class LevelEditor extends React.Component<Props, State> {
 						project={this.props.project}
 						level={level}
 						selectedLayerIndex={this.state.selectedLayerIndex}
+						showSelectedLayerOnTop={this.state.showSelectedLayerOnTop}
+						onToggleShowSelectedLayerOnTop={() => this.setState({
+							showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop,
+						})}
 						onSelectLayer={(layerIndex: number) => this.setState({selectedLayerIndex: layerIndex})}
 						onAddGeometryLayer={this.onAddGeometryLayer.bind(this)}
 						onAddTileLayer={this.onAddTileLayer.bind(this)}
 						onToggleLayerVisibility={this.onToggleLayerVisibility.bind(this)}
+					/>
+					<LayerOptions
+						layer={selectedLayer}
+						canMoveLayerUp={this.state.selectedLayerIndex > 0}
+						canMoveLayerDown={this.state.selectedLayerIndex < level.layers.length - 1}
+						canDeleteLayer={level.layers.length > 1}
+						onChangeLayerName={this.onChangeLayerName.bind(this)}
+						onMoveLayerUp={this.onMoveLayerUp.bind(this)}
+						onMoveLayerDown={this.onMoveLayerDown.bind(this)}
+						onDeleteLayer={this.onDeleteLayer.bind(this)}
+						onBlur={() => this.setState({continuedAction: false})}
 					/>
 					{isTileLayer(selectedLayer) && <TilePicker
 						project={this.props.project}
@@ -229,17 +246,6 @@ export default class LevelEditor extends React.Component<Props, State> {
 							});
 						}}
 					/>}
-					<LayerOptions
-						layer={selectedLayer}
-						canMoveLayerUp={this.state.selectedLayerIndex > 0}
-						canMoveLayerDown={this.state.selectedLayerIndex < level.layers.length - 1}
-						canDeleteLayer={level.layers.length > 1}
-						onChangeLayerName={this.onChangeLayerName.bind(this)}
-						onMoveLayerUp={this.onMoveLayerUp.bind(this)}
-						onMoveLayerDown={this.onMoveLayerDown.bind(this)}
-						onDeleteLayer={this.onDeleteLayer.bind(this)}
-						onBlur={() => this.setState({continuedAction: false})}
-					/>
 					<HistoryBrowser
 						historyList={this.state.levelHistory}
 						onHistoryPositionChanged={(position: number) => {
@@ -264,7 +270,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 						{level.layers.map((layer, i) => {
 							if (!layer.visible) return '';
 							let order = level.layers.length - i;
-							if (i === this.state.selectedLayerIndex)
+							if (this.state.showSelectedLayerOnTop && i === this.state.selectedLayerIndex)
 								order = level.layers.length;
 							if (isTileLayer(layer))
 								return <TileLayerDisplay

@@ -8,7 +8,9 @@ import {
 	DropdownItem,
 	ListGroup,
 	ListGroupItem,
-	Navbar
+	Navbar,
+	ButtonGroup,
+	UncontrolledTooltip
 } from 'reactstrap';
 import SidebarSection from './SidebarSection';
 import Octicon, { Plus, Eye } from '@githubprimer/octicons-react';
@@ -19,6 +21,8 @@ export interface Props {
 	project: Project;
 	level: Level;
 	selectedLayerIndex: number;
+	showSelectedLayerOnTop: boolean;
+	onToggleShowSelectedLayerOnTop: () => void;
 	onSelectLayer: (layerIndex: number) => void;
 	onToggleLayerVisibility: (layerIndex: number) => void;
 	onAddGeometryLayer: () => void;
@@ -42,32 +46,54 @@ export default class LayerList extends React.Component<Props, State> {
 			name='Layers'
 			flush
 			startExpanded
-			headerContent={<ButtonDropdown
-				isOpen={this.state.dropdownOpen}
-				toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
-				>
-				<DropdownToggle
-					color='link'
+			headerContent={<ButtonGroup>
+				<Button
+					id='toggleShowSelectedLayerOnTopButton'
 					size='sm'
+					outline={!this.props.showSelectedLayerOnTop}
+					onClick={() => this.props.onToggleShowSelectedLayerOnTop()}
 				>
-					<Octicon icon={Plus} />
-				</DropdownToggle>
-				<DropdownMenu>
-					<DropdownItem
-						onClick={() => this.props.onAddGeometryLayer()}
+					<Octicon icon={Eye} />
+				</Button>
+				<UncontrolledTooltip
+					delay={{show: 500, hide: 0}}
+					target='toggleShowSelectedLayerOnTopButton'
+				>
+					Highlight selected layer
+				</UncontrolledTooltip>
+				<ButtonDropdown
+					isOpen={this.state.dropdownOpen}
+					toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
 					>
-						Geometry
-					</DropdownItem>
-					{this.props.project.tilesets.map((tileset, i) =>
+					<DropdownToggle
+						id='addLayerButton'
+						size='sm'
+					>
+						<Octicon icon={Plus} />
+					</DropdownToggle>
+					<DropdownMenu>
 						<DropdownItem
-							key={i}
-							onClick={() => this.props.onAddTileLayer(i)}
+							onClick={() => this.props.onAddGeometryLayer()}
 						>
-							Tile - {tileset.name}
+							Geometry
 						</DropdownItem>
-					)}
-				</DropdownMenu>
-			</ButtonDropdown>}
+						{this.props.project.tilesets.map((tileset, i) =>
+							<DropdownItem
+								key={i}
+								onClick={() => this.props.onAddTileLayer(i)}
+							>
+								Tile - {tileset.name}
+							</DropdownItem>
+						)}
+					</DropdownMenu>
+				</ButtonDropdown>
+				<UncontrolledTooltip
+					delay={{show: 500, hide: 0}}
+					target='addLayerButton'
+				>
+					Add layer...
+				</UncontrolledTooltip>
+			</ButtonGroup>}
 		>
 			<ListGroup flush>
 				{this.props.level.layers.map((layer, i) =>
@@ -83,6 +109,7 @@ export default class LayerList extends React.Component<Props, State> {
 								: layer.name + ' (' + layer.type + ')'
 							}
 							<Button
+								id={'toggleLayerVisibilityButton' + i}
 								outline={!layer.visible}
 								color={this.props.selectedLayerIndex === i ? 'light' : 'dark'}
 								size='sm'
@@ -90,6 +117,12 @@ export default class LayerList extends React.Component<Props, State> {
 							>
 								<Octicon icon={Eye} />
 							</Button>
+							<UncontrolledTooltip
+								delay={{show: 500, hide: 0}}
+								target={'toggleLayerVisibilityButton' + i}
+							>
+								Toggle layer visibility
+							</UncontrolledTooltip>
 						</Navbar>
 					</ListGroupItem>
 				)}

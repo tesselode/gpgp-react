@@ -1,6 +1,6 @@
 import React from 'react';
 import SidebarSection from './SidebarSection';
-import { Form, FormGroup, Label, Input, Navbar, ButtonGroup, Button } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Navbar, ButtonGroup, Button, UncontrolledTooltip } from 'reactstrap';
 import Layer from '../../data/layer/Layer';
 import Octicon, { ArrowUp, ArrowDown, Trashcan } from '@githubprimer/octicons-react';
 
@@ -33,21 +33,36 @@ export default (props: Props) => <SidebarSection
 	<Navbar style={{padding: 0}}>
 		<ButtonGroup>
 			<Button
+				id='moveLayerUpButton'
 				size='sm'
 				disabled={!props.canMoveLayerUp}
 				onClick={() => props.onMoveLayerUp()}
 			>
 				<Octicon icon={ArrowUp} />
 			</Button>
+			<UncontrolledTooltip
+				delay={{show: 500, hide: 0}}
+				target='moveLayerUpButton'
+			>
+				Move layer up
+			</UncontrolledTooltip>
 			<Button
+				id='moveLayerDownButton'
 				size='sm'
 				disabled={!props.canMoveLayerDown}
 				onClick={() => props.onMoveLayerDown()}
 			>
 				<Octicon icon={ArrowDown} />
 			</Button>
+			<UncontrolledTooltip
+				delay={{show: 500, hide: 0}}
+				target='moveLayerDownButton'
+			>
+				Move layer down
+			</UncontrolledTooltip>
 		</ButtonGroup>
 		<Button
+			id='deleteLayerButton'
 			size='sm'
 			color='danger'
 			disabled={!props.canDeleteLayer}
@@ -55,5 +70,11 @@ export default (props: Props) => <SidebarSection
 		>
 			<Octicon icon={Trashcan} />
 		</Button>
+		<UncontrolledTooltip
+			delay={{show: 500, hide: 0}}
+			target='deleteLayerButton'
+		>
+			Delete layer
+		</UncontrolledTooltip>
 	</Navbar>
 </SidebarSection>
