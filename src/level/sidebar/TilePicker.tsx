@@ -30,11 +30,10 @@ export default (props: Props) => <SidebarSection
 				tileSize={props.project.tileSize}
 				width={Math.ceil(props.tilesetImageData.width / props.project.tileSize)}
 				height={Math.ceil(props.tilesetImageData.height / props.project.tileSize)}
-				onMouseMove={() => {}}
-				onMouseEnter={() => {}}
-				onMouseLeave={() => {}}
-			/>
-			<img src={props.tilesetImageData.data}/>
+				startingZoom={1}
+			>
+				<img src={props.tilesetImageData.data}/>
+			</Grid>
 		</div>
 	}
 </SidebarSection>

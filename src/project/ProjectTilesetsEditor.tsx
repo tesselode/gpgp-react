@@ -51,31 +51,18 @@ function renderTilesetPreview(props: Props) {
 	let selectedTilesetImage: TilesetImage = props.resources.tilesetImages[props.selectedTilesetIndex];
 	if (!selectedTilesetImage) return;
 	if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>
-	return <div
-		style={{
-			width: 0,
-			height: 0,
-			transformOrigin: '0% 0%',
-			transform: 'scale(2)',
-			imageRendering: 'pixelated',
-			transition: '.15s',
-		}}
+	return <Grid
+		tileSize={props.project.tileSize}
+		width={Math.ceil(selectedTilesetImage.width / props.project.tileSize)}
+		height={Math.ceil(selectedTilesetImage.height / props.project.tileSize)}
+		hideCursor
 	>
-		<Grid
-			tileSize={props.project.tileSize}
-			width={Math.ceil(selectedTilesetImage.width / props.project.tileSize)}
-			height={Math.ceil(selectedTilesetImage.height / props.project.tileSize)}
-			onMouseMove={(x, y) => {}}
-			onMouseEnter={() => {}}
-			onMouseLeave={() => {}}
-		/>
 		<img src={selectedTilesetImage.data} />
-	</div>;
+	</Grid>;
 }
 
 export default (props: Props) => {
 	let selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
-	let selectedTilesetImage: TilesetImage = props.resources.tilesetImages[props.selectedTilesetIndex];
 	return <Row>
 		<Col md={4}>
 			<Navbar color='light'>

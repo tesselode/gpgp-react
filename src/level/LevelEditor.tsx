@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import Level, { newLevel } from '../data/Level';
-import GridEditor from './GridEditor';
 import HistoryList, { addHistory, getCurrentHistoryState, changeHistoryPosition } from '../data/HistoryList';
 import LayerList from './sidebar/LayerList';
 import HistoryBrowser from './sidebar/HistoryBrowser';
@@ -11,6 +10,8 @@ import { newGeometryLayer } from '../data/layer/GeometryLayer';
 import { newTileLayer, isTileLayer } from '../data/layer/TileLayer';
 import { LayerType } from '../data/layer/Layer';
 import TilePicker from './sidebar/TilePicker';
+import GeometryLayerDisplay from './layer/GeometryLayerDisplay';
+import Grid from './Grid';
 
 export interface Props {
 	project: Project;
@@ -130,13 +131,28 @@ export default class LevelEditor extends React.Component<Props, State> {
 					/>
 				</Col>
 				<Col md={9}>
-					<GridEditor
-						level={level}
-						project={this.props.project}
+					<Grid
+						tileSize={this.props.project.tileSize}
+						width={level.width}
+						height={level.height}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
 						onMouseUp={() => this.setState({continuedAction: false})}
-					/>
+					>
+						{level.layers.map((layer, i) => {
+							switch (layer.type) {
+								case LayerType.Geometry:
+									return <GeometryLayerDisplay
+										key={i}
+										project={this.props.project}
+										level={level}
+										layer={layer}
+									/>
+								default:
+									return '';
+							}
+						})}
+					</Grid>
 				</Col>
 			</Row>
 		</Container>;
