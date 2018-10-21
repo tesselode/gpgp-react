@@ -76,7 +76,7 @@ export default class LayerList extends React.Component<Props, State> {
 						active={this.props.selectedLayerIndex === i}
 						onClick={() => this.props.onSelectLayer(i)}
 					>
-						<Navbar expand style={{padding: 0}}>
+						<Navbar style={{padding: 0}}>
 							{
 								isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + this.props.project.tilesets[layer.tilesetIndex].name + ')'
 								: layer.name + ' (' + layer.type + ')'

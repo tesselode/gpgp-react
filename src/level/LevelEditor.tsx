@@ -13,6 +13,8 @@ import TilePicker from './sidebar/TilePicker';
 import GeometryLayerDisplay from './layer/GeometryLayerDisplay';
 import Grid from './Grid';
 import TileLayerDisplay from './layer/TileLayerDisplay';
+import LayerOptions from './sidebar/LayerOptions';
+import { shiftUp, shiftDown } from '../util';
 
 export interface Props {
 	project: Project;
@@ -57,17 +59,6 @@ export default class LevelEditor extends React.Component<Props, State> {
 		);
 	}
 
-	onToggleLayerVisibility(layerIndex: number) {
-		this.setState({
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				let layer = level.layers[layerIndex];
-				layer.visible = !layer.visible;
-				return layer.visible ? 'Show layer "' + layer.name + '"'
-				: 'Hide layer "' + layer.name + '"'
-			})
-		})
-	}
-
 	onAddGeometryLayer() {
 		this.setState({
 			levelHistory: addHistory(this.state.levelHistory, level => {
@@ -82,6 +73,71 @@ export default class LevelEditor extends React.Component<Props, State> {
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				level.layers.splice(this.state.selectedLayerIndex, 0, newTileLayer(tilesetIndex))
 				return 'Add tile layer';
+			})
+		})
+	}
+
+	onToggleLayerVisibility(layerIndex: number) {
+		this.setState({
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				let layer = level.layers[layerIndex];
+				layer.visible = !layer.visible;
+				return layer.visible ? 'Show layer "' + layer.name + '"'
+				: 'Hide layer "' + layer.name + '"'
+			})
+		})
+	}
+
+	onChangeLayerName(name: string) {
+		this.setState({
+			continuedAction: true,
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				let layer = level.layers[this.state.selectedLayerIndex];
+				let oldName = layer.name;
+				layer.name = name;
+				return 'Rename layer "' + oldName + '" to "' + name + '"';
+			}, this.state.continuedAction)
+		})
+	}
+
+	onMoveLayerUp() {
+		this.setState({
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				if (this.state.selectedLayerIndex === 0) return false;
+				let layer = level.layers[this.state.selectedLayerIndex];
+				shiftUp(level.layers, this.state.selectedLayerIndex);
+				this.setState({
+					selectedLayerIndex: this.state.selectedLayerIndex - 1,
+				});
+				return 'Move layer "' + layer.name + '" up';
+			})
+		})
+	}
+
+	onMoveLayerDown() {
+		this.setState({
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				if (this.state.selectedLayerIndex === level.layers.length - 1) return false;
+				let layer = level.layers[this.state.selectedLayerIndex];
+				shiftDown(level.layers, this.state.selectedLayerIndex);
+				this.setState({
+					selectedLayerIndex: this.state.selectedLayerIndex + 1,
+				});
+				return 'Move layer "' + layer.name + '" down';
+			})
+		})
+	}
+
+	onDeleteLayer() {
+		this.setState({
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				if (level.layers.length <= 1) return false;
+				let layer = level.layers[this.state.selectedLayerIndex];
+				level.layers.splice(this.state.selectedLayerIndex, 1);
+				this.setState({
+					selectedLayerIndex: Math.min(this.state.selectedLayerIndex, level.layers.length - 1),
+				});
+				return 'Delete layer "' + layer.name + '"';
 			})
 		})
 	}
@@ -146,6 +202,17 @@ export default class LevelEditor extends React.Component<Props, State> {
 							});
 						}}
 					/>}
+					<LayerOptions
+						layer={selectedLayer}
+						canMoveLayerUp={this.state.selectedLayerIndex > 0}
+						canMoveLayerDown={this.state.selectedLayerIndex < level.layers.length - 1}
+						canDeleteLayer={level.layers.length > 1}
+						onChangeLayerName={this.onChangeLayerName.bind(this)}
+						onMoveLayerUp={this.onMoveLayerUp.bind(this)}
+						onMoveLayerDown={this.onMoveLayerDown.bind(this)}
+						onDeleteLayer={this.onDeleteLayer.bind(this)}
+						onBlur={() => this.setState({continuedAction: false})}
+					/>
 					<HistoryBrowser
 						historyList={this.state.levelHistory}
 						onHistoryPositionChanged={(position: number) => {
@@ -169,7 +236,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					>
 						{level.layers.map((layer, i) => {
 							if (!layer.visible) return '';
-							let order = level.layers.length - 1;
+							let order = level.layers.length - i;
 							if (i === this.state.selectedLayerIndex)
 								order = level.layers.length;
 							if (isTileLayer(layer))
