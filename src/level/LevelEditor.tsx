@@ -57,6 +57,17 @@ export default class LevelEditor extends React.Component<Props, State> {
 		);
 	}
 
+	onToggleLayerVisibility(layerIndex: number) {
+		this.setState({
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				let layer = level.layers[layerIndex];
+				layer.visible = !layer.visible;
+				return layer.visible ? 'Show layer "' + layer.name + '"'
+				: 'Hide layer "' + layer.name + '"'
+			})
+		})
+	}
+
 	onAddGeometryLayer() {
 		this.setState({
 			levelHistory: addHistory(this.state.levelHistory, level => {
@@ -120,6 +131,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 						onSelectLayer={(layerIndex: number) => this.setState({selectedLayerIndex: layerIndex})}
 						onAddGeometryLayer={this.onAddGeometryLayer.bind(this)}
 						onAddTileLayer={this.onAddTileLayer.bind(this)}
+						onToggleLayerVisibility={this.onToggleLayerVisibility.bind(this)}
 					/>
 					{isTileLayer(selectedLayer) && <TilePicker
 						project={this.props.project}
@@ -156,6 +168,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 						onMouseUp={() => this.setState({continuedAction: false})}
 					>
 						{level.layers.map((layer, i) => {
+							if (!layer.visible) return '';
 							let order = level.layers.length - 1;
 							if (i === this.state.selectedLayerIndex)
 								order = level.layers.length;

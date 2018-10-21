@@ -1,8 +1,17 @@
 import React from 'react';
 import Level from '../../data/Level';
-import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroup, ListGroupItem } from 'reactstrap';
+import {
+	Button,
+	ButtonDropdown,
+	DropdownToggle,
+	DropdownMenu,
+	DropdownItem,
+	ListGroup,
+	ListGroupItem,
+	Navbar
+} from 'reactstrap';
 import SidebarSection from './SidebarSection';
-import Octicon, { Plus } from '@githubprimer/octicons-react';
+import Octicon, { Plus, Eye } from '@githubprimer/octicons-react';
 import Project from '../../data/Project';
 import { isTileLayer } from '../../data/layer/TileLayer';
 
@@ -11,6 +20,7 @@ export interface Props {
 	level: Level;
 	selectedLayerIndex: number;
 	onSelectLayer: (layerIndex: number) => void;
+	onToggleLayerVisibility: (layerIndex: number) => void;
 	onAddGeometryLayer: () => void;
 	onAddTileLayer: (tilesetIndex: number) => void;
 }
@@ -66,10 +76,20 @@ export default class LayerList extends React.Component<Props, State> {
 						active={this.props.selectedLayerIndex === i}
 						onClick={() => this.props.onSelectLayer(i)}
 					>
-						{
-							isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + this.props.project.tilesets[layer.tilesetIndex].name + ')'
-							: layer.name + ' (' + layer.type + ')'
-						}
+						<Navbar expand style={{padding: 0}}>
+							{
+								isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + this.props.project.tilesets[layer.tilesetIndex].name + ')'
+								: layer.name + ' (' + layer.type + ')'
+							}
+							<Button
+								outline={!layer.visible}
+								color={this.props.selectedLayerIndex === i ? 'light' : 'dark'}
+								size='sm'
+								onClick={() => this.props.onToggleLayerVisibility(i)}
+							>
+								<Octicon icon={Eye} />
+							</Button>
+						</Navbar>
 					</ListGroupItem>
 				)}
 			</ListGroup>

@@ -10,6 +10,7 @@ export function newGeometryLayer(): GeometryLayer {
 	return {
 		name: 'New geometry layer',
 		type: LayerType.Geometry,
+		visible: true,
 		items: [],
 	}
 }

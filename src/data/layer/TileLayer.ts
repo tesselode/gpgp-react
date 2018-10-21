@@ -14,6 +14,7 @@ export function newTileLayer(tilesetIndex: number): TileLayer {
 	return {
 		name: 'New tile layer',
 		type: LayerType.Tile,
+		visible: true,
 		tilesetIndex: tilesetIndex,
 		items: [],
 	}
