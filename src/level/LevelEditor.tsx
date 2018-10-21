@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import Level, { newLevel } from '../data/Level';
 import HistoryList, { addHistory, getCurrentHistoryState, changeHistoryPosition } from '../data/HistoryList';
+import LevelOptions from './sidebar/LevelOptions';
 import LayerList from './sidebar/LayerList';
 import HistoryBrowser from './sidebar/HistoryBrowser';
 import Project from '../data/Project';
@@ -57,6 +58,26 @@ export default class LevelEditor extends React.Component<Props, State> {
 		loadProjectResources(this.props.project).then(resources =>
 			this.setState({resources: resources})
 		);
+	}
+
+	onChangeLevelWidth(width: number) {
+		this.setState({
+			continuedAction: true,
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				level.width = width;
+				return 'Change level width';
+			}, this.state.continuedAction)
+		});
+	}
+
+	onChangeLevelHeight(height: number) {
+		this.setState({
+			continuedAction: true,
+			levelHistory: addHistory(this.state.levelHistory, level => {
+				level.height = height;
+				return 'Change level height';
+			}, this.state.continuedAction)
+		});
 	}
 
 	onAddGeometryLayer() {
@@ -180,6 +201,12 @@ export default class LevelEditor extends React.Component<Props, State> {
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
 				<Col md={3} style={{height: '90vh', overflowY: 'auto'}}>
+					<LevelOptions
+						level={level}
+						onChangeLevelWidth={this.onChangeLevelWidth.bind(this)}
+						onChangeLevelHeight={this.onChangeLevelHeight.bind(this)}
+						onBlur={() => this.setState({continuedAction: false})}
+					/>
 					<LayerList
 						project={this.props.project}
 						level={level}
