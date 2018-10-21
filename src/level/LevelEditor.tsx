@@ -59,10 +59,10 @@ export default class LevelEditor extends React.Component<Props, State> {
 		})
 	}
 
-	onAddTileLayer(tilesetName: string) {
+	onAddTileLayer(tilesetIndex: number) {
 		this.setState({
 			levelHistory: addHistory(this.state.levelHistory, level => {
-				level.layers.splice(this.state.selectedLayerIndex, 0, newTileLayer(tilesetName))
+				level.layers.splice(this.state.selectedLayerIndex, 0, newTileLayer(tilesetIndex))
 				return 'Add tile layer';
 			})
 		})

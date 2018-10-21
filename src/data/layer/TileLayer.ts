@@ -6,15 +6,15 @@ export interface TileLayerItem extends LayerItem {
 }
 
 export default interface TileLayer extends Layer {
-	tilesetName: string;
+	tilesetIndex: number;
 	items: Array<TileLayerItem>;
 }
 
-export function newTileLayer(tilesetName: string): TileLayer {
+export function newTileLayer(tilesetIndex: number): TileLayer {
 	return {
 		name: 'New tile layer',
 		type: LayerType.Tile,
-		tilesetName: tilesetName,
+		tilesetIndex: tilesetIndex,
 		items: [],
 	}
 }

@@ -12,7 +12,7 @@ export interface Props {
 	selectedLayerIndex: number;
 	onSelectLayer: (layerIndex: number) => void;
 	onAddGeometryLayer: () => void;
-	onAddTileLayer: (tilesetName: string) => void;
+	onAddTileLayer: (tilesetIndex: number) => void;
 }
 
 export interface State {
@@ -51,7 +51,7 @@ export default class LayerList extends React.Component<Props, State> {
 					{this.props.project.tilesets.map((tileset, i) =>
 						<DropdownItem
 							key={i}
-							onClick={() => this.props.onAddTileLayer(tileset.name)}
+							onClick={() => this.props.onAddTileLayer(i)}
 						>
 							Tile - {tileset.name}
 						</DropdownItem>
@@ -67,7 +67,7 @@ export default class LayerList extends React.Component<Props, State> {
 						onClick={() => this.props.onSelectLayer(i)}
 					>
 						{
-							isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + layer.tilesetName + ')'
+							isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + this.props.project.tilesets[layer.tilesetIndex].name + ')'
 							: layer.name + ' (' + layer.type + ')'
 						}
 					</ListGroupItem>
