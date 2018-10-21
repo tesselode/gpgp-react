@@ -9,6 +9,7 @@ export interface Props {
 	level: Level;
 	layer: TileLayer;
 	tilesetImageData: TilesetImage;
+	order: number;
 }
 
 export default class TileLayerDisplay extends React.Component<Props> {
@@ -45,6 +46,7 @@ export default class TileLayerDisplay extends React.Component<Props> {
 				ref={this.canvasRef}
 				style={{
 					position: 'absolute',
+					zIndex: this.props.order,
 					left: 0,
 					top: 0,
 					pointerEvents: 'none',

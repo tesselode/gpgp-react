@@ -156,6 +156,9 @@ export default class LevelEditor extends React.Component<Props, State> {
 						onMouseUp={() => this.setState({continuedAction: false})}
 					>
 						{level.layers.map((layer, i) => {
+							let order = level.layers.length - 1;
+							if (i === this.state.selectedLayerIndex)
+								order = level.layers.length;
 							if (isTileLayer(layer))
 								return <TileLayerDisplay
 									key={i}
@@ -163,6 +166,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 									level={level}
 									layer={layer}
 									tilesetImageData={this.state.resources.tilesetImages[layer.tilesetIndex]}
+									order={order}
 								/>
 							else if (layer.type === LayerType.Geometry)
 								return <GeometryLayerDisplay
@@ -170,6 +174,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 									project={this.props.project}
 									level={level}
 									layer={layer}
+									order={order}
 								/>
 							return '';
 						})}

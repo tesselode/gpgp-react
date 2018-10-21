@@ -7,6 +7,7 @@ export interface Props {
 	project: Project;
 	level: Level;
 	layer: GeometryLayer;
+	order: number;
 }
 
 export default class GeometryLayerDisplay extends React.Component<Props> {
@@ -40,6 +41,7 @@ export default class GeometryLayerDisplay extends React.Component<Props> {
 			ref={this.canvasRef}
 			style={{
 				position: 'absolute',
+				zIndex: this.props.order,
 				left: 0,
 				top: 0,
 				pointerEvents: 'none',
