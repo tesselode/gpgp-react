@@ -8,8 +8,9 @@ import HistoryBrowser from './sidebar/HistoryBrowser';
 import Project from '../data/Project';
 import { ProjectResources, loadProjectResources } from '../data/ProjectResources';
 import { newGeometryLayer } from '../data/layer/GeometryLayer';
-import { newTileLayer } from '../data/layer/TileLayer';
+import { newTileLayer, isTileLayer } from '../data/layer/TileLayer';
 import { LayerType } from '../data/layer/Layer';
+import TilePicker from './sidebar/TilePicker';
 
 export interface Props {
 	project: Project;
@@ -100,6 +101,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 
 	render() {
 		let level = getCurrentHistoryState(this.state.levelHistory);
+		let selectedLayer = level.layers[this.state.selectedLayerIndex];
 		return <Container fluid>
 			<Row>
 				<Col md={3}>
@@ -111,6 +113,10 @@ export default class LevelEditor extends React.Component<Props, State> {
 						onAddGeometryLayer={this.onAddGeometryLayer.bind(this)}
 						onAddTileLayer={this.onAddTileLayer.bind(this)}
 					/>
+					{isTileLayer(selectedLayer) && <TilePicker
+						project={this.props.project}
+						tilesetImageData={this.state.resources.tilesetImages[selectedLayer.tilesetIndex]}
+					/>}
 					<HistoryBrowser
 						historyList={this.state.levelHistory}
 						onHistoryPositionChanged={(position: number) => {
