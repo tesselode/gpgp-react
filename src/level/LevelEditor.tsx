@@ -12,6 +12,7 @@ import { LayerType } from '../data/layer/Layer';
 import TilePicker from './sidebar/TilePicker';
 import GeometryLayerDisplay from './layer/GeometryLayerDisplay';
 import Grid from './Grid';
+import TileLayerDisplay from './layer/TileLayerDisplay';
 
 export interface Props {
 	project: Project;
@@ -75,19 +76,21 @@ export default class LevelEditor extends React.Component<Props, State> {
 	}
 
 	onPlace(x: number, y: number) {
-		let level = getCurrentHistoryState(this.state.levelHistory);
-		let layer = level.layers[this.state.selectedLayerIndex];
-		for (let i = 0; i < layer.items.length; i++) {
-			const item = layer.items[i];
-			if (item.x === x && item.y === y) return;
-		}
+		this.onRemove(x, y);
 		this.setState({
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
-				if (layer.type === LayerType.Tile)
-					return false;
-				layer.items.push({x: x, y: y});
+				layer.items = layer.items.filter(tile => !(tile.x === x && tile.y === y));
+				if (isTileLayer(layer))
+					layer.items.push({
+						x: x,
+						y: y,
+						tileX: this.state.selectedTileX,
+						tileY: this.state.selectedTileY
+					});
+				else
+					layer.items.push({x: x, y: y});
 				return 'Place tiles';
 			}, this.state.continuedAction)
 		})
@@ -153,17 +156,22 @@ export default class LevelEditor extends React.Component<Props, State> {
 						onMouseUp={() => this.setState({continuedAction: false})}
 					>
 						{level.layers.map((layer, i) => {
-							switch (layer.type) {
-								case LayerType.Geometry:
-									return <GeometryLayerDisplay
-										key={i}
-										project={this.props.project}
-										level={level}
-										layer={layer}
-									/>
-								default:
-									return '';
-							}
+							if (isTileLayer(layer))
+								return <TileLayerDisplay
+									key={i}
+									project={this.props.project}
+									level={level}
+									layer={layer}
+									tilesetImageData={this.state.resources.tilesetImages[layer.tilesetIndex]}
+								/>
+							else if (layer.type === LayerType.Geometry)
+								return <GeometryLayerDisplay
+									key={i}
+									project={this.props.project}
+									level={level}
+									layer={layer}
+								/>
+							return '';
 						})}
 					</Grid>
 				</Col>
