@@ -115,10 +115,8 @@ export default class LevelEditor extends React.Component<Props, State> {
 		this.setState({
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
-				let layer = level.layers[this.state.selectedLayerIndex];
-				let oldName = layer.name;
-				layer.name = name;
-				return 'Rename layer "' + oldName + '" to "' + name + '"';
+				level.layers[this.state.selectedLayerIndex].name = name;
+				return 'Rename layer to "' + name + '"';
 			}, this.state.continuedAction)
 		})
 	}
