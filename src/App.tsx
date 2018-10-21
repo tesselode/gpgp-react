@@ -7,6 +7,7 @@ import Project, { importProject } from './data/Project';
 import Octicon, { Plus } from '@githubprimer/octicons-react';
 import { remote } from 'electron';
 import fs from 'fs';
+import './App.css';
 
 export interface Tab {
 	content?: JSX.Element,

@@ -75,6 +75,7 @@ export default class LayerList extends React.Component<Props, State> {
 						key={i}
 						active={this.props.selectedLayerIndex === i}
 						onClick={() => this.props.onSelectLayer(i)}
+						className='compact-list-group-item'
 					>
 						<Navbar style={{padding: 0}}>
 							{

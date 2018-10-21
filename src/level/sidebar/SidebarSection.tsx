@@ -28,6 +28,7 @@ export default class SidebarSection extends React.Component<Props, State> {
 				<Navbar style={{padding: 0}}>
 					<Button
 						color='link'
+						size='sm'
 						onClick={() => this.setState({expanded: !this.state.expanded})}
 					>
 						{this.props.name}

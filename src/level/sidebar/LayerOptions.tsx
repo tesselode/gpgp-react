@@ -21,8 +21,9 @@ export default (props: Props) => <SidebarSection
 >
 	<Form>
 		<FormGroup>
-			<Label>Layer name</Label>
+			<Label size='sm'>Layer name</Label>
 			<Input
+				bsSize='sm'
 				value={props.layer.name}
 				onChange={event => {props.onChangeLayerName(event.target.value)}}
 				onBlur={() => props.onBlur()}

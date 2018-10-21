@@ -17,6 +17,7 @@ export default (props: Props) => {
 			key={i}
 			active={props.historyList.position === i}
 			onClick={() => props.onHistoryPositionChanged(i)}
+			className='compact-list-group-item'
 		>
 			{step.description}
 		</ListGroupItem>)
