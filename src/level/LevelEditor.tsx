@@ -26,6 +26,8 @@ export interface State {
 	levelHistory: HistoryList<Level>;
 	levelFilePath?: string;
 	selectedLayerIndex: number;
+	selectedTileX: number;
+	selectedTileY: number;
 	continuedAction: boolean;
 }
 
@@ -45,6 +47,8 @@ export default class LevelEditor extends React.Component<Props, State> {
 			},
 			levelFilePath: this.props.levelFilePath,
 			selectedLayerIndex: 0,
+			selectedTileX: 0,
+			selectedTileY: 0,
 			continuedAction: false,
 		}
 		loadProjectResources(this.props.project).then(resources =>
@@ -116,7 +120,16 @@ export default class LevelEditor extends React.Component<Props, State> {
 					/>
 					{isTileLayer(selectedLayer) && <TilePicker
 						project={this.props.project}
+						tilesetName={this.props.project.tilesets[selectedLayer.tilesetIndex].name}
 						tilesetImageData={this.state.resources.tilesetImages[selectedLayer.tilesetIndex]}
+						selectedTileX={this.state.selectedTileX}
+						selectedTileY={this.state.selectedTileY}
+						onSelectTile={(x, y) => {
+							this.setState({
+								selectedTileX: x,
+								selectedTileY: y,
+							});
+						}}
 					/>}
 					<HistoryBrowser
 						historyList={this.state.levelHistory}
