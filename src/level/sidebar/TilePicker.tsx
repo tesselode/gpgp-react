@@ -7,7 +7,7 @@ import { TilesetImage } from '../../data/ProjectResources';
 export interface Props {
 	project: Project;
 	tilesetName: string;
-	tilesetImageData: TilesetImage;
+	tilesetImageData?: TilesetImage;
 	selectedTileX: number;
 	selectedTileY: number;
 	onSelectTile: (x: number, y: number) => void;
@@ -18,7 +18,7 @@ export default (props: Props) => <SidebarSection
 	startExpanded={true}
 	flush
 >
-	{props.tilesetImageData.error ? props.tilesetImageData.error :
+	{props.tilesetImageData && (props.tilesetImageData.error ? props.tilesetImageData.error :
 		<div
 			style={{
 				width: '100%',
@@ -52,5 +52,5 @@ export default (props: Props) => <SidebarSection
 				}}/>
 			</Grid>
 		</div>
-	}
+	)}
 </SidebarSection>

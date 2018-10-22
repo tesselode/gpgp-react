@@ -8,7 +8,7 @@ import Octicon, { Plus } from '@githubprimer/octicons-react';
 import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
 import './App.css';
-import Level from './data/Level';
+import Level, { importLevel } from './data/Level';
 import { deepCopyObject } from './util';
 
 export enum TabType {
@@ -42,6 +42,7 @@ export default class App extends React.Component<{}, State> {
 
 		ipcRenderer.on('new project', event => this.onOpenProjectEditor());
 		ipcRenderer.on('open project', event => this.onOpenProject());
+		ipcRenderer.on('open level', event => this.onOpenLevel());
 		ipcRenderer.on('close tab', event => this.onCloseTab(this.state.activeTab));
 	}
 	
@@ -84,13 +85,42 @@ export default class App extends React.Component<{}, State> {
 		});
 	}
 
-	onOpenNewLevel(project?: Project, projectFilePath?: string) {
+	onOpenLevel() {
+		remote.dialog.showOpenDialog({
+			filters: [
+				{name: 'GPGP levels', extensions: ['gpgp']},
+			],
+		}, paths => {
+			if (!paths) return;
+			paths.forEach(path => {
+				fs.readFile(path, (error, data) => {
+					if (error)
+						remote.dialog.showErrorBox('Error opening level', 'The level could not be opened.');
+					else {
+						let level = importLevel(JSON.parse(data.toString()), path);
+						fs.readFile(level.projectFilePath, (error, data) => {
+							if (error)
+								remote.dialog.showErrorBox('Error opening project', "The level's project file could not be opened.");
+							else {
+								let project = importProject(JSON.parse(data.toString()), level.projectFilePath);
+								this.onOpenLevelEditor(project, level.projectFilePath, level, path);
+							}
+						})
+					}
+				})
+			});
+		});
+	}
+
+	onOpenLevelEditor(project: Project, projectFilePath: string, level?: Level, levelFilePath?: string) {
 		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
 		tabs.push({
 			title: 'New level',
 			type: TabType.LevelEditor,
 			project: project,
 			projectFilePath: projectFilePath,
+			level: level,
+			levelFilePath: levelFilePath,
 		});
 		this.setState({tabs: tabs}, () => {
 			this.setState({activeTab: this.state.tabs.length - 1})
@@ -110,6 +140,7 @@ export default class App extends React.Component<{}, State> {
 			return <Welcome
 				onCreateNewProject={() => this.onOpenProjectEditor()}
 				onOpenProject={() => this.onOpenProject()}
+				onOpenLevel={() => this.onOpenLevel()}
 			/>;
 		return <div>
 			<Nav tabs>
@@ -150,7 +181,7 @@ export default class App extends React.Component<{}, State> {
 								Open project...
 							</DropdownItem>
 							<DropdownItem
-								onClick={() => {}}
+								onClick={() => this.onOpenLevel()}
 							>
 								Open level...
 							</DropdownItem>
@@ -170,13 +201,15 @@ export default class App extends React.Component<{}, State> {
 								onChangeTabTitle={title => {
 									this.onChangeTabTitle(i, title);
 								}}
-								onCreateNewLevel={(project, projectFilePath) => this.onOpenNewLevel(project, projectFilePath)}
+								onCreateNewLevel={(project, projectFilePath) => this.onOpenLevelEditor(project, projectFilePath)}
 							/>
 							break;
 						case TabType.LevelEditor:
 							tabContent = <LevelEditor
 								project={tab.project}
 								projectFilePath={tab.projectFilePath}
+								level={tab.level}
+								levelFilePath={tab.levelFilePath}
 								focused={this.state.activeTab === i}
 								onChangeTabTitle={title => {
 									this.onChangeTabTitle(i, title);

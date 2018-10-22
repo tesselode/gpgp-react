@@ -4,6 +4,7 @@ import { Jumbotron, Row, Col, Button } from 'reactstrap';
 export interface Props {
 	onCreateNewProject: () => void;
 	onOpenProject: () => void;
+	onOpenLevel: () => void;
 }
 
 const Welcome = (props: Props) =>
@@ -29,7 +30,12 @@ const Welcome = (props: Props) =>
 						</Button>
 					</Col>
 					<Col md={6}>
-						<Button block>Open level</Button>
+						<Button
+							block
+							onClick={() => props.onOpenLevel()}
+						>
+							Open level
+						</Button>
 					</Col>
 				</Row>
 			</Col>

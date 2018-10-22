@@ -6,7 +6,7 @@ import LevelOptions from './sidebar/LevelOptions';
 import LayerList from './sidebar/LayerList';
 import HistoryBrowser from './sidebar/HistoryBrowser';
 import Project from '../data/Project';
-import { ProjectResources, loadProjectResources } from '../data/ProjectResources';
+import { ProjectResources, loadProjectResources, newProjectResources } from '../data/ProjectResources';
 import { newGeometryLayer } from '../data/layer/GeometryLayer';
 import { newTileLayer, isTileLayer } from '../data/layer/TileLayer';
 import { LayerType } from '../data/layer/Layer';
@@ -29,7 +29,7 @@ export interface Props {
 }
 
 export interface State {
-	resources?: ProjectResources;
+	resources: ProjectResources;
 	levelHistory: HistoryList<Level>;
 	levelFilePath?: string;
 	showSelectedLayerOnTop: boolean;
@@ -47,11 +47,12 @@ export default class LevelEditor extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
+			resources: newProjectResources(),
 			levelHistory: {
 				position: 0,
 				steps: [
 					{
-						description: 'New level',
+						description: this.props.level ? 'Open level' : 'New level',
 						data: this.props.level ? this.props.level :
 							newLevel(this.props.project, this.props.projectFilePath),
 					},
@@ -212,7 +213,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		if (!levelFilePath || saveAs) {
 			let chosenSaveLocation = remote.dialog.showSaveDialog({
 				filters: [
-					{name: 'GPGP Levels', extensions: ['gpgp']},
+					{name: 'GPGP levels', extensions: ['gpgp']},
 				],
 			});
 			if (!chosenSaveLocation) return;

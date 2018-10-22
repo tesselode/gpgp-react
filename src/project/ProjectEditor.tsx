@@ -179,7 +179,7 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		if (!projectFilePath || saveAs) {
 			let chosenSaveLocation = remote.dialog.showSaveDialog({
 				filters: [
-					{name: 'GPGP Projects', extensions: ['gpgpproj']},
+					{name: 'GPGP projects', extensions: ['gpgpproj']},
 				],
 			});
 			if (!chosenSaveLocation) return;

@@ -8,7 +8,7 @@ export interface Props {
 	project: Project;
 	level: Level;
 	layer: TileLayer;
-	tilesetImageData: TilesetImage;
+	tilesetImageData?: TilesetImage;
 	order: number;
 }
 
@@ -54,9 +54,10 @@ export default class TileLayerDisplay extends React.Component<Props> {
 			/>
 			<img
 				ref={this.imageRef}
-				src={this.props.tilesetImageData.data}
+				src={this.props.tilesetImageData && this.props.tilesetImageData.data}
 				alt=''
 				style={{display: 'none'}}
+				onLoad={() => this.renderCanvas()}
 			/>
 		</div>;
 	}
