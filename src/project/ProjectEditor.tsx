@@ -42,11 +42,7 @@ export interface State {
 
 export default class ProjectEditor extends React.Component<Props, State> {
 	saveListener = (event, saveAs) => {
-		console.log('received save signal');
-		if (this.props.focused) {
-			this.save(saveAs);
-			console.log('saving project', this);
-		}
+		if (this.props.focused) this.save(saveAs);
 	}
 
 	constructor(props) {

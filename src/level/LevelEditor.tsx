@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import Level, { newLevel } from '../data/Level';
+import Level, { newLevel, exportLevel } from '../data/Level';
 import HistoryList, { addHistory, getCurrentHistoryState, changeHistoryPosition } from '../data/HistoryList';
 import LevelOptions from './sidebar/LevelOptions';
 import LayerList from './sidebar/LayerList';
@@ -16,6 +16,8 @@ import Grid from './Grid';
 import TileLayerDisplay from './layer/TileLayerDisplay';
 import LayerOptions from './sidebar/LayerOptions';
 import { shiftUp, shiftDown } from '../util';
+import { remote, ipcRenderer } from 'electron';
+import fs from 'fs';
 
 export interface Props {
 	focused: boolean;
@@ -38,6 +40,10 @@ export interface State {
 }
 
 export default class LevelEditor extends React.Component<Props, State> {
+	saveListener = (event, saveAs) => {
+		if (this.props.focused) this.save(saveAs);
+	}
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -61,6 +67,11 @@ export default class LevelEditor extends React.Component<Props, State> {
 		loadProjectResources(this.props.project).then(resources =>
 			this.setState({resources: resources})
 		);
+		ipcRenderer.on('save', this.saveListener);
+	}
+
+	componentWillUnmount() {
+		ipcRenderer.removeListener('save', this.saveListener);
 	}
 
 	onChangeLevelWidth(width: number) {
@@ -193,6 +204,27 @@ export default class LevelEditor extends React.Component<Props, State> {
 				layer.items = layer.items.filter(tile => !(tile.x === x && tile.y === y));
 				return 'Remove tiles';
 			}, this.state.continuedAction)
+		})
+	}
+
+	save(saveAs = false) {
+		let levelFilePath = this.state.levelFilePath;
+		if (!levelFilePath || saveAs) {
+			let chosenSaveLocation = remote.dialog.showSaveDialog({
+				filters: [
+					{name: 'GPGP Levels', extensions: ['gpgp']},
+				],
+			});
+			if (!chosenSaveLocation) return;
+			levelFilePath = chosenSaveLocation;
+		}
+		let level = exportLevel(getCurrentHistoryState(this.state.levelHistory), levelFilePath);
+		fs.writeFile(levelFilePath, JSON.stringify(level), (error) => {
+			if (error) {
+				remote.dialog.showErrorBox('Error saving level', 'The level could not be saved.');
+				return;
+			}
+			this.setState({levelFilePath: levelFilePath});
 		})
 	}
 
