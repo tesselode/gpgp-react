@@ -34,6 +34,7 @@ export interface Props {
 
 export interface State {
 	project: Project;
+	unsavedChanges: boolean;
 	resources: ProjectResources;
 	projectFilePath?: string;
 	activeTab: ProjectEditorTab;
@@ -49,6 +50,7 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			project: this.props.project ? this.props.project : newProject(),
+			unsavedChanges: this.props.project ? false : true,
 			resources: newProjectResources(),
 			projectFilePath: this.props.projectFilePath,
 			selectedTilesetIndex: 0,
@@ -67,41 +69,62 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		ipcRenderer.removeListener('save', this.saveListener);
 	}
 
+	updateTabTitle() {
+		this.props.onChangeTabTitle(this.state.project.name + (this.state.unsavedChanges ? '*' : ''))
+	}
+
 	onChangeProjectName(name: string) {
 		let project = deepCopyObject(this.state.project);
 		project.name = name;
-		this.setState({project: project});
-		this.props.onChangeTabTitle(name);
+		this.setState({
+			project: project,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle()});
 	}
 
 	onChangeTileSize(tileSize: number) {
 		let project = deepCopyObject(this.state.project);
 		project.tileSize = tileSize;
-		this.setState({project: project});
+		this.setState({
+			project: project,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle()});
 	}
 
 	onChangeDefaultMapWidth(defaultMapWidth: number) {
 		let project = deepCopyObject(this.state.project);
 		project.defaultMapWidth = defaultMapWidth;
-		this.setState({project: project});
+		this.setState({
+			project: project,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle()});
 	}
 
 	onChangeDefaultMapHeight(defaultMapHeight: number) {
 		let project = deepCopyObject(this.state.project);
 		project.defaultMapHeight = defaultMapHeight;
-		this.setState({project: project});
+		this.setState({
+			project: project,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle()});
 	}
 
 	onChangeMaxMapWidth(maxMapWidth: number) {
 		let project = deepCopyObject(this.state.project);
 		project.maxMapWidth = maxMapWidth;
-		this.setState({project: project});
+		this.setState({
+			project: project,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle()});
 	}
 
 	onChangeMaxMapHeight(maxMapHeight: number) {
 		let project = deepCopyObject(this.state.project);
 		project.maxMapHeight = maxMapHeight;
-		this.setState({project: project});
+		this.setState({
+			project: project,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle()});
 	}
 
 	onAddTileset() {
@@ -114,9 +137,10 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		resources.tilesetImages.push({});
 		this.setState({
 			project: project,
+			unsavedChanges: true,
 			resources: resources,
 			selectedTilesetIndex: Math.max(this.state.selectedTilesetIndex, 0),
-		});
+		}, () => {this.updateTabTitle()});
 	}
 
 	onRemoveTileset(tilesetIndex: number) {
@@ -126,9 +150,10 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		resources.tilesetImages.splice(tilesetIndex, 1);
 		this.setState({
 			project: project,
+			unsavedChanges: true,
 			resources: resources,
 			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, project.tilesets.length - 1),
-		});
+		}, () => {this.updateTabTitle()});
 	}
 
 	onMoveTilesetUp(tilesetIndex: number) {
@@ -139,9 +164,10 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		shiftUp(resources.tilesetImages, tilesetIndex);
 		this.setState({
 			project: project,
+			unsavedChanges: true,
 			resources: resources,
 			selectedTilesetIndex: this.state.selectedTilesetIndex - 1,
-		});
+		}, () => {this.updateTabTitle()});
 	}
 
 	onMoveTilesetDown(tilesetIndex: number) {
@@ -152,21 +178,28 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		shiftDown(resources.tilesetImages, tilesetIndex);
 		this.setState({
 			project: project,
+			unsavedChanges: true,
 			resources: resources,
 			selectedTilesetIndex: this.state.selectedTilesetIndex + 1,
-		});
+		}, () => {this.updateTabTitle()});
 	}
 
 	onChangeTilesetName(tilesetIndex: number, name: string) {
 		let project = deepCopyObject(this.state.project);
 		project.tilesets[tilesetIndex].name = name;
-		this.setState({project: project});
+		this.setState({
+			project: project,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle()});
 	}
 
 	onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
 		let project = deepCopyObject(this.state.project);
 		project.tilesets[tilesetIndex].imagePath = imagePath;
-		this.setState({project: project});
+		this.setState({
+			project: project,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle()});
 		let resources = shallowCopyProjectResources(this.state.resources);
 		loadTilesetImage(imagePath).then(image => {
 			resources.tilesetImages[tilesetIndex] = image;
@@ -187,11 +220,13 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		}
 		let project = exportProject(this.state.project, projectFilePath);
 		fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
-			if (error) {
+			if (error)
 				remote.dialog.showErrorBox('Error saving project', 'The project could not be saved.');
-				return;
-			}
-			this.setState({projectFilePath: projectFilePath});
+			else
+				this.setState({
+					projectFilePath: projectFilePath,
+					unsavedChanges: false,
+				}, () => {this.updateTabTitle()});
 		})
 	}
 
@@ -219,6 +254,7 @@ export default class ProjectEditor extends React.Component<Props, State> {
 					</Button>
 					{this.state.projectFilePath ? <Button
 						color='primary'
+						disabled={this.state.unsavedChanges}
 						onClick={() => this.props.onCreateNewLevel(this.state.project, this.state.projectFilePath)}
 					>
 						New level
