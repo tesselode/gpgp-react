@@ -42,6 +42,7 @@ export default class App extends React.Component<{}, State> {
 
 		ipcRenderer.on('new project', event => this.onOpenProjectEditor());
 		ipcRenderer.on('open project', event => this.onOpenProject());
+		ipcRenderer.on('close tab', event => this.onCloseTab(this.state.activeTab));
 	}
 	
 	onChangeTabTitle(tabIndex: number, title: string) {

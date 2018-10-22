@@ -48,6 +48,13 @@ function createWindow () {
 						if (focusedWindow) focusedWindow.webContents.send('save', true);
 					}
 				},
+				{
+					label: 'Close tab',
+					accelerator: 'CmdOrCtrl+W',
+					click(item, focusedWindow) {
+						if (focusedWindow) focusedWindow.webContents.send('close tab');
+					}
+				}
 			],
 		},
 		{
