@@ -5,13 +5,24 @@ import ProjectEditor from './project/ProjectEditor';
 import Welcome from './welcome';
 import Project, { importProject } from './data/Project';
 import Octicon, { Plus } from '@githubprimer/octicons-react';
-import { remote } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
 import './App.css';
+import Level from './data/Level';
+import { deepCopyObject } from './util';
+
+export enum TabType {
+	ProjectEditor = 'ProjectEditor',
+	LevelEditor = 'LevelEditor',
+}
 
 export interface Tab {
-	content?: JSX.Element,
-	title?: string,
+	title: string;
+	type: TabType;
+	project?: Project;
+	projectFilePath?: string;
+	level?: Level;
+	levelFilePath?: string;
 }
 
 export interface State {
@@ -28,8 +39,17 @@ export default class App extends React.Component<{}, State> {
 			tabs: [],
 			newTabDropdownOpen: false,
 		}
+
+		ipcRenderer.on('new project', event => this.onOpenProjectEditor());
+		ipcRenderer.on('open project', event => this.onOpenProject());
 	}
 	
+	onChangeTabTitle(tabIndex: number, title: string) {
+		let tabs = deepCopyObject(this.state.tabs);
+		tabs[tabIndex].title = title;
+		this.setState({tabs: tabs});
+	}
+
 	onOpenProject() {
 		remote.dialog.showOpenDialog({
 			filters: [
@@ -51,35 +71,26 @@ export default class App extends React.Component<{}, State> {
 	}
 
 	onOpenProjectEditor(project?: Project, projectFilePath?: string) {
-		let newTab: Tab = {title: project ? project.name : 'New project'};
-		newTab.content = <ProjectEditor
-			project={project}
-			projectFilePath={projectFilePath}
-			onChangeTabTitle={(title: string) => {
-				newTab.title = title;
-				this.setState({tabs: this.state.tabs});
-			}}
-			onCreateNewLevel={(project, projectFilePath) => this.onOpenNewLevel(project, projectFilePath)}
-		/>
 		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
-		tabs.push(newTab);
+		tabs.push({
+			title: project ? project.name : 'New project',
+			type: TabType.ProjectEditor,
+			project: project,
+			projectFilePath: projectFilePath,
+		});
 		this.setState({tabs: tabs}, () => {
 			this.setState({activeTab: this.state.tabs.length - 1})
 		});
 	}
 
 	onOpenNewLevel(project?: Project, projectFilePath?: string) {
-		let newTab: Tab = {title: 'New level'};
-		newTab.content = <LevelEditor
-			project={project}
-			projectFilePath={projectFilePath}
-			onChangeTabTitle={(title: string) => {
-				newTab.title = title;
-				this.setState({tabs: this.state.tabs});
-			}}
-		/>
 		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
-		tabs.push(newTab);
+		tabs.push({
+			title: 'New level',
+			type: TabType.LevelEditor,
+			project: project,
+			projectFilePath: projectFilePath,
+		});
 		this.setState({tabs: tabs}, () => {
 			this.setState({activeTab: this.state.tabs.length - 1})
 		});
@@ -147,12 +158,40 @@ export default class App extends React.Component<{}, State> {
 				</NavItem>
 			</Nav>
 			<TabContent activeTab={this.state.activeTab}>
-				{this.state.tabs.map((tab, i) => <TabPane
-					key={i}
-					tabId={i}
-				>
-					{tab.content}
-				</TabPane>)}
+				{this.state.tabs.map((tab, i) => {
+					let tabContent;
+					switch (tab.type) {
+						case TabType.ProjectEditor:
+							tabContent = <ProjectEditor
+								project={tab.project}
+								projectFilePath={tab.projectFilePath}
+								focused={this.state.activeTab === i}
+								onChangeTabTitle={title => {
+									this.onChangeTabTitle(i, title);
+								}}
+								onCreateNewLevel={(project, projectFilePath) => this.onOpenNewLevel(project, projectFilePath)}
+							/>
+							break;
+						case TabType.LevelEditor:
+							tabContent = <LevelEditor
+								project={tab.project}
+								projectFilePath={tab.projectFilePath}
+								focused={this.state.activeTab === i}
+								onChangeTabTitle={title => {
+									this.onChangeTabTitle(i, title);
+								}}
+							/>
+							break;
+						default:
+							tabContent = '';
+					}
+					return <TabPane
+						key={i}
+						tabId={i}
+					>
+						{tabContent}
+					</TabPane>;
+				})}
 			</TabContent>
 		</div>
 	}

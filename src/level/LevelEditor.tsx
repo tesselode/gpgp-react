@@ -18,6 +18,7 @@ import LayerOptions from './sidebar/LayerOptions';
 import { shiftUp, shiftDown } from '../util';
 
 export interface Props {
+	focused: boolean;
 	project: Project;
 	projectFilePath: string;
 	onChangeTabTitle: (title: string) => void;

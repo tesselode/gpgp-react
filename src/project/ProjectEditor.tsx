@@ -15,7 +15,7 @@ import Project, { newProject, exportProject } from '../data/Project';
 import ProjectSettingsEditor from './ProjectSettingsEditor';
 import ProjectTilesetsEditor from './ProjectTilesetsEditor';
 import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources, loadProjectResources } from '../data/ProjectResources';
-import { remote } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
 import { shiftUp, shiftDown, deepCopyObject } from '../util';
 
@@ -27,6 +27,7 @@ export enum ProjectEditorTab {
 export interface Props {
 	project?: Project;
 	projectFilePath?: string;
+	focused: boolean;
 	onChangeTabTitle: (title: string) => void;
 	onCreateNewLevel: (project: Project, projectFilePath: string) => void;
 }
@@ -40,6 +41,14 @@ export interface State {
 }
 
 export default class ProjectEditor extends React.Component<Props, State> {
+	saveListener = (event, saveAs) => {
+		console.log('received save signal');
+		if (this.props.focused) {
+			this.save(saveAs);
+			console.log('saving project', this);
+		}
+	}
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -55,6 +64,11 @@ export default class ProjectEditor extends React.Component<Props, State> {
 					resources: resources,
 				});
 			})
+		ipcRenderer.on('save', this.saveListener);
+	}
+
+	componentWillUnmount() {
+		ipcRenderer.removeListener('save', this.saveListener);
 	}
 
 	onChangeProjectName(name: string) {
