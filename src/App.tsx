@@ -11,6 +11,7 @@ import path from 'path';
 import './App.css';
 import Level, { importLevel } from './data/Level';
 import { deepCopyObject } from './util';
+import AppTab from './AppTab';
 
 export enum TabType {
 	ProjectEditor = 'ProjectEditor',
@@ -18,17 +19,36 @@ export enum TabType {
 }
 
 export interface Tab {
-	title: string;
 	type: TabType;
+	ref: React.RefObject<AppTab>;
+}
+
+export interface ProjectEditorTab extends Tab {
+	ref: React.RefObject<ProjectEditor>;
+	project?: Project;
+	projectFilePath?: string;
+}
+
+export function isProjectEditorTab(tab: Tab): tab is ProjectEditorTab {
+	return tab.type === TabType.ProjectEditor;
+}
+
+export interface LevelEditorTab extends Tab {
+	ref: React.RefObject<LevelEditor>;
 	project?: Project;
 	projectFilePath?: string;
 	level?: Level;
 	levelFilePath?: string;
 }
 
+export function isLevelEditorTab(tab: Tab): tab is LevelEditorTab {
+	return tab.type === TabType.LevelEditor;
+}
+
 export interface State {
 	activeTab: number;
 	tabs: Array<Tab>;
+	tabTitles: Array<string>;
 	newTabDropdownOpen: boolean;
 }
 
@@ -38,18 +58,21 @@ export default class App extends React.Component<{}, State> {
 		this.state = {
 			activeTab: 0,
 			tabs: [],
+			tabTitles: [],
 			newTabDropdownOpen: false,
 		}
 
 		ipcRenderer.on('new project', event => this.onOpenProjectEditor());
 		ipcRenderer.on('open project', event => this.onOpenProject());
 		ipcRenderer.on('open level', event => this.onOpenLevel());
+		ipcRenderer.on('close tab', event => this.onCloseTab(this.state.activeTab));
+		ipcRenderer.on('save', (event, saveAs) => this.onSave(saveAs));
 	}
 	
 	onChangeTabTitle(tabIndex: number, title: string) {
-		let tabs = deepCopyObject(this.state.tabs);
-		tabs[tabIndex].title = title;
-		this.setState({tabs: tabs});
+		let tabTitles = this.state.tabTitles.slice(0, this.state.tabTitles.length);
+		tabTitles[tabIndex] = title;
+		this.setState({tabTitles: tabTitles});
 	}
 
 	onOpenProject() {
@@ -74,13 +97,16 @@ export default class App extends React.Component<{}, State> {
 
 	onOpenProjectEditor(project?: Project, projectFilePath?: string) {
 		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
-		tabs.push({
-			title: project ? project.name : 'New project',
+		let newTab = {
 			type: TabType.ProjectEditor,
+			ref: React.createRef<ProjectEditor>(),
 			project: project,
 			projectFilePath: projectFilePath,
-		});
-		this.setState({tabs: tabs}, () => {
+		};
+		tabs.push(newTab);
+		let tabTitles = this.state.tabTitles.slice(0, this.state.tabTitles.length);
+		tabTitles.push(project ? project.name : 'New project');
+		this.setState({tabs: tabs, tabTitles: tabTitles}, () => {
 			this.setState({activeTab: this.state.tabs.length - 1})
 		});
 	}
@@ -114,25 +140,40 @@ export default class App extends React.Component<{}, State> {
 
 	onOpenLevelEditor(project: Project, projectFilePath: string, level?: Level, levelFilePath?: string) {
 		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
-		tabs.push({
-			title: levelFilePath ? path.parse(levelFilePath).name : 'New level',
+		let newTab ={
 			type: TabType.LevelEditor,
+			ref: React.createRef<LevelEditor>(),
 			project: project,
 			projectFilePath: projectFilePath,
 			level: level,
 			levelFilePath: levelFilePath,
-		});
-		this.setState({tabs: tabs}, () => {
+		};
+		tabs.push(newTab);
+		let tabTitles = this.state.tabTitles.slice(0, this.state.tabTitles.length);
+		tabTitles.push(levelFilePath ? path.parse(levelFilePath).name : 'New level');
+		this.setState({tabs: tabs, tabTitles: tabTitles}, () => {
 			this.setState({activeTab: this.state.tabs.length - 1})
 		});
 	}
 
+	onSave(saveAs?: boolean) {
+		let tab = this.state.tabs[this.state.activeTab];
+		if (!(tab && tab.ref.current)) return;
+		tab.ref.current.save(saveAs);
+	}
+
 	onCloseTab(tabNumber: number) {
-		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
-		tabs.splice(tabNumber, 1);
-		this.setState({tabs: tabs}, () => {
-			this.setState({activeTab: Math.min(this.state.activeTab, this.state.tabs.length - 1)})
-		})
+		let tab = this.state.tabs[tabNumber];
+		if (!(tab && tab.ref.current)) return;
+		tab.ref.current.exit(() => {
+			let tabs = this.state.tabs.slice(0, this.state.tabs.length);
+			tabs.splice(tabNumber, 1);
+			let tabTitles = this.state.tabTitles.slice(0, this.state.tabTitles.length);
+			tabTitles.splice(tabNumber, 1);
+			this.setState({tabs: tabs, tabTitles: tabTitles}, () => {
+				this.setState({activeTab: Math.min(this.state.activeTab, this.state.tabs.length - 1)})
+			});
+		});
 	}
 
 	render() {
@@ -149,7 +190,7 @@ export default class App extends React.Component<{}, State> {
 						active={this.state.activeTab === i}
 						onClick={() => this.setState({activeTab: i})}
 					>
-						{tab.title}
+						{this.state.tabTitles[i]}
 						<Button
 							close
 							onClick={() => this.onCloseTab(i)}
@@ -191,36 +232,32 @@ export default class App extends React.Component<{}, State> {
 			</Nav>
 			<TabContent activeTab={this.state.activeTab}>
 				{this.state.tabs.map((tab, i) => {
-					let tabContent;
-					switch (tab.type) {
-						case TabType.ProjectEditor:
-							tabContent = <ProjectEditor
-								project={tab.project}
-								projectFilePath={tab.projectFilePath}
-								focused={this.state.activeTab === i}
-								onCloseTab={() => {this.onCloseTab(i)}}
-								onChangeTabTitle={title => {
-									this.onChangeTabTitle(i, title);
-								}}
-								onCreateNewLevel={(project, projectFilePath) => this.onOpenLevelEditor(project, projectFilePath)}
-							/>
-							break;
-						case TabType.LevelEditor:
-							tabContent = <LevelEditor
-								project={tab.project}
-								projectFilePath={tab.projectFilePath}
-								level={tab.level}
-								levelFilePath={tab.levelFilePath}
-								focused={this.state.activeTab === i}
-								onCloseTab={() => {this.onCloseTab(i)}}
-								onChangeTabTitle={title => {
-									this.onChangeTabTitle(i, title);
-								}}
-							/>
-							break;
-						default:
-							tabContent = '';
-					}
+					let tabContent: JSX.Element | string = '';
+					if (isProjectEditorTab(tab))
+						tabContent = <ProjectEditor
+							ref={tab.ref}
+							project={tab.project}
+							projectFilePath={tab.projectFilePath}
+							focused={this.state.activeTab === i}
+							onCloseTab={() => {this.onCloseTab(i)}}
+							onChangeTabTitle={title => {
+								this.onChangeTabTitle(i, title);
+							}}
+							onCreateNewLevel={(project, projectFilePath) => this.onOpenLevelEditor(project, projectFilePath)}
+						/>
+					else if (isLevelEditorTab(tab))
+						tabContent = <LevelEditor
+							ref={tab.ref}
+							project={tab.project}
+							projectFilePath={tab.projectFilePath}
+							level={tab.level}
+							levelFilePath={tab.levelFilePath}
+							focused={this.state.activeTab === i}
+							onCloseTab={() => {this.onCloseTab(i)}}
+							onChangeTabTitle={title => {
+								this.onChangeTabTitle(i, title);
+							}}
+						/>
 					return <TabPane
 						key={i}
 						tabId={i}

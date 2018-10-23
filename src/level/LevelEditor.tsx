@@ -19,6 +19,7 @@ import { shiftUp, shiftDown } from '../util';
 import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
 import path from 'path';
+import AppTab from '../AppTab';
 
 export interface Props {
 	focused: boolean;
@@ -42,15 +43,7 @@ export interface State {
 	continuedAction: boolean;
 }
 
-export default class LevelEditor extends React.Component<Props, State> {
-	saveListener = (event, saveAs) => {
-		if (this.props.focused) this.save(saveAs);
-	}
-
-	closeTabListener = event => {
-		if (this.props.focused) this.onCloseTab();
-	}
-
+export default class LevelEditor extends AppTab<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -65,7 +58,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					},
 				],
 			},
-			unsavedChanges: !this.props.level,
+			unsavedChanges: false,
 			levelFilePath: this.props.levelFilePath,
 			showSelectedLayerOnTop: true,
 			selectedLayerIndex: 0,
@@ -76,17 +69,13 @@ export default class LevelEditor extends React.Component<Props, State> {
 		loadProjectResources(this.props.project).then(resources =>
 			this.setState({resources: resources})
 		);
-		ipcRenderer.on('save', this.saveListener);
-		ipcRenderer.on('close tab', this.closeTabListener);
 	}
 
-	componentWillUnmount() {
-		ipcRenderer.removeListener('save', this.saveListener);
-		ipcRenderer.removeListener('close tab', this.closeTabListener);
-	}
-
-	onCloseTab() {
-		if (!this.state.unsavedChanges) this.props.onCloseTab();
+	exit(onExit: () => void) {
+		if (!this.state.unsavedChanges) {
+			onExit();
+			return;
+		}
 		let choice = remote.dialog.showMessageBox({
 			type: 'warning',
 			message: 'Do you want to save your changes?',
@@ -95,10 +84,10 @@ export default class LevelEditor extends React.Component<Props, State> {
 		});
 		switch (choice) {
 			case 0:
-				this.save(false, () => {this.props.onCloseTab()});
+				this.save(false, () => {onExit()});
 				break;
 			case 1:
-				this.props.onCloseTab();
+				onExit();
 				break;
 		}
 	}
@@ -255,7 +244,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}, () => {this.updateTabTitle()})
 	}
 
-	save(saveAs = false, onSavedSuccessfully?: () => void) {
+	save(saveAs = false, onSave?: () => void) {
 		let levelFilePath = this.state.levelFilePath;
 		if (!levelFilePath || saveAs) {
 			let chosenSaveLocation = remote.dialog.showSaveDialog({
@@ -276,7 +265,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 				unsavedChanges: false,
 				levelFilePath: levelFilePath,
 			}, () => {this.updateTabTitle()});
-			onSavedSuccessfully();
+			if (onSave) onSave();
 		})
 	}
 

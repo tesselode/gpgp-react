@@ -18,6 +18,7 @@ import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyPro
 import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
 import { shiftUp, shiftDown, deepCopyObject } from '../util';
+import AppTab from '../AppTab';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -42,20 +43,12 @@ export interface State {
 	selectedTilesetIndex: number;
 }
 
-export default class ProjectEditor extends React.Component<Props, State> {
-	saveListener = (event, saveAs) => {
-		if (this.props.focused) this.save(saveAs);
-	}
-
-	closeTabListener = event => {
-		if (this.props.focused) this.onCloseTab();
-	}
-
+export default class ProjectEditor extends AppTab<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
 			project: this.props.project ? this.props.project : newProject(),
-			unsavedChanges: !this.props.project,
+			unsavedChanges: false,
 			resources: newProjectResources(),
 			projectFilePath: this.props.projectFilePath,
 			selectedTilesetIndex: 0,
@@ -67,17 +60,10 @@ export default class ProjectEditor extends React.Component<Props, State> {
 					resources: resources,
 				});
 			})
-		ipcRenderer.on('save', this.saveListener);
-		ipcRenderer.on('close tab', this.closeTabListener);
 	}
 
-	componentWillUnmount() {
-		ipcRenderer.removeListener('save', this.saveListener);
-		ipcRenderer.removeListener('close tab', this.closeTabListener);
-	}
-
-	onCloseTab() {
-		this.props.onCloseTab();
+	exit(onExit: () => void) {
+		onExit();
 	}
 
 	updateTabTitle() {
