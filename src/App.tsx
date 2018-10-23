@@ -7,6 +7,7 @@ import Project, { importProject } from './data/Project';
 import Octicon, { Plus } from '@githubprimer/octicons-react';
 import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
+import path from 'path';
 import './App.css';
 import Level, { importLevel } from './data/Level';
 import { deepCopyObject } from './util';
@@ -115,7 +116,7 @@ export default class App extends React.Component<{}, State> {
 	onOpenLevelEditor(project: Project, projectFilePath: string, level?: Level, levelFilePath?: string) {
 		let tabs = this.state.tabs.slice(0, this.state.tabs.length);
 		tabs.push({
-			title: 'New level',
+			title: levelFilePath ? path.parse(levelFilePath).name : 'New level',
 			type: TabType.LevelEditor,
 			project: project,
 			projectFilePath: projectFilePath,

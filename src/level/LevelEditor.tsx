@@ -18,6 +18,7 @@ import LayerOptions from './sidebar/LayerOptions';
 import { shiftUp, shiftDown } from '../util';
 import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
+import path from 'path';
 
 export interface Props {
 	focused: boolean;
@@ -31,6 +32,7 @@ export interface Props {
 export interface State {
 	resources: ProjectResources;
 	levelHistory: HistoryList<Level>;
+	unsavedChanges: boolean;
 	levelFilePath?: string;
 	showSelectedLayerOnTop: boolean;
 	selectedLayerIndex: number;
@@ -58,6 +60,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					},
 				],
 			},
+			unsavedChanges: !this.props.level,
 			levelFilePath: this.props.levelFilePath,
 			showSelectedLayerOnTop: true,
 			selectedLayerIndex: 0,
@@ -75,67 +78,82 @@ export default class LevelEditor extends React.Component<Props, State> {
 		ipcRenderer.removeListener('save', this.saveListener);
 	}
 
+	updateTabTitle() {
+		let tabTitle = this.state.levelFilePath ?
+			path.parse(this.state.levelFilePath).name
+			: 'New level';
+		if (this.state.unsavedChanges) tabTitle += '*';
+		this.props.onChangeTabTitle(tabTitle);
+	}
+
 	onChangeLevelWidth(width: number) {
 		this.setState({
+			unsavedChanges: true,
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				level.width = width;
 				return 'Change level width';
 			}, this.state.continuedAction)
-		});
+		}, () => {this.updateTabTitle()});
 	}
 
 	onChangeLevelHeight(height: number) {
 		this.setState({
+			unsavedChanges: true,
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				level.height = height;
 				return 'Change level height';
 			}, this.state.continuedAction)
-		});
+		}, () => {this.updateTabTitle()});
 	}
 
 	onAddGeometryLayer() {
 		this.setState({
+			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				level.layers.splice(this.state.selectedLayerIndex, 0, newGeometryLayer())
 				return 'Add geometry layer';
 			})
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	onAddTileLayer(tilesetIndex: number) {
 		this.setState({
+			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				level.layers.splice(this.state.selectedLayerIndex, 0, newTileLayer(tilesetIndex))
 				return 'Add tile layer';
 			})
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	onToggleLayerVisibility(layerIndex: number) {
 		this.setState({
+			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[layerIndex];
 				layer.visible = !layer.visible;
 				return layer.visible ? 'Show layer "' + layer.name + '"'
 				: 'Hide layer "' + layer.name + '"'
 			})
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	onChangeLayerName(name: string) {
 		this.setState({
+			unsavedChanges: true,
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				level.layers[this.state.selectedLayerIndex].name = name;
 				return 'Rename layer to "' + name + '"';
 			}, this.state.continuedAction)
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	onMoveLayerUp() {
 		this.setState({
+			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				if (this.state.selectedLayerIndex === 0) return false;
 				let layer = level.layers[this.state.selectedLayerIndex];
@@ -145,11 +163,12 @@ export default class LevelEditor extends React.Component<Props, State> {
 				});
 				return 'Move layer "' + layer.name + '" up';
 			})
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	onMoveLayerDown() {
 		this.setState({
+			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				if (this.state.selectedLayerIndex === level.layers.length - 1) return false;
 				let layer = level.layers[this.state.selectedLayerIndex];
@@ -159,11 +178,12 @@ export default class LevelEditor extends React.Component<Props, State> {
 				});
 				return 'Move layer "' + layer.name + '" down';
 			})
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	onDeleteLayer() {
 		this.setState({
+			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				if (level.layers.length <= 1) return false;
 				let layer = level.layers[this.state.selectedLayerIndex];
@@ -173,12 +193,13 @@ export default class LevelEditor extends React.Component<Props, State> {
 				});
 				return 'Delete layer "' + layer.name + '"';
 			})
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	onPlace(x: number, y: number) {
 		this.onRemove(x, y);
 		this.setState({
+			unsavedChanges: true,
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
@@ -194,18 +215,19 @@ export default class LevelEditor extends React.Component<Props, State> {
 					layer.items.push({x: x, y: y});
 				return 'Place tiles';
 			}, this.state.continuedAction)
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	onRemove(x: number, y: number) {
 		this.setState({
+			unsavedChanges: true,
 			continuedAction: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
 				layer.items = layer.items.filter(tile => !(tile.x === x && tile.y === y));
 				return 'Remove tiles';
 			}, this.state.continuedAction)
-		})
+		}, () => {this.updateTabTitle()})
 	}
 
 	save(saveAs = false) {
@@ -221,11 +243,13 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 		let level = exportLevel(getCurrentHistoryState(this.state.levelHistory), levelFilePath);
 		fs.writeFile(levelFilePath, JSON.stringify(level), (error) => {
-			if (error) {
+			if (error)
 				remote.dialog.showErrorBox('Error saving level', 'The level could not be saved.');
-				return;
-			}
-			this.setState({levelFilePath: levelFilePath});
+			else
+				this.setState({
+					unsavedChanges: false,
+					levelFilePath: levelFilePath,
+				}, () => {this.updateTabTitle()});
 		})
 	}
 

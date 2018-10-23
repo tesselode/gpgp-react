@@ -50,7 +50,7 @@ export default class ProjectEditor extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			project: this.props.project ? this.props.project : newProject(),
-			unsavedChanges: this.props.project ? false : true,
+			unsavedChanges: !this.props.project,
 			resources: newProjectResources(),
 			projectFilePath: this.props.projectFilePath,
 			selectedTilesetIndex: 0,
