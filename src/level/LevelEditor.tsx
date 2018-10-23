@@ -25,6 +25,7 @@ export interface Props {
 	project: Project;
 	projectFilePath: string;
 	onChangeTabTitle: (title: string) => void;
+	onCloseTab: () => void;
 	level?: Level;
 	levelFilePath?: string;
 }
@@ -44,6 +45,10 @@ export interface State {
 export default class LevelEditor extends React.Component<Props, State> {
 	saveListener = (event, saveAs) => {
 		if (this.props.focused) this.save(saveAs);
+	}
+
+	closeTabListener = event => {
+		if (this.props.focused) this.onCloseTab();
 	}
 
 	constructor(props) {
@@ -72,10 +77,16 @@ export default class LevelEditor extends React.Component<Props, State> {
 			this.setState({resources: resources})
 		);
 		ipcRenderer.on('save', this.saveListener);
+		ipcRenderer.on('close tab', this.closeTabListener);
 	}
 
 	componentWillUnmount() {
 		ipcRenderer.removeListener('save', this.saveListener);
+		ipcRenderer.removeListener('close tab', this.closeTabListener);
+	}
+
+	onCloseTab() {
+		this.props.onCloseTab();
 	}
 
 	updateTabTitle() {

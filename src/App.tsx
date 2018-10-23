@@ -44,7 +44,6 @@ export default class App extends React.Component<{}, State> {
 		ipcRenderer.on('new project', event => this.onOpenProjectEditor());
 		ipcRenderer.on('open project', event => this.onOpenProject());
 		ipcRenderer.on('open level', event => this.onOpenLevel());
-		ipcRenderer.on('close tab', event => this.onCloseTab(this.state.activeTab));
 	}
 	
 	onChangeTabTitle(tabIndex: number, title: string) {
@@ -199,6 +198,7 @@ export default class App extends React.Component<{}, State> {
 								project={tab.project}
 								projectFilePath={tab.projectFilePath}
 								focused={this.state.activeTab === i}
+								onCloseTab={() => {this.onCloseTab(i)}}
 								onChangeTabTitle={title => {
 									this.onChangeTabTitle(i, title);
 								}}
@@ -212,6 +212,7 @@ export default class App extends React.Component<{}, State> {
 								level={tab.level}
 								levelFilePath={tab.levelFilePath}
 								focused={this.state.activeTab === i}
+								onCloseTab={() => {this.onCloseTab(i)}}
 								onChangeTabTitle={title => {
 									this.onChangeTabTitle(i, title);
 								}}
