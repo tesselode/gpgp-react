@@ -15,7 +15,7 @@ import Project, { newProject, exportProject } from '../../data/project';
 import ProjectSettingsEditor from './project-settings-editor';
 import ProjectTilesetsEditor from './project-tilesets-editor';
 import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources, loadProjectResources } from '../../data/project-resources';
-import { remote, ipcRenderer } from 'electron';
+import { remote } from 'electron';
 import fs from 'fs';
 import { shiftUp, shiftDown, deepCopyObject } from '../../util';
 import AppTab from '../app-tab';
@@ -217,13 +217,14 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}
 		let project = exportProject(this.state.project, projectFilePath);
 		fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
-			if (error)
+			if (error) {
 				remote.dialog.showErrorBox('Error saving project', 'The project could not be saved.');
-			else
-				this.setState({
-					projectFilePath: projectFilePath,
-					unsavedChanges: false,
-				}, () => {this.updateTabTitle()});
+				return;
+			}
+			this.setState({
+				projectFilePath: projectFilePath,
+				unsavedChanges: false,
+			}, () => {this.updateTabTitle()});
 		})
 	}
 

@@ -10,7 +10,6 @@ import fs from 'fs';
 import path from 'path';
 import './app.css';
 import Level, { importLevel } from '../data/Level';
-import { deepCopyObject } from '../util';
 import AppTab from './app-tab';
 
 export enum TabType {
@@ -120,20 +119,20 @@ export default class App extends React.Component<{}, State> {
 			if (!paths) return;
 			paths.forEach(path => {
 				fs.readFile(path, (error, data) => {
-					if (error)
+					if (error) {
 						remote.dialog.showErrorBox('Error opening level', 'The level could not be opened.');
-					else {
-						let level = importLevel(JSON.parse(data.toString()), path);
-						fs.readFile(level.projectFilePath, (error, data) => {
-							if (error)
-								remote.dialog.showErrorBox('Error opening project', "The level's project file could not be opened.");
-							else {
-								let project = importProject(JSON.parse(data.toString()), level.projectFilePath);
-								this.onOpenLevelEditor(project, level.projectFilePath, level, path);
-							}
-						})
+						return;
 					}
-				})
+					let level = importLevel(JSON.parse(data.toString()), path);
+					fs.readFile(level.projectFilePath, (error, data) => {
+						if (error) {
+							remote.dialog.showErrorBox('Error opening project', "The level's project file could not be opened.");
+							return;
+						}
+						let project = importProject(JSON.parse(data.toString()), level.projectFilePath);
+						this.onOpenLevelEditor(project, level.projectFilePath, level, path);
+					});
+				});
 			});
 		});
 	}

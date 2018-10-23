@@ -16,7 +16,7 @@ import Grid from '../grid';
 import TileLayerDisplay from './layer/tile-layer-display';
 import LayerOptions from './sidebar/layer-options';
 import { shiftUp, shiftDown } from '../../util';
-import { remote, ipcRenderer } from 'electron';
+import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import AppTab from '../app-tab';
