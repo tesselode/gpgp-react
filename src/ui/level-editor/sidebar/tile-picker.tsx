@@ -1,8 +1,8 @@
 import React from 'react';
-import SidebarSection from './SidebarSection';
-import Project from '../../data/Project';
-import Grid from '../Grid';
-import { TilesetImage } from '../../data/ProjectResources';
+import SidebarSection from './sidebar-section';
+import Project from '../../../data/project';
+import Grid from '../../grid';
+import { TilesetImage } from '../../../data/project-resources';
 
 export interface Props {
 	project: Project;

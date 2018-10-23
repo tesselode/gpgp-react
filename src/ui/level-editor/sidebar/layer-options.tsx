@@ -1,7 +1,7 @@
 import React from 'react';
-import SidebarSection from './SidebarSection';
+import SidebarSection from './sidebar-section';
 import { Form, FormGroup, Label, Input, Navbar, ButtonGroup, Button, UncontrolledTooltip } from 'reactstrap';
-import Layer from '../../data/layer/Layer';
+import Layer from '../../../data/layer/layer';
 import Octicon, { ArrowUp, ArrowDown, Trashcan } from '@githubprimer/octicons-react';
 
 export interface Props {

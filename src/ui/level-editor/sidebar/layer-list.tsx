@@ -1,5 +1,5 @@
 import React from 'react';
-import Level from '../../data/Level';
+import Level from '../../../data/level';
 import {
 	Button,
 	ButtonDropdown,
@@ -12,10 +12,10 @@ import {
 	ButtonGroup,
 	UncontrolledTooltip
 } from 'reactstrap';
-import SidebarSection from './SidebarSection';
+import SidebarSection from './sidebar-section';
 import Octicon, { Plus, Eye } from '@githubprimer/octicons-react';
-import Project from '../../data/Project';
-import { isTileLayer } from '../../data/layer/TileLayer';
+import Project from '../../../data/project';
+import { isTileLayer } from '../../../data/layer/tile-layer';
 
 export interface Props {
 	project: Project;

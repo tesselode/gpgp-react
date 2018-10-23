@@ -11,14 +11,14 @@ import {
 	TabPane,
 	TabContent,
 } from 'reactstrap';
-import Project, { newProject, exportProject } from '../data/Project';
-import ProjectSettingsEditor from './ProjectSettingsEditor';
-import ProjectTilesetsEditor from './ProjectTilesetsEditor';
-import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources, loadProjectResources } from '../data/ProjectResources';
+import Project, { newProject, exportProject } from '../../data/project';
+import ProjectSettingsEditor from './project-settings-editor';
+import ProjectTilesetsEditor from './project-tilesets-editor';
+import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources, loadProjectResources } from '../../data/project-resources';
 import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
-import { shiftUp, shiftDown, deepCopyObject } from '../util';
-import AppTab from '../AppTab';
+import { shiftUp, shiftDown, deepCopyObject } from '../../util';
+import AppTab from '../app-tab';
 
 export enum ProjectEditorTab {
 	Settings,

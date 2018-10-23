@@ -1,7 +1,7 @@
 import React from 'react';
-import SidebarSection from './SidebarSection';
+import SidebarSection from './sidebar-section';
 import { Form, FormGroup, InputGroup, Label, Input, InputGroupAddon } from 'reactstrap';
-import Level from '../../data/Level';
+import Level from '../../../data/level';
 
 export interface Props {
 	level: Level;

@@ -1,8 +1,8 @@
 import React from 'react';
-import TileLayer from '../../data/layer/TileLayer';
-import Level from '../../data/Level';
-import Project from '../../data/Project';
-import { TilesetImage } from '../../data/ProjectResources';
+import TileLayer from '../../../data/layer/tile-layer';
+import Level from '../../../data/level';
+import Project from '../../../data/project';
+import { TilesetImage } from '../../../data/project-resources';
 
 export interface Props {
 	project: Project;

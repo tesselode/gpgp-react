@@ -1,8 +1,8 @@
 import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import Level from '../../data/Level';
-import SidebarSection from './SidebarSection';
-import HistoryList from '../../data/HistoryList';
+import Level from '../../../data/level';
+import SidebarSection from './sidebar-section';
+import HistoryList from '../../../data/history-list';
 
 export interface Props {
 	historyList: HistoryList<Level>;

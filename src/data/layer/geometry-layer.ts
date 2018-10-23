@@ -1,4 +1,4 @@
-import Layer, { LayerItem, LayerType } from "./Layer";
+import Layer, { LayerItem, LayerType } from "./layer";
 
 export interface GeometryLayerItem extends LayerItem {}
 

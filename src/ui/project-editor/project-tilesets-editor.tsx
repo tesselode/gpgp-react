@@ -16,9 +16,9 @@ import {
 	Input,
 } from 'reactstrap';
 import Octicon, { Plus, Trashcan, FileDirectory, ArrowUp, ArrowDown } from '@githubprimer/octicons-react';
-import Project from '../data/Project';
-import { ProjectResources, TilesetImage } from '../data/ProjectResources';
-import Grid from '../level/Grid';
+import Project from '../../data/project';
+import { ProjectResources, TilesetImage } from '../../data/project-resources';
+import Grid from '../grid';
 import { remote } from 'electron';
 
 export interface Props {

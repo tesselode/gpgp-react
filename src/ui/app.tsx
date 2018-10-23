@@ -1,17 +1,17 @@
 import React from 'react';
 import { Nav, NavItem, NavLink, TabContent, TabPane, Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
-import LevelEditor from './level/LevelEditor';
-import ProjectEditor from './project/ProjectEditor';
+import LevelEditor from './level-editor/level-editor';
+import ProjectEditor from './project-editor/project-editor';
 import Welcome from './welcome';
-import Project, { importProject } from './data/Project';
+import Project, { importProject } from '../data/Project';
 import Octicon, { Plus } from '@githubprimer/octicons-react';
 import { remote, ipcRenderer } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import './App.css';
-import Level, { importLevel } from './data/Level';
-import { deepCopyObject } from './util';
-import AppTab from './AppTab';
+import './app.css';
+import Level, { importLevel } from '../data/Level';
+import { deepCopyObject } from '../util';
+import AppTab from './app-tab';
 
 export enum TabType {
 	ProjectEditor = 'ProjectEditor',

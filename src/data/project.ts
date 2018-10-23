@@ -1,4 +1,4 @@
-import Tileset from "./Tileset";
+import Tileset from "./tileset";
 import { deepCopyObject } from "../util";
 import path from 'path';
 

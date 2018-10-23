@@ -1,8 +1,8 @@
-import Layer from "./layer/Layer";
-import { newGeometryLayer } from './layer/GeometryLayer';
+import Layer from "./layer/layer";
+import { newGeometryLayer } from './layer/geometry-layer';
 import { deepCopyObject } from "../util";
 import path from 'path';
-import Project from "./Project";
+import Project from "./project";
 
 export default interface Level {
 	projectFilePath: string;
