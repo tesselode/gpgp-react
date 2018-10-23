@@ -86,7 +86,21 @@ export default class LevelEditor extends React.Component<Props, State> {
 	}
 
 	onCloseTab() {
-		this.props.onCloseTab();
+		if (!this.state.unsavedChanges) this.props.onCloseTab();
+		let choice = remote.dialog.showMessageBox({
+			type: 'warning',
+			message: 'Do you want to save your changes?',
+			buttons: ['Save', 'Don\'t save', 'Cancel'],
+			defaultId: 0,
+		});
+		switch (choice) {
+			case 0:
+				this.save(false, () => {this.props.onCloseTab()});
+				break;
+			case 1:
+				this.props.onCloseTab();
+				break;
+		}
 	}
 
 	updateTabTitle() {
@@ -241,7 +255,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}, () => {this.updateTabTitle()})
 	}
 
-	save(saveAs = false) {
+	save(saveAs = false, onSavedSuccessfully?: () => void) {
 		let levelFilePath = this.state.levelFilePath;
 		if (!levelFilePath || saveAs) {
 			let chosenSaveLocation = remote.dialog.showSaveDialog({
@@ -254,13 +268,15 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 		let level = exportLevel(getCurrentHistoryState(this.state.levelHistory), levelFilePath);
 		fs.writeFile(levelFilePath, JSON.stringify(level), (error) => {
-			if (error)
+			if (error) {
 				remote.dialog.showErrorBox('Error saving level', 'The level could not be saved.');
-			else
-				this.setState({
-					unsavedChanges: false,
-					levelFilePath: levelFilePath,
-				}, () => {this.updateTabTitle()});
+				return;
+			}
+			this.setState({
+				unsavedChanges: false,
+				levelFilePath: levelFilePath,
+			}, () => {this.updateTabTitle()});
+			onSavedSuccessfully();
 		})
 	}
 
