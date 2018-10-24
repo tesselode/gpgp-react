@@ -20,6 +20,7 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import AppTab from '../app-tab';
+import GenericCursor from '../cursor/generic-cursor';
 
 export interface Props {
 	focused: boolean;
@@ -335,6 +336,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 						tileSize={this.props.project.tileSize}
 						width={level.width}
 						height={level.height}
+						cursor={GenericCursor}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
 						onMouseUp={() => this.setState({continuedAction: false})}

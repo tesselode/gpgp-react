@@ -1,4 +1,5 @@
 import React from 'react';
+import { CursorProps } from './cursor/generic-cursor';
 
 const gridRenderingScale = 2;
 
@@ -7,7 +8,7 @@ export interface Props {
 	width: number;
 	height: number;
 	startingZoom?: number;
-	hideCursor?: boolean;
+	cursor?: (props: CursorProps) => JSX.Element;
 	onPlace?: (x: number, y: number) => void,
 	onRemove?: (x: number, y: number) => void,
 	onMouseUp?: () => void,
@@ -152,16 +153,12 @@ export default class Grid extends React.Component<Props, State> {
 				onMouseLeave={() => this.setState({cursorOverGrid: false})}
 			/>
 			{this.props.children}
-			{!this.props.hideCursor && <div style={{
-				opacity: this.state.cursorOverGrid ? 1 : 0,
-				position: 'absolute',
-				left: this.state.cursorX * this.props.tileSize + 1 + 'px',
-				top: this.state.cursorY * this.props.tileSize + 1 + 'px',
-				width: this.props.tileSize + 'px',
-				height: this.props.tileSize + 'px',
-				background: 'rgba(0, 0, 0, .1)',
-				pointerEvents: 'none',
-			}}/>}
+			{this.props.cursor && this.props.cursor({
+				enabled: this.state.cursorOverGrid,
+				tileSize: this.props.tileSize,
+				cursorX: this.state.cursorX,
+				cursorY: this.state.cursorY,
+			})}
 		</div>;
 	}
 }

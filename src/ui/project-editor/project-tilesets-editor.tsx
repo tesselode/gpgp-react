@@ -55,7 +55,6 @@ function renderTilesetPreview(props: Props) {
 		tileSize={props.project.tileSize}
 		width={Math.ceil(selectedTilesetImage.width / props.project.tileSize)}
 		height={Math.ceil(selectedTilesetImage.height / props.project.tileSize)}
-		hideCursor
 	>
 		<img src={selectedTilesetImage.data} />
 	</Grid>;
