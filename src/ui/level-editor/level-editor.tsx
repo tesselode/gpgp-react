@@ -9,7 +9,7 @@ import Project from '../../data/project';
 import { ProjectResources, loadProjectResources, newProjectResources } from '../../data/project-resources';
 import { newGeometryLayer } from '../../data/layer/geometry-layer';
 import { newTileLayer, isTileLayer } from '../../data/layer/tile-layer';
-import { LayerType } from '../../data/layer/Layer';
+import Layer, { LayerType } from '../../data/layer/Layer';
 import TilePicker from './sidebar/tile-picker';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import Grid from '../grid';
@@ -20,7 +20,8 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import AppTab from '../app-tab';
-import GenericCursor from '../cursor/generic-cursor';
+import GenericCursor, { CursorProps } from '../cursor/generic-cursor';
+import TileCursor from '../cursor/tile-cursor';
 
 export interface Props {
 	focused: boolean;
@@ -270,6 +271,16 @@ export default class LevelEditor extends AppTab<Props, State> {
 		})
 	}
 
+	getCursor(layer: Layer): (props: CursorProps) => JSX.Element {
+		if (isTileLayer(layer))
+			return TileCursor({
+				tilesetImage: this.state.resources.tilesetImages[layer.tilesetIndex],
+				tileX: this.state.selectedTileX,
+				tileY: this.state.selectedTileY,
+			});
+		return GenericCursor;
+	}
+
 	render() {
 		let level = getCurrentHistoryState(this.state.levelHistory);
 		let selectedLayer = level.layers[this.state.selectedLayerIndex];
@@ -336,7 +347,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 						tileSize={this.props.project.tileSize}
 						width={level.width}
 						height={level.height}
-						cursor={GenericCursor}
+						cursor={this.getCursor(selectedLayer)}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
 						onMouseUp={() => this.setState({continuedAction: false})}
