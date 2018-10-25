@@ -36,7 +36,7 @@ export default class SidebarSection extends React.Component<Props, State> {
 					{this.props.headerContent}
 				</Navbar>
 			</CardHeader>
-			<Collapse isOpen={this.state.expanded} >
+			<Collapse isOpen={this.state.expanded} style={{transition: '.2s'}} >
 				<CardBody
 					style={this.props.flush && {padding: 0}}
 				>
