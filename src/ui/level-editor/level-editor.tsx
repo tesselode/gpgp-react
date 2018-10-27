@@ -7,15 +7,15 @@ import LayerList from './sidebar/layer-list';
 import HistoryBrowser from './sidebar/history-browser';
 import Project from '../../data/project';
 import { ProjectResources, loadProjectResources, newProjectResources } from '../../data/project-resources';
-import { newGeometryLayer } from '../../data/layer/geometry-layer';
-import { newTileLayer, isTileLayer } from '../../data/layer/tile-layer';
+import { newGeometryLayer, isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
+import { newTileLayer, isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Layer, { LayerType } from '../../data/layer/Layer';
 import TilePicker from './sidebar/tile-picker';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import Grid, { GridTool } from '../grid';
 import TileLayerDisplay from './layer/tile-layer-display';
 import LayerOptions from './sidebar/layer-options';
-import { shiftUp, shiftDown } from '../../util';
+import { shiftUp, shiftDown, Rect } from '../../util';
 import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
@@ -215,35 +215,31 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle()})
 	}
 
-	onPlace(x: number, y: number) {
-		this.onRemove(x, y);
+	onPlace(rect: Rect) {
 		this.setState({
 			unsavedChanges: true,
-			continuedAction: true,
+			continuedAction: this.state.tool === GridTool.Pencil,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
-				layer.items = layer.items.filter(tile => !(tile.x === x && tile.y === y));
-				if (isTileLayer(layer))
-					layer.items.push({
-						x: x,
-						y: y,
-						tileX: this.state.selectedTileX,
-						tileY: this.state.selectedTileY
-					});
-				else
-					layer.items.push({x: x, y: y});
+				if (isGeometryLayer(layer))
+					placeGeometry(layer, rect);
+				else if (isTileLayer(layer))
+					placeTile(layer, rect, this.state.selectedTileX, this.state.selectedTileY);
 				return 'Place tiles';
 			}, this.state.continuedAction)
 		}, () => {this.updateTabTitle()})
 	}
 
-	onRemove(x: number, y: number) {
+	onRemove(rect: Rect) {
 		this.setState({
 			unsavedChanges: true,
-			continuedAction: true,
+			continuedAction: this.state.tool === GridTool.Pencil,
 			levelHistory: addHistory(this.state.levelHistory, level => {
 				let layer = level.layers[this.state.selectedLayerIndex];
-				layer.items = layer.items.filter(tile => !(tile.x === x && tile.y === y));
+				if (isGeometryLayer(layer))
+					removeGeometry(layer, rect);
+				else if (isTileLayer(layer))
+					removeTile(layer, rect);
 				return 'Remove tiles';
 			}, this.state.continuedAction)
 		}, () => {this.updateTabTitle()})

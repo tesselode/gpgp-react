@@ -35,8 +35,8 @@ export default (props: Props) => <SidebarSection
 				width={Math.ceil(props.tilesetImageData.width / props.project.tileSize)}
 				height={Math.ceil(props.tilesetImageData.height / props.project.tileSize)}
 				startingZoom={1}
-				onPlace={(x, y) => {
-					props.onSelectTile(x, y)
+				onPlace={(rect) => {
+					props.onSelectTile(rect.l, rect.t)
 				}}
 			>
 				<img src={props.tilesetImageData.data}/>

@@ -12,8 +12,8 @@ export default (tileCursorProps: TileCursorProps) =>
 	(props: CursorProps) => <div
 		style={{
 			position: 'absolute',
-			left: props.cursorL * props.tileSize + 1 + 'px',
-			top: props.cursorT * props.tileSize + 1 + 'px',
+			left: props.rect.l * props.tileSize + 1 + 'px',
+			top: props.rect.t * props.tileSize + 1 + 'px',
 			width: props.tileSize + 'px',
 			height: props.tileSize + 'px',
 			opacity: props.enabled ? .67 : 0,

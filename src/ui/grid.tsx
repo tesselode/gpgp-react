@@ -1,18 +1,12 @@
 import React from 'react';
 import { CursorProps } from './cursor/generic-cursor';
+import { Rect } from '../util';
 
 const gridRenderingScale = 2;
 
 export enum GridTool {
 	Pencil,
 	Rectangle,
-}
-
-export interface Rect {
-	l: number;
-	t: number;
-	r: number;
-	b: number;
 }
 
 export interface Props {
@@ -22,8 +16,8 @@ export interface Props {
 	height: number;
 	startingZoom?: number;
 	cursor?: (props: CursorProps) => JSX.Element;
-	onPlace?: (l: number, t: number, r?: number, b?: number) => void,
-	onRemove?: (l: number, t: number, r?: number, b?: number) => void,
+	onPlace?: (rect: Rect) => void,
+	onRemove?: (rect: Rect) => void,
 	onMouseUp?: () => void,
 }
 
@@ -49,7 +43,11 @@ export default class Grid extends React.Component<Props, State> {
 		}
 	}
 
-	getNormalizedCursorRect(l: number, t: number, r?: number, b?: number): Rect {
+	getNormalizedCursorRect(): Rect {
+		let l = this.state.cursorL;
+		let t = this.state.cursorT;
+		let r = this.state.cursorR;
+		let b = this.state.cursorB;
 		if (r == null) r = l;
 		if (b == null) b = t;
 		let newL = Math.min(l, r);
@@ -71,10 +69,10 @@ export default class Grid extends React.Component<Props, State> {
 				this.setState({cursorL: x, cursorT: y});
 				switch (this.state.mouseDown) {
 					case 0:
-						if (this.props.onPlace) this.props.onPlace(x, y);
+						if (this.props.onPlace) this.props.onPlace(this.getNormalizedCursorRect());
 						break;
 					case 2:
-						if (this.props.onRemove) this.props.onRemove(x, y);
+						if (this.props.onRemove) this.props.onRemove(this.getNormalizedCursorRect());
 						break;
 					default:
 						break;
@@ -101,11 +99,11 @@ export default class Grid extends React.Component<Props, State> {
 				switch (event.button) {
 					case 0:
 						if (this.props.onPlace)
-							this.props.onPlace(this.state.cursorL, this.state.cursorT);
+							this.props.onPlace(this.getNormalizedCursorRect());
 						break;
 					case 2:
 						if (this.props.onRemove)
-							this.props.onRemove(this.state.cursorL, this.state.cursorT);
+							this.props.onRemove(this.getNormalizedCursorRect());
 						break;
 					default:
 						break;
@@ -117,19 +115,20 @@ export default class Grid extends React.Component<Props, State> {
 	onMouseUp() {
 		switch (this.props.tool) {
 			case GridTool.Rectangle:
-				if (typeof(this.state.cursorR) === 'number' && typeof(this.state.cursorB) === 'number')
+				if (typeof(this.state.cursorR) === 'number' && typeof(this.state.cursorB) === 'number') {
 					switch (this.state.mouseDown) {
 						case 0:
 							if (this.props.onPlace)
-								this.props.onPlace(this.state.cursorL, this.state.cursorT, this.state.cursorR, this.state.cursorB);
+								this.props.onPlace(this.getNormalizedCursorRect());
 							break;
 						case 2:
 							if (this.props.onRemove)
-								this.props.onRemove(this.state.cursorL, this.state.cursorT, this.state.cursorR, this.state.cursorB);
+								this.props.onRemove(this.getNormalizedCursorRect());
 							break;
 						default:
 							break;
 					}
+				}
 				break;		
 			default:
 				break;
@@ -181,12 +180,6 @@ export default class Grid extends React.Component<Props, State> {
 	}
 
 	render() {
-		let cursorRect = this.getNormalizedCursorRect(
-			this.state.cursorL,
-			this.state.cursorT,
-			this.state.cursorR,
-			this.state.cursorB,
-		);
 		return <div
 			style={{
 				width: 0,
@@ -219,10 +212,7 @@ export default class Grid extends React.Component<Props, State> {
 			{this.props.cursor && this.props.cursor({
 				enabled: true,
 				tileSize: this.props.tileSize,
-				cursorL: cursorRect.l,
-				cursorT: cursorRect.t,
-				cursorR: cursorRect.r,
-				cursorB: cursorRect.b,
+				rect: this.getNormalizedCursorRect(),
 			})}
 		</div>;
 	}

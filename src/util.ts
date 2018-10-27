@@ -1,3 +1,10 @@
+export interface Rect {
+	l: number;
+	t: number;
+	r: number;
+	b: number;
+}
+
 export function deepCopyObject<T extends Object>(object: T): T {
 	return JSON.parse(JSON.stringify(object));
 }
