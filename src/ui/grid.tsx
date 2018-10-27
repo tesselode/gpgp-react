@@ -212,7 +212,7 @@ export default class Grid extends React.Component<Props, State> {
 			{this.props.cursor && this.props.cursor({
 				enabled: true,
 				tileSize: this.props.tileSize,
-				rect: this.getNormalizedCursorRect(),
+				cursor: this.getNormalizedCursorRect(),
 			})}
 		</div>;
 	}

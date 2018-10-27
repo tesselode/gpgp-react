@@ -42,8 +42,7 @@ export interface State {
 	tool: GridTool;
 	showSelectedLayerOnTop: boolean;
 	selectedLayerIndex: number;
-	selectedTileX: number;
-	selectedTileY: number;
+	tilesetSelection?: Rect;
 	continuedAction: boolean;
 }
 
@@ -67,8 +66,6 @@ export default class LevelEditor extends AppTab<Props, State> {
 			tool: GridTool.Pencil,
 			showSelectedLayerOnTop: true,
 			selectedLayerIndex: 0,
-			selectedTileX: 0,
-			selectedTileY: 0,
 			continuedAction: false,
 		}
 		loadProjectResources(this.props.project).then(resources =>
@@ -223,8 +220,8 @@ export default class LevelEditor extends AppTab<Props, State> {
 				let layer = level.layers[this.state.selectedLayerIndex];
 				if (isGeometryLayer(layer))
 					placeGeometry(layer, rect);
-				else if (isTileLayer(layer))
-					placeTile(layer, rect, this.state.selectedTileX, this.state.selectedTileY);
+				else if (isTileLayer(layer) && this.state.tilesetSelection)
+					placeTile(this.state.tool, layer, rect, this.state.tilesetSelection);
 				return 'Place tiles';
 			}, this.state.continuedAction)
 		}, () => {this.updateTabTitle()})
@@ -273,9 +270,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 	getCursor(layer: Layer): (props: CursorProps) => JSX.Element {
 		if (isTileLayer(layer))
 			return TileCursor({
+				tool: this.state.tool,
 				tilesetImage: this.state.resources.tilesetImages[layer.tilesetIndex],
-				tileX: this.state.selectedTileX,
-				tileY: this.state.selectedTileY,
+				tilesetSelection: this.state.tilesetSelection,
 			});
 		return GenericCursor;
 	}
@@ -324,14 +321,8 @@ export default class LevelEditor extends AppTab<Props, State> {
 						project={this.props.project}
 						tilesetName={this.props.project.tilesets[selectedLayer.tilesetIndex].name}
 						tilesetImageData={this.state.resources.tilesetImages[selectedLayer.tilesetIndex]}
-						selectedTileX={this.state.selectedTileX}
-						selectedTileY={this.state.selectedTileY}
-						onSelectTile={(x, y) => {
-							this.setState({
-								selectedTileX: x,
-								selectedTileY: y,
-							});
-						}}
+						selection={this.state.tilesetSelection}
+						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect})}}
 					/>}
 					<HistoryBrowser
 						historyList={this.state.levelHistory}
