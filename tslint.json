@@ -17,7 +17,7 @@
         "jsx-no-lambda": false,
         "jsx-boolean-value": false,
         "jsx-no-bind": false,
-        "member-access": false
+        "member-ordering": false
     },
     "rulesDirectory": []
 }

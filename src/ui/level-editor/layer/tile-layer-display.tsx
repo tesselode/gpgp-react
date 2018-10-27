@@ -13,10 +13,10 @@ export interface Props {
 }
 
 export default class TileLayerDisplay extends React.Component<Props> {
-	canvasRef = React.createRef<HTMLCanvasElement>();
-	imageRef = React.createRef<HTMLImageElement>();
+	private canvasRef = React.createRef<HTMLCanvasElement>();
+	private imageRef = React.createRef<HTMLImageElement>();
 
-	renderCanvas() {
+	private renderCanvas() {
 		const canvas = this.canvasRef.current;
 		canvas.width = this.props.level.width * this.props.project.tileSize;
 		canvas.height = this.props.level.height * this.props.project.tileSize;
@@ -31,15 +31,15 @@ export default class TileLayerDisplay extends React.Component<Props> {
 		}
 	}
 
-	componentDidMount() {
+	public componentDidMount() {
 		this.renderCanvas();
 	}
 
-	componentDidUpdate() {
+	public componentDidUpdate() {
 		this.renderCanvas();
 	}
 
-	render() {
+	public render() {
 		return <div>
 			<canvas
 				ref={this.canvasRef}

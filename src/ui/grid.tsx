@@ -31,7 +31,7 @@ export interface State {
 }
 
 export default class Grid extends React.Component<Props, State> {
-	canvasRef = React.createRef<HTMLCanvasElement>();
+	private canvasRef = React.createRef<HTMLCanvasElement>();
 
 	constructor(props) {
 		super(props);
@@ -43,7 +43,7 @@ export default class Grid extends React.Component<Props, State> {
 		};
 	}
 
-	getNormalizedCursorRect(): Rect {
+	private getNormalizedCursorRect(): Rect {
 		const l = this.state.cursorL;
 		const t = this.state.cursorT;
 		let r = this.state.cursorR;
@@ -57,7 +57,7 @@ export default class Grid extends React.Component<Props, State> {
 		return {l: newL, r: newR, t: newT, b: newB};
 	}
 
-	onCursorMove(x, y) {
+	private onCursorMove(x, y) {
 		switch (this.props.tool) {
 			case GridTool.Rectangle:
 				if (this.state.mouseDown === 0 || this.state.mouseDown === 2)
@@ -81,7 +81,7 @@ export default class Grid extends React.Component<Props, State> {
 		}
 	}
 
-	onMouseMove(x, y) {
+	private onMouseMove(x, y) {
 		const scale = this.props.tileSize * this.state.zoom;
 		const relativeMouseX = x / scale;
 		const relativeMouseY = y / scale;
@@ -90,7 +90,7 @@ export default class Grid extends React.Component<Props, State> {
 		this.onCursorMove(gridL, gridR);
 	}
 
-	onMouseDown(event) {
+	private onMouseDown(event) {
 		this.setState({mouseDown: event.button});
 		switch (this.props.tool) {
 			case GridTool.Rectangle:
@@ -112,7 +112,7 @@ export default class Grid extends React.Component<Props, State> {
 		}
 	}
 
-	onMouseUp() {
+	private onMouseUp() {
 		switch (this.props.tool) {
 			case GridTool.Rectangle:
 				if (typeof(this.state.cursorR) === 'number' && typeof(this.state.cursorB) === 'number') {
@@ -141,7 +141,7 @@ export default class Grid extends React.Component<Props, State> {
 		});
 	}
 
-	onWheel(event) {
+	private onWheel(event) {
 		event.preventDefault();
 		if (event.deltaY > 0) {
 			this.setState({zoom: this.state.zoom / 1.1});
@@ -151,7 +151,7 @@ export default class Grid extends React.Component<Props, State> {
 		}
 	}
 
-	renderCanvas() {
+	private renderCanvas() {
 		const canvas = this.canvasRef.current;
 		canvas.width = this.props.width * this.props.tileSize * gridRenderingScale;
 		canvas.height = this.props.height * this.props.tileSize * gridRenderingScale;
@@ -171,15 +171,15 @@ export default class Grid extends React.Component<Props, State> {
 		}
 	}
 
-	componentDidMount() {
+	public componentDidMount() {
 		this.renderCanvas();
 	}
 
-	componentDidUpdate() {
+	public componentDidUpdate() {
 		this.renderCanvas();
 	}
 
-	render() {
+	public render() {
 		return <div
 			style={{
 				width: 0,

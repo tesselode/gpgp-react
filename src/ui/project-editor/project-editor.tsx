@@ -68,15 +68,15 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			});
 	}
 
-	exit(onExit: () => void) {
+	public exit(onExit: () => void) {
 		onExit();
 	}
 
-	updateTabTitle() {
+	private updateTabTitle() {
 		this.props.onChangeTabTitle(this.state.project.name + (this.state.unsavedChanges ? '*' : ''));
 	}
 
-	onChangeProjectName(name: string) {
+	private onChangeProjectName(name: string) {
 		const project = deepCopyObject(this.state.project);
 		project.name = name;
 		this.setState({
@@ -85,7 +85,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChangeTileSize(tileSize: number) {
+	private onChangeTileSize(tileSize: number) {
 		const project = deepCopyObject(this.state.project);
 		project.tileSize = tileSize;
 		this.setState({
@@ -94,7 +94,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChangeDefaultMapWidth(defaultMapWidth: number) {
+	private onChangeDefaultMapWidth(defaultMapWidth: number) {
 		const project = deepCopyObject(this.state.project);
 		project.defaultMapWidth = defaultMapWidth;
 		this.setState({
@@ -103,7 +103,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChangeDefaultMapHeight(defaultMapHeight: number) {
+	private onChangeDefaultMapHeight(defaultMapHeight: number) {
 		const project = deepCopyObject(this.state.project);
 		project.defaultMapHeight = defaultMapHeight;
 		this.setState({
@@ -112,7 +112,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChangeMaxMapWidth(maxMapWidth: number) {
+	private onChangeMaxMapWidth(maxMapWidth: number) {
 		const project = deepCopyObject(this.state.project);
 		project.maxMapWidth = maxMapWidth;
 		this.setState({
@@ -121,7 +121,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChangeMaxMapHeight(maxMapHeight: number) {
+	private onChangeMaxMapHeight(maxMapHeight: number) {
 		const project = deepCopyObject(this.state.project);
 		project.maxMapHeight = maxMapHeight;
 		this.setState({
@@ -130,7 +130,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onAddTileset() {
+	private onAddTileset() {
 		const project = deepCopyObject(this.state.project);
 		const resources = shallowCopyProjectResources(this.state.resources);
 		project.tilesets.push({
@@ -146,7 +146,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onRemoveTileset(tilesetIndex: number) {
+	private onRemoveTileset(tilesetIndex: number) {
 		const project = deepCopyObject(this.state.project);
 		const resources = shallowCopyProjectResources(this.state.resources);
 		project.tilesets.splice(tilesetIndex, 1);
@@ -159,7 +159,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onMoveTilesetUp(tilesetIndex: number) {
+	private onMoveTilesetUp(tilesetIndex: number) {
 		if (tilesetIndex === 0) return;
 		const project = deepCopyObject(this.state.project);
 		const resources = shallowCopyProjectResources(this.state.resources);
@@ -173,7 +173,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onMoveTilesetDown(tilesetIndex: number) {
+	private onMoveTilesetDown(tilesetIndex: number) {
 		if (tilesetIndex === this.state.project.tilesets.length - 1) return;
 		const project = deepCopyObject(this.state.project);
 		const resources = shallowCopyProjectResources(this.state.resources);
@@ -187,7 +187,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChangeTilesetName(tilesetIndex: number, name: string) {
+	private onChangeTilesetName(tilesetIndex: number, name: string) {
 		const project = deepCopyObject(this.state.project);
 		project.tilesets[tilesetIndex].name = name;
 		this.setState({
@@ -196,7 +196,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
+	private onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
 		const project = deepCopyObject(this.state.project);
 		project.tilesets[tilesetIndex].imagePath = imagePath;
 		this.setState({
@@ -210,7 +210,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		});
 	}
 
-	save(saveAs = false) {
+	public save(saveAs = false) {
 		let projectFilePath = this.state.projectFilePath;
 		if (!projectFilePath || saveAs) {
 			const chosenSaveLocation = remote.dialog.showSaveDialog({
@@ -234,7 +234,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		});
 	}
 
-	render() {
+	public render() {
 		return <div>
 			<Navbar>
 				<NavbarBrand>

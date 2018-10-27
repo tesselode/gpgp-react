@@ -41,7 +41,7 @@ export default class LayerList extends React.Component<Props, State> {
 		};
 	}
 
-	render() {
+	public render() {
 		return <SidebarSection
 			name='Layers'
 			flush

@@ -79,13 +79,13 @@ export default class App extends React.Component<{}, State> {
 		ipcRenderer.on('save', (event, saveAs) => this.onSave(saveAs));
 	}
 
-	onChangeTabTitle(tabIndex: number, title: string) {
+	private onChangeTabTitle(tabIndex: number, title: string) {
 		const tabTitles = this.state.tabTitles.slice(0, this.state.tabTitles.length);
 		tabTitles[tabIndex] = title;
 		this.setState({tabTitles});
 	}
 
-	onOpenProject() {
+	private onOpenProject() {
 		remote.dialog.showOpenDialog({
 			filters: [
 				{name: 'GPGP projects', extensions: ['gpgpproj']},
@@ -105,7 +105,7 @@ export default class App extends React.Component<{}, State> {
 		});
 	}
 
-	onOpenProjectEditor(project?: Project, projectFilePath?: string) {
+	private onOpenProjectEditor(project?: Project, projectFilePath?: string) {
 		const tabs = this.state.tabs.slice(0, this.state.tabs.length);
 		const newTab = {
 			type: TabType.ProjectEditor,
@@ -121,7 +121,7 @@ export default class App extends React.Component<{}, State> {
 		});
 	}
 
-	onOpenLevel() {
+	private onOpenLevel() {
 		remote.dialog.showOpenDialog({
 			filters: [
 				{name: 'GPGP levels', extensions: ['gpgp']},
@@ -148,7 +148,7 @@ export default class App extends React.Component<{}, State> {
 		});
 	}
 
-	onOpenLevelEditor(project: Project, projectFilePath: string, level?: Level, levelFilePath?: string) {
+	private onOpenLevelEditor(project: Project, projectFilePath: string, level?: Level, levelFilePath?: string) {
 		const tabs = this.state.tabs.slice(0, this.state.tabs.length);
 		const newTab = {
 			type: TabType.LevelEditor,
@@ -166,13 +166,13 @@ export default class App extends React.Component<{}, State> {
 		});
 	}
 
-	onSave(saveAs?: boolean) {
+	private onSave(saveAs?: boolean) {
 		const tab = this.state.tabs[this.state.activeTab];
 		if (!(tab && tab.ref.current)) return;
 		tab.ref.current.save(saveAs);
 	}
 
-	onCloseTab(tabNumber: number) {
+	private onCloseTab(tabNumber: number) {
 		const tab = this.state.tabs[tabNumber];
 		if (!(tab && tab.ref.current)) return;
 		tab.ref.current.exit(() => {
@@ -186,7 +186,7 @@ export default class App extends React.Component<{}, State> {
 		});
 	}
 
-	render() {
+	public render() {
 		if (this.state.tabs.length === 0)
 			return <Welcome
 				onCreateNewProject={() => this.onOpenProjectEditor()}

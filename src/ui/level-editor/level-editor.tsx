@@ -73,7 +73,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		);
 	}
 
-	exit(onExit: () => void) {
+	public exit(onExit: () => void) {
 		if (!this.state.unsavedChanges) {
 			onExit();
 			return;
@@ -94,7 +94,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}
 	}
 
-	updateTabTitle() {
+	private updateTabTitle() {
 		let tabTitle = this.state.levelFilePath ?
 			path.parse(this.state.levelFilePath).name
 			: 'New level';
@@ -102,7 +102,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		this.props.onChangeTabTitle(tabTitle);
 	}
 
-	onChangeLevelWidth(width: number) {
+	private onChangeLevelWidth(width: number) {
 		this.setState({
 			unsavedChanges: true,
 			continuedAction: true,
@@ -113,7 +113,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChangeLevelHeight(height: number) {
+	private onChangeLevelHeight(height: number) {
 		this.setState({
 			unsavedChanges: true,
 			continuedAction: true,
@@ -124,7 +124,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onAddGeometryLayer() {
+	private onAddGeometryLayer() {
 		this.setState({
 			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
@@ -134,7 +134,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onAddTileLayer(tilesetIndex: number) {
+	private onAddTileLayer(tilesetIndex: number) {
 		this.setState({
 			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
@@ -144,7 +144,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onToggleLayerVisibility(layerIndex: number) {
+	private onToggleLayerVisibility(layerIndex: number) {
 		this.setState({
 			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
@@ -156,7 +156,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onChangeLayerName(name: string) {
+	private onChangeLayerName(name: string) {
 		this.setState({
 			unsavedChanges: true,
 			continuedAction: true,
@@ -167,7 +167,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onMoveLayerUp() {
+	private onMoveLayerUp() {
 		this.setState({
 			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
@@ -182,7 +182,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onMoveLayerDown() {
+	private onMoveLayerDown() {
 		this.setState({
 			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
@@ -197,7 +197,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onDeleteLayer() {
+	private onDeleteLayer() {
 		this.setState({
 			unsavedChanges: true,
 			levelHistory: addHistory(this.state.levelHistory, level => {
@@ -212,7 +212,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onPlace(rect: Rect) {
+	private onPlace(rect: Rect) {
 		this.setState({
 			unsavedChanges: true,
 			continuedAction: this.state.tool === GridTool.Pencil,
@@ -227,7 +227,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	onRemove(rect: Rect) {
+	private onRemove(rect: Rect) {
 		this.setState({
 			unsavedChanges: true,
 			continuedAction: this.state.tool === GridTool.Pencil,
@@ -242,7 +242,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
-	save(saveAs = false, onSave?: () => void) {
+	public save(saveAs = false, onSave?: () => void) {
 		let levelFilePath = this.state.levelFilePath;
 		if (!levelFilePath || saveAs) {
 			const chosenSaveLocation = remote.dialog.showSaveDialog({
@@ -267,7 +267,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		});
 	}
 
-	getCursor(layer: Layer): (props: CursorProps) => JSX.Element {
+	private getCursor(layer: Layer): (props: CursorProps) => JSX.Element {
 		if (isTileLayer(layer))
 			return TileCursor({
 				tool: this.state.tool,
@@ -277,7 +277,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		return GenericCursor;
 	}
 
-	render() {
+	public render() {
 		const level = getCurrentHistoryState(this.state.levelHistory);
 		const selectedLayer = level.layers[this.state.selectedLayerIndex];
 		return <Container fluid style={{paddingTop: '1em'}}>
