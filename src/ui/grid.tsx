@@ -8,6 +8,13 @@ export enum GridTool {
 	Rectangle,
 }
 
+export interface Rect {
+	l: number;
+	t: number;
+	r: number;
+	b: number;
+}
+
 export interface Props {
 	tool?: GridTool;
 	tileSize: number;
@@ -15,16 +22,17 @@ export interface Props {
 	height: number;
 	startingZoom?: number;
 	cursor?: (props: CursorProps) => JSX.Element;
-	onPlace?: (x: number, y: number) => void,
-	onRemove?: (x: number, y: number) => void,
+	onPlace?: (l: number, t: number, r?: number, b?: number) => void,
+	onRemove?: (l: number, t: number, r?: number, b?: number) => void,
 	onMouseUp?: () => void,
 }
 
 export interface State {
 	zoom: number;
-	cursorX: number;
-	cursorY: number;
-	cursorOverGrid: boolean;
+	cursorL: number;
+	cursorT: number;
+	cursorR?: number;
+	cursorB?: number;
 	mouseDown: number | boolean;
 }
 
@@ -35,24 +43,42 @@ export default class Grid extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			zoom: this.props.startingZoom ? this.props.startingZoom : 2,
-			cursorX: 0,
-			cursorY: 0,
-			cursorOverGrid: false,
+			cursorL: 0,
+			cursorT: 0,
 			mouseDown: false,
 		}
 	}
 
+	getNormalizedCursorRect(l: number, t: number, r?: number, b?: number): Rect {
+		if (r == null) r = l;
+		if (b == null) b = t;
+		let newL = Math.min(l, r);
+		let newR = Math.max(l, r);
+		let newT = Math.min(t, b);
+		let newB = Math.max(t, b);
+		return {l: newL, r: newR, t: newT, b: newB};
+	}
+
 	onCursorMove(x, y) {
-		this.setState({cursorX: x, cursorY: y});
-		if (!this.state.cursorOverGrid) return;
-		switch (this.state.mouseDown) {
-			case 0:
-				if (this.props.onPlace) this.props.onPlace(x, y);
-				break;
-			case 2:
-				if (this.props.onRemove) this.props.onRemove(x, y);
+		switch (this.props.tool) {
+			case GridTool.Rectangle:
+				if (this.state.mouseDown === 0 || this.state.mouseDown === 2)
+					this.setState({cursorR: x, cursorB: y});
+				else
+					this.setState({cursorL: x, cursorT: y});
 				break;
 			default:
+				this.setState({cursorL: x, cursorT: y});
+				switch (this.state.mouseDown) {
+					case 0:
+						if (this.props.onPlace) this.props.onPlace(x, y);
+						break;
+					case 2:
+						if (this.props.onRemove) this.props.onRemove(x, y);
+						break;
+					default:
+						break;
+				}
 				break;
 		}
 	}
@@ -61,32 +87,59 @@ export default class Grid extends React.Component<Props, State> {
 		let scale = this.props.tileSize * this.state.zoom;
 		let relativeMouseX = x / scale;
 		let relativeMouseY = y / scale;
-		let cursorX = Math.min(Math.floor(relativeMouseX), this.props.width - 1);
-		let cursorY = Math.min(Math.floor(relativeMouseY), this.props.height - 1);
-		if (cursorX !== this.state.cursorX || cursorY !== this.state.cursorY)
-			this.onCursorMove(cursorX, cursorY);
+		let gridL = Math.min(Math.floor(relativeMouseX), this.props.width - 1);
+		let gridR = Math.min(Math.floor(relativeMouseY), this.props.height - 1);
+		this.onCursorMove(gridL, gridR);
 	}
 
 	onMouseDown(event) {
 		this.setState({mouseDown: event.button});
-		if (!this.state.cursorOverGrid) return;
-		switch (event.button) {
-			case 0:
-				if (this.props.onPlace)
-					this.props.onPlace(this.state.cursorX, this.state.cursorY);
-				break;
-			case 2:
-				if (this.props.onRemove)
-					this.props.onRemove(this.state.cursorX, this.state.cursorY);
+		switch (this.props.tool) {
+			case GridTool.Rectangle:
 				break;
 			default:
+				switch (event.button) {
+					case 0:
+						if (this.props.onPlace)
+							this.props.onPlace(this.state.cursorL, this.state.cursorT);
+						break;
+					case 2:
+						if (this.props.onRemove)
+							this.props.onRemove(this.state.cursorL, this.state.cursorT);
+						break;
+					default:
+						break;
+				}
 				break;
 		}
 	}
 
 	onMouseUp() {
+		switch (this.props.tool) {
+			case GridTool.Rectangle:
+				if (typeof(this.state.cursorR) === 'number' && typeof(this.state.cursorB) === 'number')
+					switch (this.state.mouseDown) {
+						case 0:
+							if (this.props.onPlace)
+								this.props.onPlace(this.state.cursorL, this.state.cursorT, this.state.cursorR, this.state.cursorB);
+							break;
+						case 2:
+							if (this.props.onRemove)
+								this.props.onRemove(this.state.cursorL, this.state.cursorT, this.state.cursorR, this.state.cursorB);
+							break;
+						default:
+							break;
+					}
+				break;		
+			default:
+				break;
+		}
 		if (this.props.onMouseUp) this.props.onMouseUp();
-		this.setState({mouseDown: false});
+		this.setState({
+			mouseDown: false,
+			cursorR: null,
+			cursorB: null,
+		});
 	}
 
 	onWheel(event) {
@@ -128,6 +181,12 @@ export default class Grid extends React.Component<Props, State> {
 	}
 
 	render() {
+		let cursorRect = this.getNormalizedCursorRect(
+			this.state.cursorL,
+			this.state.cursorT,
+			this.state.cursorR,
+			this.state.cursorB,
+		);
 		return <div
 			style={{
 				width: 0,
@@ -155,15 +214,15 @@ export default class Grid extends React.Component<Props, State> {
 					let rect = this.canvasRef.current.getBoundingClientRect();
 					this.onMouseMove(event.clientX - rect.left, event.clientY - rect.top);
 				}}
-				onMouseEnter={() => this.setState({cursorOverGrid: true})}
-				onMouseLeave={() => this.setState({cursorOverGrid: false})}
 			/>
 			{this.props.children}
 			{this.props.cursor && this.props.cursor({
-				enabled: this.state.cursorOverGrid,
+				enabled: true,
 				tileSize: this.props.tileSize,
-				cursorX: this.state.cursorX,
-				cursorY: this.state.cursorY,
+				cursorL: cursorRect.l,
+				cursorT: cursorRect.t,
+				cursorR: cursorRect.r,
+				cursorB: cursorRect.b,
 			})}
 		</div>;
 	}
