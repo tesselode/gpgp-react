@@ -1,8 +1,8 @@
+import Octicon, { ArrowDown, ArrowUp, Trashcan } from '@githubprimer/octicons-react';
 import React from 'react';
-import SidebarSection from './sidebar-section';
-import { Form, FormGroup, Label, Input, Navbar, ButtonGroup, Button, UncontrolledTooltip } from 'reactstrap';
+import { Button, ButtonGroup, Form, FormGroup, Input, Label, Navbar, UncontrolledTooltip } from 'reactstrap';
 import Layer from '../../../data/layer/layer';
-import Octicon, { ArrowUp, ArrowDown, Trashcan } from '@githubprimer/octicons-react';
+import SidebarSection from './sidebar-section';
 
 export interface Props {
 	layer: Layer;
@@ -25,7 +25,7 @@ export default (props: Props) => <SidebarSection
 			<Input
 				bsSize='sm'
 				value={props.layer.name}
-				onChange={event => {props.onChangeLayerName(event.target.value)}}
+				onChange={event => {props.onChangeLayerName(event.target.value); }}
 				onBlur={() => props.onBlur()}
 			/>
 		</FormGroup>
@@ -77,4 +77,4 @@ export default (props: Props) => <SidebarSection
 			Delete layer
 		</UncontrolledTooltip>
 	</Navbar>
-</SidebarSection>
+</SidebarSection>;

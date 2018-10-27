@@ -1,8 +1,8 @@
 import React from 'react';
-import GenericCursor, { CursorProps } from './generic-cursor';
 import { TilesetImage } from '../../data/project-resources';
 import { Rect } from '../../util';
 import { GridTool } from '../grid';
+import GenericCursor, { CursorProps } from './generic-cursor';
 
 export interface TileCursorProps {
 	tool: GridTool;
@@ -10,7 +10,14 @@ export interface TileCursorProps {
 	tilesetSelection?: Rect;
 }
 
-const renderCroppedTilesetImage = (tileSize: number, imageData: string, x: number, y: number, region: Rect, key?: number) =>
+const renderCroppedTilesetImage = (
+	tileSize: number,
+	imageData: string,
+	x: number,
+	y: number,
+	region: Rect,
+	key?: number,
+) =>
 	<div
 		key={key}
 		style={{
@@ -34,7 +41,7 @@ const renderCroppedTilesetImage = (tileSize: number, imageData: string, x: numbe
 				imageRendering: 'pixelated',
 			}}
 		/>
-	</div>
+	</div>;
 
 const pencil = (tileCursorProps: TileCursorProps, props: CursorProps) =>
 	tileCursorProps.tilesetSelection && renderCroppedTilesetImage(
@@ -42,13 +49,13 @@ const pencil = (tileCursorProps: TileCursorProps, props: CursorProps) =>
 		tileCursorProps.tilesetImage.data,
 		props.cursor.l,
 		props.cursor.t,
-		tileCursorProps.tilesetSelection
-	)
+		tileCursorProps.tilesetSelection,
+	);
 
 const rectangle = (tileCursorProps: TileCursorProps, props: CursorProps) => {
-	let cursor = props.cursor;
-	let tiles = tileCursorProps.tilesetSelection;
-	let elements = [];
+	const cursor = props.cursor;
+	const tiles = tileCursorProps.tilesetSelection;
+	const elements = [];
 	let key = 0;
 	for (let x = cursor.l; x <= cursor.r; x += (tiles.r - tiles.l + 1)) {
 		for (let y = cursor.t; y <= cursor.b; y += (tiles.b - tiles.t + 1)) {
@@ -75,8 +82,8 @@ const rectangle = (tileCursorProps: TileCursorProps, props: CursorProps) => {
 		}}
 	>
 		{elements}
-	</div>
-}
+	</div>;
+};
 
 export default (tileCursorProps: TileCursorProps) =>
 	(props: CursorProps) => <div>
@@ -96,4 +103,4 @@ export default (tileCursorProps: TileCursorProps) =>
 				}
 			</div>
 		}
-	</div>
+	</div>;

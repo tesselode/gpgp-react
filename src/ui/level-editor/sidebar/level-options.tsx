@@ -1,7 +1,7 @@
 import React from 'react';
-import SidebarSection from './sidebar-section';
-import { Form, FormGroup, InputGroup, Label, Input, InputGroupAddon } from 'reactstrap';
+import { Form, FormGroup, Input, InputGroup, InputGroupAddon, Label } from 'reactstrap';
 import Level from '../../../data/level';
+import SidebarSection from './sidebar-section';
 
 export interface Props {
 	level: Level;
@@ -21,8 +21,8 @@ export default (props: Props) => <SidebarSection
 					type='number'
 					value={props.level.width}
 					onChange={event => {
-						let width = Number(event.target.value);
-						if (width !== NaN && width > 0)
+						const width = Number(event.target.value);
+						if (!isNaN(width) && width > 0)
 							props.onChangeLevelWidth(width);
 					}}
 					onBlur={() => props.onBlur()}
@@ -37,8 +37,8 @@ export default (props: Props) => <SidebarSection
 					type='number'
 					value={props.level.height}
 					onChange={event => {
-						let height = Number(event.target.value);
-						if (height !== NaN && height > 0)
+						const height = Number(event.target.value);
+						if (!isNaN(height) && height > 0)
 							props.onChangeLevelHeight(height);
 					}}
 					onBlur={() => props.onBlur()}
@@ -47,4 +47,4 @@ export default (props: Props) => <SidebarSection
 			</InputGroup>
 		</FormGroup>
 	</Form>
-</SidebarSection>
+</SidebarSection>;

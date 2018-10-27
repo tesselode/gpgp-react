@@ -1,6 +1,6 @@
-import Layer, { LayerItem, LayerType } from "./layer";
-import { Rect } from "../../util";
 import { GridTool } from "../../ui/grid";
+import { Rect } from "../../util";
+import Layer, { LayerItem, LayerType } from "./layer";
 
 export interface TileLayerItem extends LayerItem {
 	tileX: number;
@@ -9,7 +9,7 @@ export interface TileLayerItem extends LayerItem {
 
 export default interface TileLayer extends Layer {
 	tilesetIndex: number;
-	items: Array<TileLayerItem>;
+	items: TileLayerItem[];
 }
 
 export function newTileLayer(tilesetIndex: number): TileLayer {
@@ -17,9 +17,9 @@ export function newTileLayer(tilesetIndex: number): TileLayer {
 		name: 'New tile layer',
 		type: LayerType.Tile,
 		visible: true,
-		tilesetIndex: tilesetIndex,
+		tilesetIndex,
 		items: [],
-	}
+	};
 }
 
 export function isTileLayer(layer: Layer): layer is TileLayer {
@@ -42,7 +42,7 @@ export function placeTile(tool: GridTool, layer: TileLayer, rect: Rect, tiles: R
 				for (let y = rect.t; y <= rect.b; y++) {
 					tileY++;
 					if (tileY > tiles.b) tileY = tiles.t;
-					layer.items.push({x: x, y: y, tileX: tileX, tileY: tileY});
+					layer.items.push({x, y, tileX, tileY});
 				}
 			}
 			break;
@@ -52,8 +52,8 @@ export function placeTile(tool: GridTool, layer: TileLayer, rect: Rect, tiles: R
 					layer.items.push({
 						x: rect.l + (tileX - tiles.l),
 						y: rect.t + (tileY - tiles.t),
-						tileX: tileX,
-						tileY: tileY,
+						tileX,
+						tileY,
 					});
 				}
 			}

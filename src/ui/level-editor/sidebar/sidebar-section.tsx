@@ -1,15 +1,15 @@
 import React from 'react';
-import { Collapse, Card, CardHeader, CardBody, Navbar, Button } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Collapse, Navbar } from 'reactstrap';
 
 export interface Props {
-	name: string,
-	startExpanded?: boolean,
-	flush?: boolean,
-	headerContent?: JSX.Element,
+	name: string;
+	startExpanded?: boolean;
+	flush?: boolean;
+	headerContent?: JSX.Element;
 }
 
 export interface State {
-	expanded: boolean,
+	expanded: boolean;
 }
 
 export default class SidebarSection extends React.Component<Props, State> {
@@ -17,7 +17,7 @@ export default class SidebarSection extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			expanded: this.props.startExpanded,
-		}
+		};
 	}
 
 	render() {

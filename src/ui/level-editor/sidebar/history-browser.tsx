@@ -1,8 +1,8 @@
 import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
+import HistoryList from '../../../data/history-list';
 import Level from '../../../data/level';
 import SidebarSection from './sidebar-section';
-import HistoryList from '../../../data/history-list';
 
 export interface Props {
 	historyList: HistoryList<Level>;
@@ -10,7 +10,7 @@ export interface Props {
 }
 
 export default (props: Props) => {
-	let items: Array<JSX.Element> = [];
+	const items: JSX.Element[] = [];
 	for (let i = props.historyList.steps.length - 1; i >= 0; i--) {
 		const step = props.historyList.steps[i];
 		items.push(<ListGroupItem
@@ -20,7 +20,7 @@ export default (props: Props) => {
 			className='compact-list-group-item'
 		>
 			{step.description}
-		</ListGroupItem>)
+		</ListGroupItem>);
 	}
 	return <SidebarSection
 		name='History'
@@ -30,4 +30,4 @@ export default (props: Props) => {
 			{items}
 		</ListGroup>
 	</SidebarSection>;
-}
+};

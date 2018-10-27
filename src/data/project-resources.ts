@@ -1,5 +1,5 @@
-import Project from "./project";
 import Jimp from 'jimp';
+import Project from "./project";
 
 export interface TilesetImage {
 	data?: string;
@@ -9,7 +9,7 @@ export interface TilesetImage {
 }
 
 export interface ProjectResources {
-	tilesetImages: Array<TilesetImage>;
+	tilesetImages: TilesetImage[];
 }
 
 export function newProjectResources(): ProjectResources {
@@ -23,10 +23,10 @@ export function loadTilesetImage(imagePath: string): Promise<TilesetImage> {
 		.then(image =>
 			image.getBase64Async(image.getMIME())
 				.then(data => ({
-					data: data,
+					data,
 					width: image.bitmap.width,
 					height: image.bitmap.height,
-				}))
+				})),
 		)
 		.catch(error => ({
 			error: "The tileset image could not be loaded.",
@@ -34,16 +34,16 @@ export function loadTilesetImage(imagePath: string): Promise<TilesetImage> {
 }
 
 export function loadProjectResources(project: Project): Promise<ProjectResources> {
-	let resources = newProjectResources();
+	const resources = newProjectResources();
 	return Promise.all(project.tilesets.map((tileset, i) =>
 		loadTilesetImage(tileset.imagePath).then(image => {
 			resources.tilesetImages[i] = image;
-		})
+		}),
 	)).then(() => resources);
 }
 
 export function shallowCopyProjectResources(projectResources: ProjectResources): ProjectResources {
-	let resources = newProjectResources();
+	const resources = newProjectResources();
 	resources.tilesetImages = projectResources.tilesetImages;
 	return resources;
 }

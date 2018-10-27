@@ -1,0 +1,23 @@
+{
+    "defaultSeverity": "warning",
+    "extends": [
+        "tslint:recommended", "tslint-react"
+    ],
+    "jsRules": {},
+    "rules": {
+        "interface-name": false,
+        "indent": false,
+        "object-literal-sort-keys": false,
+        "quotemark": false,
+        "arrow-parens": false,
+        "curly": false,
+        "no-shadowed-variable": false,
+        "jsx-wrap-multiline": false,
+        "jsx-no-multiline-js": false,
+        "jsx-no-lambda": false,
+        "jsx-boolean-value": false,
+        "jsx-no-bind": false,
+        "member-access": false
+    },
+    "rulesDirectory": []
+}

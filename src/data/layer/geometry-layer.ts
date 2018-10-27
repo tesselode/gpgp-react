@@ -1,10 +1,8 @@
-import Layer, { LayerItem, LayerType } from "./layer";
 import { Rect } from "../../util";
-
-export interface GeometryLayerItem extends LayerItem {}
+import Layer, { LayerItem, LayerType } from "./layer";
 
 export default interface GeometryLayer extends Layer {
-	items: Array<GeometryLayerItem>;
+	items: LayerItem[];
 }
 
 export function newGeometryLayer(): GeometryLayer {
@@ -13,7 +11,7 @@ export function newGeometryLayer(): GeometryLayer {
 		type: LayerType.Geometry,
 		visible: true,
 		items: [],
-	}
+	};
 }
 
 export function isGeometryLayer(layer: Layer): layer is GeometryLayer {
@@ -28,7 +26,7 @@ export function placeGeometry(layer: GeometryLayer, rect: Rect) {
 	removeGeometry(layer, rect);
 	for (let x = rect.l; x <= rect.r; x++) {
 		for (let y = rect.t; y <= rect.b; y++) {
-			layer.items.push({x: x, y: y});
+			layer.items.push({x, y});
 		}
 	}
 }

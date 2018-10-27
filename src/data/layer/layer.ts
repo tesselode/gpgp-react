@@ -12,5 +12,5 @@ export default interface Layer {
 	name: string;
 	type: LayerType;
 	visible: boolean;
-	items: Array<LayerItem>;
+	items: LayerItem[];
 }

@@ -1,9 +1,9 @@
 import React from 'react';
-import SidebarSection from './sidebar-section';
 import Project from '../../../data/project';
-import Grid, { GridTool } from '../../grid';
 import { TilesetImage } from '../../../data/project-resources';
 import { Rect } from '../../../util';
+import Grid, { GridTool } from '../../grid';
+import SidebarSection from './sidebar-section';
 
 export interface Props {
 	project: Project;
@@ -36,20 +36,22 @@ export default (props: Props) => <SidebarSection
 				width={Math.ceil(props.tilesetImageData.width / props.project.tileSize)}
 				height={Math.ceil(props.tilesetImageData.height / props.project.tileSize)}
 				startingZoom={1}
-				onPlace={(rect) => {props.onSelectTiles(rect)}}
+				onPlace={(rect) => {props.onSelectTiles(rect); }}
 			>
 				<img src={props.tilesetImageData.data}/>
-				{props.selection && <div style={{
-					position: 'absolute',
-					zIndex: 2,
-					left: props.selection.l * props.project.tileSize + 'px',
-					top: props.selection.t * props.project.tileSize + 'px',
-					width: props.project.tileSize * (props.selection.r - props.selection.l + 1) + 1 + 'px',
-					height: props.project.tileSize * (props.selection.b - props.selection.t + 1) + 1 + 'px',
-					border: '1px solid red',
-					pointerEvents: 'none',
-				}}/>}
+				{props.selection && <div
+					style={{
+						position: 'absolute',
+						zIndex: 2,
+						left: props.selection.l * props.project.tileSize + 'px',
+						top: props.selection.t * props.project.tileSize + 'px',
+						width: props.project.tileSize * (props.selection.r - props.selection.l + 1) + 1 + 'px',
+						height: props.project.tileSize * (props.selection.b - props.selection.t + 1) + 1 + 'px',
+						border: '1px solid red',
+						pointerEvents: 'none',
+					}}
+				/>}
 			</Grid>
 		</div>
 	)}
-</SidebarSection>
+</SidebarSection>;

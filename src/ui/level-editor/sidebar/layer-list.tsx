@@ -1,21 +1,21 @@
+import Octicon, { Eye, Plus } from '@githubprimer/octicons-react';
 import React from 'react';
-import Level from '../../../data/level';
 import {
 	Button,
 	ButtonDropdown,
-	DropdownToggle,
-	DropdownMenu,
+	ButtonGroup,
 	DropdownItem,
+	DropdownMenu,
+	DropdownToggle,
 	ListGroup,
 	ListGroupItem,
 	Navbar,
-	ButtonGroup,
-	UncontrolledTooltip
+	UncontrolledTooltip,
 } from 'reactstrap';
-import SidebarSection from './sidebar-section';
-import Octicon, { Plus, Eye } from '@githubprimer/octicons-react';
-import Project from '../../../data/project';
 import { isTileLayer } from '../../../data/layer/tile-layer';
+import Level from '../../../data/level';
+import Project from '../../../data/project';
+import SidebarSection from './sidebar-section';
 
 export interface Props {
 	project: Project;
@@ -64,7 +64,7 @@ export default class LayerList extends React.Component<Props, State> {
 				<ButtonDropdown
 					isOpen={this.state.dropdownOpen}
 					toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
-					>
+				>
 					<DropdownToggle
 						id='addLayerButton'
 						size='sm'
@@ -83,7 +83,7 @@ export default class LayerList extends React.Component<Props, State> {
 								onClick={() => this.props.onAddTileLayer(i)}
 							>
 								Tile - {tileset.name}
-							</DropdownItem>
+							</DropdownItem>,
 						)}
 					</DropdownMenu>
 				</ButtonDropdown>
@@ -105,7 +105,8 @@ export default class LayerList extends React.Component<Props, State> {
 					>
 						<Navbar style={{padding: 0}}>
 							{
-								isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + this.props.project.tilesets[layer.tilesetIndex].name + ')'
+								isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' +
+									this.props.project.tilesets[layer.tilesetIndex].name + ')'
 								: layer.name + ' (' + layer.type + ')'
 							}
 							<Button
@@ -124,7 +125,7 @@ export default class LayerList extends React.Component<Props, State> {
 								Toggle layer visibility
 							</UncontrolledTooltip>
 						</Navbar>
-					</ListGroupItem>
+					</ListGroupItem>,
 				)}
 			</ListGroup>
 		</SidebarSection>;

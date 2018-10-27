@@ -1,5 +1,5 @@
 import React from 'react';
-import { Jumbotron, Row, Col, Button } from 'reactstrap';
+import { Button, Col, Jumbotron, Row } from 'reactstrap';
 
 export interface Props {
 	onCreateNewProject: () => void;
@@ -40,6 +40,6 @@ const Welcome = (props: Props) =>
 				</Row>
 			</Col>
 		</Row>
-	</Jumbotron>
+	</Jumbotron>;
 
 export default Welcome;

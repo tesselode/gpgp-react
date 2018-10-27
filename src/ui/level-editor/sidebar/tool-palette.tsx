@@ -1,8 +1,8 @@
+import Octicon, { Pencil, PrimitiveSquare } from '@githubprimer/octicons-react';
 import React from 'react';
-import { GridTool } from '../../grid';
 import { ButtonGroup } from 'reactstrap';
 import Button from 'reactstrap/lib/Button';
-import Octicon, { Pencil, PrimitiveSquare } from '@githubprimer/octicons-react';
+import { GridTool } from '../../grid';
 
 export interface Props {
 	tool: GridTool;
@@ -28,4 +28,4 @@ export default (props: Props) => <div
 			<Octicon icon={PrimitiveSquare} />
 		</Button>
 	</ButtonGroup>
-</div>
+</div>;

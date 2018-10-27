@@ -1,6 +1,6 @@
 import React from 'react';
-import Level from '../../../data/level';
 import GeometryLayer from '../../../data/layer/geometry-layer';
+import Level from '../../../data/level';
 import Project from '../../../data/project';
 
 export interface Props {
@@ -19,13 +19,11 @@ export default class GeometryLayerDisplay extends React.Component<Props> {
 		canvas.height = this.props.level.height * this.props.project.tileSize;
 		const context = canvas.getContext('2d');
 		context.fillStyle = 'rgba(39, 187, 232, .33)';
-		for (let i = 0; i < this.props.layer.items.length; i++) {
-			const tile = this.props.layer.items[i];
-			context.fillRect(tile.x * this.props.project.tileSize,
-				tile.y * this.props.project.tileSize,
+		for (const item of this.props.layer.items)
+			context.fillRect(item.x * this.props.project.tileSize,
+				item.y * this.props.project.tileSize,
 				this.props.project.tileSize,
 				this.props.project.tileSize);
-		}
 	}
 
 	componentDidMount() {

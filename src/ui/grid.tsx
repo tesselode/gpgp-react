@@ -1,6 +1,6 @@
 import React from 'react';
-import { CursorProps } from './cursor/generic-cursor';
 import { Rect } from '../util';
+import { CursorProps } from './cursor/generic-cursor';
 
 const gridRenderingScale = 2;
 
@@ -16,9 +16,9 @@ export interface Props {
 	height: number;
 	startingZoom?: number;
 	cursor?: (props: CursorProps) => JSX.Element;
-	onPlace?: (rect: Rect) => void,
-	onRemove?: (rect: Rect) => void,
-	onMouseUp?: () => void,
+	onPlace?: (rect: Rect) => void;
+	onRemove?: (rect: Rect) => void;
+	onMouseUp?: () => void;
 }
 
 export interface State {
@@ -40,20 +40,20 @@ export default class Grid extends React.Component<Props, State> {
 			cursorL: 0,
 			cursorT: 0,
 			mouseDown: false,
-		}
+		};
 	}
 
 	getNormalizedCursorRect(): Rect {
-		let l = this.state.cursorL;
-		let t = this.state.cursorT;
+		const l = this.state.cursorL;
+		const t = this.state.cursorT;
 		let r = this.state.cursorR;
 		let b = this.state.cursorB;
 		if (r == null) r = l;
 		if (b == null) b = t;
-		let newL = Math.min(l, r);
-		let newR = Math.max(l, r);
-		let newT = Math.min(t, b);
-		let newB = Math.max(t, b);
+		const newL = Math.min(l, r);
+		const newR = Math.max(l, r);
+		const newT = Math.min(t, b);
+		const newB = Math.max(t, b);
 		return {l: newL, r: newR, t: newT, b: newB};
 	}
 
@@ -82,11 +82,11 @@ export default class Grid extends React.Component<Props, State> {
 	}
 
 	onMouseMove(x, y) {
-		let scale = this.props.tileSize * this.state.zoom;
-		let relativeMouseX = x / scale;
-		let relativeMouseY = y / scale;
-		let gridL = Math.min(Math.floor(relativeMouseX), this.props.width - 1);
-		let gridR = Math.min(Math.floor(relativeMouseY), this.props.height - 1);
+		const scale = this.props.tileSize * this.state.zoom;
+		const relativeMouseX = x / scale;
+		const relativeMouseY = y / scale;
+		const gridL = Math.min(Math.floor(relativeMouseX), this.props.width - 1);
+		const gridR = Math.min(Math.floor(relativeMouseY), this.props.height - 1);
 		this.onCursorMove(gridL, gridR);
 	}
 
@@ -129,7 +129,7 @@ export default class Grid extends React.Component<Props, State> {
 							break;
 					}
 				}
-				break;		
+				break;
 			default:
 				break;
 		}
@@ -204,7 +204,7 @@ export default class Grid extends React.Component<Props, State> {
 					transformOrigin: '0% 0%',
 				}}
 				onMouseMove={(event) => {
-					let rect = this.canvasRef.current.getBoundingClientRect();
+					const rect = this.canvasRef.current.getBoundingClientRect();
 					this.onMouseMove(event.clientX - rect.left, event.clientY - rect.top);
 				}}
 			/>

@@ -1,25 +1,25 @@
+import Octicon, { ArrowDown, ArrowUp, FileDirectory, Plus, Trashcan } from '@githubprimer/octicons-react';
+import { remote } from 'electron';
 import React from 'react';
 import {
-	Row,
-	Col,
-	Navbar,
-	NavbarBrand,
-	Form,
-	ButtonGroup,
 	Button,
-	ListGroup,
-	ListGroupItem,
+	ButtonGroup,
+	Col,
+	Form,
 	FormGroup,
-	Label,
+	Input,
 	InputGroup,
 	InputGroupAddon,
-	Input,
+	Label,
+	ListGroup,
+	ListGroupItem,
+	Navbar,
+	NavbarBrand,
+	Row,
 } from 'reactstrap';
-import Octicon, { Plus, Trashcan, FileDirectory, ArrowUp, ArrowDown } from '@githubprimer/octicons-react';
 import Project from '../../data/project';
 import { ProjectResources, TilesetImage } from '../../data/project-resources';
 import Grid from '../grid';
-import { remote } from 'electron';
 
 export interface Props {
 	focused: boolean;
@@ -39,18 +39,18 @@ function chooseTilesetImage(props: Props): void {
 	remote.dialog.showOpenDialog({
 		filters: [
 			{name: 'Images', extensions: ['jpg', 'png']},
-		]
+		],
 	}, paths => {
 		if (paths)
-			props.onChooseTilesetImage(props.selectedTilesetIndex, paths[0])
+			props.onChooseTilesetImage(props.selectedTilesetIndex, paths[0]);
 	});
 }
 
 function renderTilesetPreview(props: Props) {
 	if (!props.focused) return;
-	let selectedTilesetImage: TilesetImage = props.resources.tilesetImages[props.selectedTilesetIndex];
+	const selectedTilesetImage: TilesetImage = props.resources.tilesetImages[props.selectedTilesetIndex];
 	if (!selectedTilesetImage) return;
-	if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>
+	if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>;
 	return <Grid
 		tileSize={props.project.tileSize}
 		width={Math.ceil(selectedTilesetImage.width / props.project.tileSize)}
@@ -61,7 +61,7 @@ function renderTilesetPreview(props: Props) {
 }
 
 export default (props: Props) => {
-	let selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
+	const selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
 	return <Row>
 		<Col md={4}>
 			<Navbar color='light'>
@@ -87,7 +87,7 @@ export default (props: Props) => {
 					<Button
 						disabled={!(selectedTileset && props.selectedTilesetIndex !== props.project.tilesets.length - 1)}
 						onClick={() => props.onMoveTilesetDown(props.selectedTilesetIndex)}
-						>
+					>
 						<Octicon icon={ArrowDown}/>
 					</Button>
 				</ButtonGroup>
@@ -137,4 +137,4 @@ export default (props: Props) => {
 			{renderTilesetPreview(props)}
 		</Col>}
 	</Row>;
-}
+};

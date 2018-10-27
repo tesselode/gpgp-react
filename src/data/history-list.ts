@@ -15,12 +15,12 @@ export function addHistory<T>(
 	f: (data: T) => string | boolean,
 	continuedAction = false,
 ): HistoryList<T> {
-	let newHistory = deepCopyObject(historyList);
+	const newHistory = deepCopyObject(historyList);
 	newHistory.steps = newHistory.steps.slice(0, newHistory.position + 1);
-	let newData = deepCopyObject(newHistory.steps[newHistory.steps.length - 1].data);
-	let description = f(newData);
+	const newData = deepCopyObject(newHistory.steps[newHistory.steps.length - 1].data);
+	const description = f(newData);
 	if (typeof description === 'boolean') return historyList;
-	let newStep = {data: newData, description: description}
+	const newStep = {data: newData, description};
 	if (continuedAction)
 		newHistory.steps[newHistory.steps.length - 1] = newStep;
 	else {
@@ -32,9 +32,9 @@ export function addHistory<T>(
 
 export function changeHistoryPosition<T>(
 	historyList: HistoryList<T>,
-	position: number
+	position: number,
 ): HistoryList<T> {
-	let newHistory = deepCopyObject(historyList);
+	const newHistory = deepCopyObject(historyList);
 	newHistory.position = position;
 	return newHistory;
 }

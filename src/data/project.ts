@@ -1,6 +1,6 @@
-import Tileset from "./tileset";
-import { deepCopyObject } from "../util";
 import path from 'path';
+import { deepCopyObject } from "../util";
+import Tileset from "./tileset";
 
 export default interface Project {
 	name: string;
@@ -9,7 +9,7 @@ export default interface Project {
 	defaultMapHeight: number;
 	maxMapWidth: number;
 	maxMapHeight: number;
-	tilesets: Array<Tileset>;
+	tilesets: Tileset[];
 }
 
 export function newProject(): Project {
@@ -21,23 +21,19 @@ export function newProject(): Project {
 		maxMapWidth: 1000,
 		maxMapHeight: 1000,
 		tilesets: [],
-	}
+	};
 }
 
 export function importProject(project: Project, projectFilePath: string): Project {
-	let importedProject = deepCopyObject(project);
-	for (let i = 0; i < importedProject.tilesets.length; i++) {
-		const tileset = importedProject.tilesets[i];
+	const importedProject = deepCopyObject(project);
+	for (const tileset of importedProject.tilesets)
 		tileset.imagePath = path.resolve(path.dirname(projectFilePath), tileset.imagePath);
-	}
 	return importedProject;
 }
 
 export function exportProject(project: Project, projectFilePath: string): Project {
-	let exportedProject = deepCopyObject(project);
-	for (let i = 0; i < exportedProject.tilesets.length; i++) {
-		const tileset = exportedProject.tilesets[i];
+	const exportedProject = deepCopyObject(project);
+	for (const tileset of exportedProject.tilesets)
 		tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
-	}
 	return exportedProject;
 }

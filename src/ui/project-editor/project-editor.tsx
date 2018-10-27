@@ -1,24 +1,30 @@
-import React from 'react';
-import {
-	Navbar,
-	NavbarBrand,
-	Nav,
-	NavItem,
-	NavLink,
-	Label,
-	ButtonGroup,
-	Button,
-	TabPane,
-	TabContent,
-} from 'reactstrap';
-import Project, { newProject, exportProject } from '../../data/project';
-import ProjectSettingsEditor from './project-settings-editor';
-import ProjectTilesetsEditor from './project-tilesets-editor';
-import { ProjectResources, newProjectResources, loadTilesetImage, shallowCopyProjectResources, loadProjectResources } from '../../data/project-resources';
 import { remote } from 'electron';
 import fs from 'fs';
-import { shiftUp, shiftDown, deepCopyObject } from '../../util';
+import React from 'react';
+import {
+	Button,
+	ButtonGroup,
+	Label,
+	Nav,
+	Navbar,
+	NavbarBrand,
+	NavItem,
+	NavLink,
+	TabContent,
+	TabPane,
+} from 'reactstrap';
+import Project, { exportProject, newProject } from '../../data/project';
+import {
+	loadProjectResources,
+	loadTilesetImage,
+	newProjectResources,
+	ProjectResources,
+	shallowCopyProjectResources,
+} from '../../data/project-resources';
+import { deepCopyObject, shiftDown, shiftUp } from '../../util';
 import AppTab from '../app-tab';
+import ProjectSettingsEditor from './project-settings-editor';
+import ProjectTilesetsEditor from './project-tilesets-editor';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -57,9 +63,9 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		if (this.props.project)
 			loadProjectResources(this.props.project).then(resources => {
 				this.setState({
-					resources: resources,
+					resources,
 				});
-			})
+			});
 	}
 
 	exit(onExit: () => void) {
@@ -67,147 +73,147 @@ export default class ProjectEditor extends AppTab<Props, State> {
 	}
 
 	updateTabTitle() {
-		this.props.onChangeTabTitle(this.state.project.name + (this.state.unsavedChanges ? '*' : ''))
+		this.props.onChangeTabTitle(this.state.project.name + (this.state.unsavedChanges ? '*' : ''));
 	}
 
 	onChangeProjectName(name: string) {
-		let project = deepCopyObject(this.state.project);
+		const project = deepCopyObject(this.state.project);
 		project.name = name;
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onChangeTileSize(tileSize: number) {
-		let project = deepCopyObject(this.state.project);
+		const project = deepCopyObject(this.state.project);
 		project.tileSize = tileSize;
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onChangeDefaultMapWidth(defaultMapWidth: number) {
-		let project = deepCopyObject(this.state.project);
+		const project = deepCopyObject(this.state.project);
 		project.defaultMapWidth = defaultMapWidth;
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onChangeDefaultMapHeight(defaultMapHeight: number) {
-		let project = deepCopyObject(this.state.project);
+		const project = deepCopyObject(this.state.project);
 		project.defaultMapHeight = defaultMapHeight;
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onChangeMaxMapWidth(maxMapWidth: number) {
-		let project = deepCopyObject(this.state.project);
+		const project = deepCopyObject(this.state.project);
 		project.maxMapWidth = maxMapWidth;
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onChangeMaxMapHeight(maxMapHeight: number) {
-		let project = deepCopyObject(this.state.project);
+		const project = deepCopyObject(this.state.project);
 		project.maxMapHeight = maxMapHeight;
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onAddTileset() {
-		let project = deepCopyObject(this.state.project);
-		let resources = shallowCopyProjectResources(this.state.resources);
+		const project = deepCopyObject(this.state.project);
+		const resources = shallowCopyProjectResources(this.state.resources);
 		project.tilesets.push({
 			name: 'New tileset',
 			imagePath: '',
 		});
 		resources.tilesetImages.push({});
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-			resources: resources,
+			resources,
 			selectedTilesetIndex: Math.max(this.state.selectedTilesetIndex, 0),
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onRemoveTileset(tilesetIndex: number) {
-		let project = deepCopyObject(this.state.project);
-		let resources = shallowCopyProjectResources(this.state.resources);
+		const project = deepCopyObject(this.state.project);
+		const resources = shallowCopyProjectResources(this.state.resources);
 		project.tilesets.splice(tilesetIndex, 1);
 		resources.tilesetImages.splice(tilesetIndex, 1);
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-			resources: resources,
+			resources,
 			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, project.tilesets.length - 1),
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onMoveTilesetUp(tilesetIndex: number) {
 		if (tilesetIndex === 0) return;
-		let project = deepCopyObject(this.state.project);
-		let resources = shallowCopyProjectResources(this.state.resources);
+		const project = deepCopyObject(this.state.project);
+		const resources = shallowCopyProjectResources(this.state.resources);
 		shiftUp(project.tilesets, tilesetIndex);
 		shiftUp(resources.tilesetImages, tilesetIndex);
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-			resources: resources,
+			resources,
 			selectedTilesetIndex: this.state.selectedTilesetIndex - 1,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onMoveTilesetDown(tilesetIndex: number) {
 		if (tilesetIndex === this.state.project.tilesets.length - 1) return;
-		let project = deepCopyObject(this.state.project);
-		let resources = shallowCopyProjectResources(this.state.resources);
+		const project = deepCopyObject(this.state.project);
+		const resources = shallowCopyProjectResources(this.state.resources);
 		shiftDown(project.tilesets, tilesetIndex);
 		shiftDown(resources.tilesetImages, tilesetIndex);
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-			resources: resources,
+			resources,
 			selectedTilesetIndex: this.state.selectedTilesetIndex + 1,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onChangeTilesetName(tilesetIndex: number, name: string) {
-		let project = deepCopyObject(this.state.project);
+		const project = deepCopyObject(this.state.project);
 		project.tilesets[tilesetIndex].name = name;
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-		}, () => {this.updateTabTitle()});
+		}, () => {this.updateTabTitle(); });
 	}
 
 	onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
-		let project = deepCopyObject(this.state.project);
+		const project = deepCopyObject(this.state.project);
 		project.tilesets[tilesetIndex].imagePath = imagePath;
 		this.setState({
-			project: project,
+			project,
 			unsavedChanges: true,
-		}, () => {this.updateTabTitle()});
-		let resources = shallowCopyProjectResources(this.state.resources);
+		}, () => {this.updateTabTitle(); });
+		const resources = shallowCopyProjectResources(this.state.resources);
 		loadTilesetImage(imagePath).then(image => {
 			resources.tilesetImages[tilesetIndex] = image;
-			this.setState({resources: resources});
-		})
+			this.setState({resources});
+		});
 	}
 
 	save(saveAs = false) {
 		let projectFilePath = this.state.projectFilePath;
 		if (!projectFilePath || saveAs) {
-			let chosenSaveLocation = remote.dialog.showSaveDialog({
+			const chosenSaveLocation = remote.dialog.showSaveDialog({
 				filters: [
 					{name: 'GPGP projects', extensions: ['gpgpproj']},
 				],
@@ -215,17 +221,17 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			if (!chosenSaveLocation) return;
 			projectFilePath = chosenSaveLocation;
 		}
-		let project = exportProject(this.state.project, projectFilePath);
+		const project = exportProject(this.state.project, projectFilePath);
 		fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
 			if (error) {
 				remote.dialog.showErrorBox('Error saving project', 'The project could not be saved.');
 				return;
 			}
 			this.setState({
-				projectFilePath: projectFilePath,
+				projectFilePath,
 				unsavedChanges: false,
-			}, () => {this.updateTabTitle()});
-		})
+			}, () => {this.updateTabTitle(); });
+		});
 	}
 
 	render() {

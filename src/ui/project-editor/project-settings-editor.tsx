@@ -3,10 +3,10 @@ import {
 	Col,
 	Form,
 	FormGroup,
-	Label,
+	Input,
 	InputGroup,
 	InputGroupAddon,
-	Input,
+	Label,
 } from 'reactstrap';
 import Project from '../../data/project';
 
@@ -38,8 +38,8 @@ export default (props: Props) => <Form>
 					type='number'
 					value={props.project.tileSize}
 					onChange={(event) => {
-						let value = Number(event.target.value);
-						if (value !== NaN && value > 0) {
+						const value = Number(event.target.value);
+						if (!isNaN(value) && value > 0) {
 							props.onChangeTileSize(value);
 						}
 					}}
@@ -56,8 +56,8 @@ export default (props: Props) => <Form>
 					type='number'
 					value={props.project.defaultMapWidth}
 					onChange={(event) => {
-						let value = Number(event.target.value);
-						if (value !== NaN && value > 0) {
+						const value = Number(event.target.value);
+						if (!isNaN(value) && value > 0) {
 							props.onChangeDefaultMapWidth(value);
 						}
 					}}
@@ -74,8 +74,8 @@ export default (props: Props) => <Form>
 					type='number'
 					value={props.project.defaultMapHeight}
 					onChange={(event) => {
-						let value = Number(event.target.value);
-						if (value !== NaN && value > 0) {
+						const value = Number(event.target.value);
+						if (!isNaN(value) && value > 0) {
 							props.onChangeDefaultMapHeight(value);
 						}
 					}}
@@ -92,8 +92,8 @@ export default (props: Props) => <Form>
 					type='number'
 					value={props.project.maxMapWidth}
 					onChange={(event) => {
-						let value = Number(event.target.value);
-						if (value !== NaN && value > 0) {
+						const value = Number(event.target.value);
+						if (!isNaN(value) && value > 0) {
 							props.onChangeMaxMapWidth(value);
 						}
 					}}
@@ -110,8 +110,8 @@ export default (props: Props) => <Form>
 					type='number'
 					value={props.project.maxMapHeight}
 					onChange={(event) => {
-						let value = Number(event.target.value);
-						if (value !== NaN && value > 0) {
+						const value = Number(event.target.value);
+						if (!isNaN(value) && value > 0) {
 							props.onChangeMaxMapHeight(value);
 						}
 					}}
@@ -120,4 +120,4 @@ export default (props: Props) => <Form>
 			</InputGroup>
 		</Col>
 	</FormGroup>
-</Form>
+</Form>;
