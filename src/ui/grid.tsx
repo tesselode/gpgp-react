@@ -3,7 +3,13 @@ import { CursorProps } from './cursor/generic-cursor';
 
 const gridRenderingScale = 2;
 
+export enum GridTool {
+	Pencil,
+	Rectangle,
+}
+
 export interface Props {
+	tool?: GridTool;
 	tileSize: number;
 	width: number;
 	height: number;

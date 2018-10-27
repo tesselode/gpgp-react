@@ -12,7 +12,7 @@ import { newTileLayer, isTileLayer } from '../../data/layer/tile-layer';
 import Layer, { LayerType } from '../../data/layer/Layer';
 import TilePicker from './sidebar/tile-picker';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
-import Grid from '../grid';
+import Grid, { GridTool } from '../grid';
 import TileLayerDisplay from './layer/tile-layer-display';
 import LayerOptions from './sidebar/layer-options';
 import { shiftUp, shiftDown } from '../../util';
@@ -22,6 +22,7 @@ import path from 'path';
 import AppTab from '../app-tab';
 import GenericCursor, { CursorProps } from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
+import ToolPalette from './sidebar/tool-palette';
 
 export interface Props {
 	focused: boolean;
@@ -38,6 +39,7 @@ export interface State {
 	levelHistory: HistoryList<Level>;
 	unsavedChanges: boolean;
 	levelFilePath?: string;
+	tool: GridTool;
 	showSelectedLayerOnTop: boolean;
 	selectedLayerIndex: number;
 	selectedTileX: number;
@@ -62,6 +64,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			},
 			unsavedChanges: false,
 			levelFilePath: this.props.levelFilePath,
+			tool: GridTool.Pencil,
 			showSelectedLayerOnTop: true,
 			selectedLayerIndex: 0,
 			selectedTileX: 0,
@@ -287,6 +290,10 @@ export default class LevelEditor extends AppTab<Props, State> {
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
 				<Col md={3} style={{height: '90vh', overflowY: 'auto'}}>
+					<ToolPalette
+						tool={this.state.tool}
+						onToolChanged={(tool) => this.setState({tool: tool})}
+					/>
 					<LevelOptions
 						level={level}
 						onChangeLevelWidth={this.onChangeLevelWidth.bind(this)}
