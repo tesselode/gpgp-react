@@ -40,11 +40,9 @@ Once the project is saved, you can create a new level based on that project. Eac
 - `project-editor.tsx` - optionally receives project data (if opening an existing project) or creates a new blank project. also holds project resources in the state (for now just tileset images)
 - `level-editor.tsx` - receives project data and optionally receives level data. also loads its own copy of the project resources
 - `grid.tsx` - meant to be a reusable interactive grid, so only receives the bare minimum data, like tile size, width, and height. has callbacks for cursor movement, mouse click/release, etc.
-- cursors - pretty weird atm. receives props from both the level editor (such as a tileset image) and the grid (cursor position, adding/removing). not really sustainable i don't think
+- cursors - mainly receives props from the grid. the grid can also pass in additional props that it gets from the level editor
 
 ## Todo
-- [ ] Refactor grid/cursor components
-	- Right now, I'm awkwardly passing two sets of props to the cursor components - one from the level editor, and one from the grid. It SUCks
 - [ ] Add entity layers and entity configuration in project
 	- I'm envisioning the project editor as having an entities tab where you can define a variety of entities, each with a visual representation, size, etc. You can also set parameters of different types - for instance, an enemy might have a jump height parameter, walk speed parameter etc.
 	- In the level editor, you could create entity layers where you place entities and customize the parameters for each instance
