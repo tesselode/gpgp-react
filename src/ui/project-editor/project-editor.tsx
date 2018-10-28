@@ -32,20 +32,28 @@ export enum ProjectEditorTab {
 }
 
 export interface Props {
+	/** The loaded project data, if a project was opened. */
 	project?: Project;
+	/** The path to the project file, if a project was opened. */
 	projectFilePath?: string;
-	focused: boolean;
+	/** A function that is called when the tab title should be updated. */
 	onChangeTabTitle: (title: string) => void;
-	onCloseTab: () => void;
+	/** A function that is called when the "New level" button is pressed. */
 	onCreateNewLevel: (project: Project, projectFilePath: string) => void;
 }
 
 export interface State {
+	/** The current project data. */
 	project: Project;
+	/** Whether there are unsaved changes to the project. */
 	unsavedChanges: boolean;
+	/** The currently loaded resources for the project. */
 	resources: ProjectResources;
+	/** The path to the project file, if it is saved or opened. */
 	projectFilePath?: string;
+	/** The currently active project editor tab. */
 	activeTab: ProjectEditorTab;
+	/** The number of the currently selected tileset. */
 	selectedTilesetIndex: number;
 }
 

@@ -248,8 +248,6 @@ export default class App extends React.Component<{}, State> {
 							ref={tab.ref}
 							project={tab.project}
 							projectFilePath={tab.projectFilePath}
-							focused={this.state.activeTab === i}
-							onCloseTab={() => {this.onCloseTab(i); }}
 							onChangeTabTitle={title => {
 								this.onChangeTabTitle(i, title);
 							}}
@@ -262,8 +260,6 @@ export default class App extends React.Component<{}, State> {
 							projectFilePath={tab.projectFilePath}
 							level={tab.level}
 							levelFilePath={tab.levelFilePath}
-							focused={this.state.activeTab === i}
-							onCloseTab={() => {this.onCloseTab(i); }}
 							onChangeTabTitle={title => {
 								this.onChangeTabTitle(i, title);
 							}}

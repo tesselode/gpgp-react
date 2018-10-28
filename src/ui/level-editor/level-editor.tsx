@@ -25,27 +25,40 @@ import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
 
 export interface Props {
-	focused: boolean;
+	/** The project the currently edited level belongs to. */
 	project: Project;
+	/** The path to the project file. */
 	projectFilePath: string;
-	onChangeTabTitle: (title: string) => void;
-	onCloseTab: () => void;
+	/** The loaded level data, if an existing level was opened. */
 	level?: Level;
+	/** The path to the level file, if an existing level was opened. */
 	levelFilePath?: string;
+	/** A function that is executed when the tab title should be updated. */
+	onChangeTabTitle: (title: string) => void;
 }
 
 export interface State {
+	/** The resources for the level's project. */
 	resources: ProjectResources;
+	/** The history of the level data. */
 	levelHistory: HistoryList<Level>;
+	/** Whether there are unsaved changes to the level. */
 	unsavedChanges: boolean;
+	/** The path to the level file, if it has been saved or opened. */
 	levelFilePath?: string;
+	/** The currently used editing tool. */
 	tool: GridTool;
+	/** Whether the currently selected layer should be shown above all other layers. */
 	showSelectedLayerOnTop: boolean;
+	/** The number of the currently selected layer. */
 	selectedLayerIndex: number;
+	/** The currently selected region of the tileset. */
 	tilesetSelection?: Rect;
+	/** Whether an action is currently taking place. */
 	continuedAction: boolean;
 }
 
+/** The level editor screen. */
 export default class LevelEditor extends AppTab<Props, State> {
 	constructor(props) {
 		super(props);

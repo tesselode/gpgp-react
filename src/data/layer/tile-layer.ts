@@ -2,16 +2,26 @@ import { GridTool } from "../../ui/grid";
 import { Rect } from "../../util";
 import Layer, { LayerItem, LayerType } from "./layer";
 
+/** A tile that can be placed on a tile layer. */
 export interface TileLayerItem extends LayerItem {
+	/** The x position of the tile in the tileset (in tiles). */
 	tileX: number;
+	/** The y position of the tile in the tileset (in tiles). */
 	tileY: number;
 }
 
+/** A layer on which tiles can be placed. Generally used for arranging the visual decorations in a level. */
 export default interface TileLayer extends Layer {
+	/** The number of the tileset in the project for the level. */
 	tilesetIndex: number;
+	/** The tiles placed on the layer. */
 	items: TileLayerItem[];
 }
 
+/**
+ * Creates a new, empty tile layer.
+ * @param tilesetIndex The number of the tileset to use in the project.
+ */
 export function newTileLayer(tilesetIndex: number): TileLayer {
 	return {
 		name: 'New tile layer',
@@ -22,14 +32,30 @@ export function newTileLayer(tilesetIndex: number): TileLayer {
 	};
 }
 
+/**
+ * Returns whether a layer is a tile layer.
+ * @param layer The layer to check.
+ */
 export function isTileLayer(layer: Layer): layer is TileLayer {
 	return layer.type === LayerType.Tile;
 }
 
+/**
+ * Removes a tile from a tile layer.
+ * @param layer The tile layer to remove.
+ * @param rect The rectangle to remove tiles within.
+ */
 export function removeTile(layer: TileLayer, rect: Rect) {
 	layer.items = layer.items.filter(item => item.x < rect.l || item.x > rect.r || item.y < rect.t || item.y > rect.b);
 }
 
+/**
+ * Places a tile on a tile layer.
+ * @param tool The editing tool that is currently being used.
+ * @param layer The layer to place a tile on.
+ * @param rect The region of the layer to place tiles on.
+ * @param tiles The region on the tileset to pull tiles from.
+ */
 export function placeTile(tool: GridTool, layer: TileLayer, rect: Rect, tiles: Rect) {
 	removeTile(layer, rect);
 	switch (tool) {
