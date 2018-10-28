@@ -2,11 +2,15 @@ import React from 'react';
 import { Button, Col, Jumbotron, Row } from 'reactstrap';
 
 export interface Props {
+	/** A function that is called when the "New project" button is pressed. */
 	onCreateNewProject: () => void;
+	/** A function that is called when the "Open project" button is pressed. */
 	onOpenProject: () => void;
+	/** A function that is called when the "Open level" button is pressed. */
 	onOpenLevel: () => void;
 }
 
+/** The introductory screen that is shown when no tabs are open. */
 const Welcome = (props: Props) =>
 	<Jumbotron>
 		<h1>Welcome to GPGP</h1>

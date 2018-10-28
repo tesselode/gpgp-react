@@ -2,36 +2,67 @@ import React from 'react';
 import { Rect } from '../util';
 import { CursorProps } from './cursor/generic-cursor';
 
+/** The resolution multiplier for rendering the grid lines. */
 const gridRenderingScale = 2;
 
+/** The types of editing tools that can be used on a grid. */
 export enum GridTool {
+	/** Draws individual items by dragging over squares. */
 	Pencil,
+	/** Places rectangles of items. */
 	Rectangle,
 }
 
 export interface Props {
+	/** The width and height of tiles (in pixels). */
 	tileSize: number;
+	/** The width of the grid (in tiles). */
 	width: number;
+	/** The height of the grid (in tiles). */
 	height: number;
+	/** The zoom multiplier when the grid is first displayed (defaults to 2.0). */
 	startingZoom?: number;
+	/** The tool that is currently being used (defaults to the pencil tool). */
 	tool?: GridTool;
+	/** Whether the ability to remove items should be disabled. */
 	disableRemoving?: boolean;
+	/** The cursor component to render at the current mouse posoition. */
 	cursor?: React.ComponentClass<CursorProps>;
+	/** Additional properties to pass to the cursor element. */
 	additionalCursorProps?: object;
+	/** A function that is called when items are placed in a rectangular region. */
 	onPlace?: (rect: Rect) => void;
+	/** A function that is called when items are removed in a rectangular region. */
 	onRemove?: (rect: Rect) => void;
+	/** A function that is called when the left or right mouse button is released. */
 	onMouseUp?: () => void;
 }
 
 export interface State {
+	/** The current zoom level of the grid. */
 	zoom: number;
+	/** The left coordinate of the rectangular cursor region (in tiles). */
 	cursorL: number;
+	/** The top coordinate of the rectangular cursor region (in tiles). */
 	cursorT: number;
+	/** The right coordinate of the rectangular cursor region (in tiles).
+	 * Assumed to be the same as the left coordinate if null.
+	 */
 	cursorR?: number;
+	/** The bottom coordinate of the rectangular cursor region (in tiles).
+	 * Assumed to be the same as the left coordinate if null.
+	 */
 	cursorB?: number;
+	/** The number of the mouse button that is held down, or false if no button is held.
+	 * (0 = left mouse button, 2 = right mouse button)
+	 */
 	mouseDown: number | boolean;
 }
 
+/** An interactive grid that can be used for placing and removing tiles,
+ * selecting regions, or just displaying an image.
+ * Elements can be drawn on the grid by passing them as children.
+ */
 export default class Grid extends React.Component<Props, State> {
 	private canvasRef = React.createRef<HTMLCanvasElement>();
 
@@ -45,6 +76,9 @@ export default class Grid extends React.Component<Props, State> {
 		};
 	}
 
+	/** Normalizes the current cursor rectangle so that the top-left corner is
+	 * actually above and to the left of the bottom-right corner.
+	 */
 	private getNormalizedCursorRect(): Rect {
 		const l = this.state.cursorL;
 		const t = this.state.cursorT;
@@ -154,6 +188,7 @@ export default class Grid extends React.Component<Props, State> {
 		}
 	}
 
+	/** Renders the lines of the grid. */
 	private renderCanvas() {
 		const canvas = this.canvasRef.current;
 		canvas.width = this.props.width * this.props.tileSize * gridRenderingScale;

@@ -5,13 +5,19 @@ import Project from '../../../data/project';
 import { TilesetImage } from '../../../data/project-resources';
 
 export interface Props {
+	/** The project the level is for. */
 	project: Project;
+	/** The level the layer belongs to. */
 	level: Level;
+	/** The tile layer to display. */
 	layer: TileLayer;
+	/** The image data for the tileset used by the tile layer. */
 	tilesetImageData?: TilesetImage;
+	/** The depth the layer should be displayed at. */
 	order: number;
 }
 
+/** A visual representation of a tile layer in a level. */
 export default class TileLayerDisplay extends React.Component<Props> {
 	private canvasRef = React.createRef<HTMLCanvasElement>();
 	private imageRef = React.createRef<HTMLImageElement>();

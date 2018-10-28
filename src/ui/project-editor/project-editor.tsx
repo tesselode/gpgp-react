@@ -57,6 +57,7 @@ export interface State {
 	selectedTilesetIndex: number;
 }
 
+/** The project editor screen, which allows you to create new projects or edit existing ones. */
 export default class ProjectEditor extends AppTab<Props, State> {
 	constructor(props) {
 		super(props);

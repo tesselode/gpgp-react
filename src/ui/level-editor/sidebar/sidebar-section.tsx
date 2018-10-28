@@ -2,16 +2,22 @@ import React from 'react';
 import { Button, Card, CardBody, CardHeader, Collapse, Navbar } from 'reactstrap';
 
 export interface Props {
+	/** The title of the sidebar section. */
 	name: string;
+	/** Whether the section should be expanded by default. */
 	startExpanded?: boolean;
+	/** Whether the contents of the section should have zero padding. */
 	flush?: boolean;
+	/** Additional elements to add to the section header. */
 	headerContent?: JSX.Element;
 }
 
 export interface State {
+	/** Whether the section is currently expanded. */
 	expanded: boolean;
 }
 
+/** A collapsible card used for the various settings groups in the level editor sidebar. */
 export default class SidebarSection extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);

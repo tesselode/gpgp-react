@@ -58,7 +58,7 @@ export interface State {
 	continuedAction: boolean;
 }
 
-/** The level editor screen. */
+/** The level editor screen, which allows you to create or edit levels. */
 export default class LevelEditor extends AppTab<Props, State> {
 	constructor(props) {
 		super(props);

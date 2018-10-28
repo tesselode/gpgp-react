@@ -4,12 +4,17 @@ import Level from '../../../data/level';
 import Project from '../../../data/project';
 
 export interface Props {
+	/** The project the level is for. */
 	project: Project;
+	/** The level the layer belongs to. */
 	level: Level;
+	/** The geometry layer to display. */
 	layer: GeometryLayer;
+	/** The depth the layer should be displayed at. */
 	order: number;
 }
 
+/** A visual representation of a geometry layer in a level. */
 export default class GeometryLayerDisplay extends React.Component<Props> {
 	private canvasRef = React.createRef<HTMLCanvasElement>();
 
