@@ -4,6 +4,7 @@ import { TilesetImage } from '../../../data/project-resources';
 import { Rect } from '../../../util';
 import Grid, { GridTool } from '../../grid';
 import SidebarSection from './sidebar-section';
+import GenericCursor from '../../cursor/generic-cursor';
 
 export interface Props {
 	project: Project;
@@ -31,11 +32,13 @@ export default (props: Props) => <SidebarSection
 			}}
 		>
 			<Grid
-				tool={GridTool.Rectangle}
 				tileSize={props.project.tileSize}
 				width={Math.ceil(props.tilesetImageData.width / props.project.tileSize)}
 				height={Math.ceil(props.tilesetImageData.height / props.project.tileSize)}
 				startingZoom={1}
+				tool={GridTool.Rectangle}
+				disableRemoving
+				cursor={GenericCursor}
 				onPlace={(rect) => {props.onSelectTiles(rect); }}
 			>
 				<img src={props.tilesetImageData.data}/>

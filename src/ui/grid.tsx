@@ -10,11 +10,12 @@ export enum GridTool {
 }
 
 export interface Props {
-	tool?: GridTool;
 	tileSize: number;
 	width: number;
 	height: number;
 	startingZoom?: number;
+	tool?: GridTool;
+	disableRemoving?: boolean;
 	cursor?: React.ComponentClass<CursorProps>;
 	additionalCursorProps?: object;
 	onPlace?: (rect: Rect) => void;
@@ -73,7 +74,8 @@ export default class Grid extends React.Component<Props, State> {
 						if (this.props.onPlace) this.props.onPlace(this.getNormalizedCursorRect());
 						break;
 					case 2:
-						if (this.props.onRemove) this.props.onRemove(this.getNormalizedCursorRect());
+						if (!this.props.disableRemoving && this.props.onRemove)
+							this.props.onRemove(this.getNormalizedCursorRect());
 						break;
 					default:
 						break;
@@ -103,7 +105,7 @@ export default class Grid extends React.Component<Props, State> {
 							this.props.onPlace(this.getNormalizedCursorRect());
 						break;
 					case 2:
-						if (this.props.onRemove)
+						if (!this.props.disableRemoving && this.props.onRemove)
 							this.props.onRemove(this.getNormalizedCursorRect());
 						break;
 					default:
@@ -123,7 +125,7 @@ export default class Grid extends React.Component<Props, State> {
 								this.props.onPlace(this.getNormalizedCursorRect());
 							break;
 						case 2:
-							if (this.props.onRemove)
+							if (!this.props.disableRemoving && this.props.onRemove)
 								this.props.onRemove(this.getNormalizedCursorRect());
 							break;
 						default:
@@ -210,13 +212,15 @@ export default class Grid extends React.Component<Props, State> {
 				}}
 			/>
 			{this.props.children}
-			{this.props.cursor && React.createElement(this.props.cursor, {
-				...this.props.additionalCursorProps,
-				enabled: true,
-				tileSize: this.props.tileSize,
-				cursor: this.getNormalizedCursorRect(),
-				removing: this.state.mouseDown === 2,
-			})}
+			{this.props.cursor && !(this.state.mouseDown === 2 && this.props.disableRemoving) &&
+				React.createElement(this.props.cursor, {
+					...this.props.additionalCursorProps,
+					enabled: true,
+					tileSize: this.props.tileSize,
+					cursor: this.getNormalizedCursorRect(),
+					removing: this.state.mouseDown === 2,
+				})
+			}
 		</div>;
 	}
 }
