@@ -17,7 +17,7 @@ export default (props: CursorProps) =>
 			width: props.tileSize * (props.cursor.r - props.cursor.l + 1) + 'px',
 			height: props.tileSize * (props.cursor.b - props.cursor.t + 1) + 'px',
 			opacity: props.enabled ? 1 : 0,
-			background: props.removing ? 'rgba(1, 0, 0, .1)' : 'rgba(0, 0, 0, .1)',
+			background: props.removing ? 'rgba(255, 0, 0, .1)' : 'rgba(0, 0, 0, .1)',
 			pointerEvents: 'none',
 		}}
 	/>;

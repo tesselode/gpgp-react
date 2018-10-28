@@ -213,6 +213,7 @@ export default class Grid extends React.Component<Props, State> {
 				enabled: true,
 				tileSize: this.props.tileSize,
 				cursor: this.getNormalizedCursorRect(),
+				removing: this.state.mouseDown === 2,
 			})}
 		</div>;
 	}
