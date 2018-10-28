@@ -2,16 +2,27 @@ import path from 'path';
 import { deepCopyObject } from "../util";
 import Tileset from "./tileset";
 
+/** A project containing the settings for a game's levels. */
 export default interface Project {
+	/** The name of the project. */
 	name: string;
+	/** The tile size of levels in this project (in pixels). */
 	tileSize: number;
+	/** The default width of levels in this project (in tiles). */
 	defaultMapWidth: number;
+	/** The default height of levels in this project (in tiles). */
 	defaultMapHeight: number;
+	/** The maximum width of levels in this project (in tiles). */
 	maxMapWidth: number;
+	/** The maximum height of levels in this project (in tiles). */
 	maxMapHeight: number;
+	/** A list of the tilesets that can be used by levels in this project. */
 	tilesets: Tileset[];
 }
 
+/**
+ * Creates a new, empty project.
+ */
 export function newProject(): Project {
 	return {
 		name: 'New project',
@@ -24,6 +35,11 @@ export function newProject(): Project {
 	};
 }
 
+/**
+ * Imports a project for use after loading it from the filesystem.
+ * @param project The project to import.
+ * @param projectFilePath The path to the project file.
+ */
 export function importProject(project: Project, projectFilePath: string): Project {
 	const importedProject = deepCopyObject(project);
 	for (const tileset of importedProject.tilesets)
@@ -31,6 +47,11 @@ export function importProject(project: Project, projectFilePath: string): Projec
 	return importedProject;
 }
 
+/**
+ * Exports a project to be saved as a file.
+ * @param project The project to export.
+ * @param projectFilePath The path the project will be saved to.
+ */
 export function exportProject(project: Project, projectFilePath: string): Project {
 	const exportedProject = deepCopyObject(project);
 	for (const tileset of exportedProject.tilesets)
