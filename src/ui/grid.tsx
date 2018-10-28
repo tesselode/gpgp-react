@@ -15,7 +15,8 @@ export interface Props {
 	width: number;
 	height: number;
 	startingZoom?: number;
-	cursor?: (props: CursorProps) => JSX.Element;
+	cursor?: React.ComponentClass<CursorProps>;
+	additionalCursorProps?: object;
 	onPlace?: (rect: Rect) => void;
 	onRemove?: (rect: Rect) => void;
 	onMouseUp?: () => void;
@@ -209,7 +210,8 @@ export default class Grid extends React.Component<Props, State> {
 				}}
 			/>
 			{this.props.children}
-			{this.props.cursor && this.props.cursor({
+			{this.props.cursor && React.createElement(this.props.cursor, {
+				...this.props.additionalCursorProps,
 				enabled: true,
 				tileSize: this.props.tileSize,
 				cursor: this.getNormalizedCursorRect(),

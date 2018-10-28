@@ -280,16 +280,6 @@ export default class LevelEditor extends AppTab<Props, State> {
 		});
 	}
 
-	private getCursor(layer: Layer): (props: CursorProps) => JSX.Element {
-		if (isTileLayer(layer))
-			return TileCursor({
-				tool: this.state.tool,
-				tilesetImage: this.state.resources.tilesetImages[layer.tilesetIndex],
-				tilesetSelection: this.state.tilesetSelection,
-			});
-		return GenericCursor;
-	}
-
 	public render() {
 		const level = getCurrentHistoryState(this.state.levelHistory);
 		const selectedLayer = level.layers[this.state.selectedLayerIndex];
@@ -355,7 +345,16 @@ export default class LevelEditor extends AppTab<Props, State> {
 						width={level.width}
 						height={level.height}
 						tool={this.state.tool}
-						cursor={this.getCursor(selectedLayer)}
+						cursor={
+							selectedLayer.type === LayerType.Tile ? TileCursor : GenericCursor
+						}
+						additionalCursorProps={
+							isTileLayer(selectedLayer) && {
+								tool: this.state.tool,
+								tilesetImage: this.state.resources.tilesetImages[selectedLayer.tilesetIndex],
+								tilesetSelection: this.state.tilesetSelection,
+							}
+						}
 						onPlace={this.onPlace.bind(this)}
 						onRemove={this.onRemove.bind(this)}
 						onMouseUp={() => this.setState({continuedAction: false})}

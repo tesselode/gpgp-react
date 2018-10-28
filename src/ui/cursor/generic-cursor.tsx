@@ -8,16 +8,19 @@ export interface CursorProps {
 	removing?: boolean;
 }
 
-export default (props: CursorProps) =>
-	<div
-		style={{
-			position: 'absolute',
-			left: props.cursor.l * props.tileSize + 1 + 'px',
-			top: props.cursor.t * props.tileSize + 1 + 'px',
-			width: props.tileSize * (props.cursor.r - props.cursor.l + 1) + 'px',
-			height: props.tileSize * (props.cursor.b - props.cursor.t + 1) + 'px',
-			opacity: props.enabled ? 1 : 0,
-			background: props.removing ? 'rgba(255, 0, 0, .1)' : 'rgba(0, 0, 0, .1)',
-			pointerEvents: 'none',
-		}}
-	/>;
+export default class GenericCursor extends React.Component<CursorProps> {
+	public render() {
+		return <div
+			style={{
+				position: 'absolute',
+				left: this.props.cursor.l * this.props.tileSize + 1 + 'px',
+				top: this.props.cursor.t * this.props.tileSize + 1 + 'px',
+				width: this.props.tileSize * (this.props.cursor.r - this.props.cursor.l + 1) + 'px',
+				height: this.props.tileSize * (this.props.cursor.b - this.props.cursor.t + 1) + 'px',
+				opacity: this.props.enabled ? 1 : 0,
+				background: this.props.removing ? 'rgba(255, 0, 0, .1)' : 'rgba(0, 0, 0, .1)',
+				pointerEvents: 'none',
+			}}
+		/>;
+	}
+}
