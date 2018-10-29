@@ -80,7 +80,7 @@ export function isSwitchEntityParameter(p: EntityParameter): p is SwitchEntityPa
 	return p.type === EntityParameterType.Switch;
 }
 
-/** The settings for an entity/ */
+/** The settings for an entity. */
 export default interface Entity {
 	/** The name of the entity. */
 	name: string;
@@ -96,4 +96,15 @@ export default interface Entity {
 	color: string;
 	/** The parameters that can be set for instances of the entity. */
 	parameters: EntityParameter[];
+}
+
+/** Creates a new, empty entity. */
+export function newEntity(): Entity {
+	return {
+		name: 'New entity',
+		width: 1,
+		height: 1,
+		color: '#ee0000',
+		parameters: [],
+	};
 }

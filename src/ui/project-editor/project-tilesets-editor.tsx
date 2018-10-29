@@ -26,12 +26,12 @@ export interface Props {
 	project: Project;
 	resources: ProjectResources;
 	selectedTilesetIndex: number;
+	onSelectTileset: (tilesetIndex: number) => void;
 	onAddTileset: () => void;
 	onRemoveTileset: (tilesetIndex: number) => void;
 	onMoveTilesetUp: (tilesetIndex: number) => void;
 	onMoveTilesetDown: (tilesetIndex: number) => void;
 	onChangeTilesetName: (tilesetIndex: number, name: string) => void;
-	onSelectTileset: (tilesetIndex: number) => void;
 	onChooseTilesetImage: (tilesetIndex: number, imagePath: string) => void;
 }
 

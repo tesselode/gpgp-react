@@ -13,6 +13,7 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
+import { newEntity } from '../../data/entity';
 import Project, { exportProject, newProject } from '../../data/project';
 import {
 	loadProjectResources,
@@ -23,12 +24,14 @@ import {
 } from '../../data/project-resources';
 import { deepCopyObject, shiftDown, shiftUp } from '../../util';
 import AppTab from '../app-tab';
+import ProjectEntitiesEditor from './project-entities-editor';
 import ProjectSettingsEditor from './project-settings-editor';
 import ProjectTilesetsEditor from './project-tilesets-editor';
 
 export enum ProjectEditorTab {
 	Settings,
 	Tilesets,
+	Entities,
 }
 
 export interface Props {
@@ -55,6 +58,8 @@ export interface State {
 	activeTab: ProjectEditorTab;
 	/** The number of the currently selected tileset. */
 	selectedTilesetIndex: number;
+	/** The number of the currently selected entity. */
+	selectedEntityIndex: number;
 }
 
 /** The project editor screen, which allows you to create new projects or edit existing ones. */
@@ -67,6 +72,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			resources: newProjectResources(),
 			projectFilePath: this.props.projectFilePath,
 			selectedTilesetIndex: 0,
+			selectedEntityIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
 		if (this.props.project)
@@ -219,6 +225,48 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		});
 	}
 
+	private onAddEntity() {
+		const project = deepCopyObject(this.state.project);
+		project.entities.push(newEntity());
+		this.setState({
+			project,
+			unsavedChanges: true,
+			selectedEntityIndex: Math.max(this.state.selectedEntityIndex, 0),
+		}, () => {this.updateTabTitle(); });
+	}
+
+	private onRemoveEntity(entityIndex: number) {
+		const project = deepCopyObject(this.state.project);
+		project.entities.splice(entityIndex, 1);
+		this.setState({
+			project,
+			unsavedChanges: true,
+			selectedEntityIndex: Math.min(this.state.selectedEntityIndex, project.entities.length - 1),
+		}, () => {this.updateTabTitle(); });
+	}
+
+	private onMoveEntityUp(entityIndex: number) {
+		if (entityIndex === 0) return;
+		const project = deepCopyObject(this.state.project);
+		shiftUp(project.entities, entityIndex);
+		this.setState({
+			project,
+			unsavedChanges: true,
+			selectedEntityIndex: this.state.selectedEntityIndex - 1,
+		}, () => {this.updateTabTitle(); });
+	}
+
+	private onMoveEntityDown(entityIndex: number) {
+		if (entityIndex === this.state.project.entities.length - 1) return;
+		const project = deepCopyObject(this.state.project);
+		shiftDown(project.entities, entityIndex);
+		this.setState({
+			project,
+			unsavedChanges: true,
+			selectedEntityIndex: this.state.selectedEntityIndex + 1,
+		}, () => {this.updateTabTitle(); });
+	}
+
 	public save(saveAs = false) {
 		let projectFilePath = this.state.projectFilePath;
 		if (!projectFilePath || saveAs) {
@@ -291,6 +339,14 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						Tilesets
 					</NavLink>
 				</NavItem>
+				<NavItem>
+					<NavLink
+						active={this.state.activeTab === ProjectEditorTab.Entities}
+						onClick={() => this.setState({activeTab: ProjectEditorTab.Entities})}
+					>
+						Entities
+					</NavLink>
+				</NavItem>
 			</Nav>
 			<TabContent
 				activeTab={this.state.activeTab}
@@ -313,13 +369,26 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						project={this.state.project}
 						resources={this.state.resources}
 						selectedTilesetIndex={this.state.selectedTilesetIndex}
+						onSelectTileset={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
 						onAddTileset={this.onAddTileset.bind(this)}
 						onRemoveTileset={this.onRemoveTileset.bind(this)}
 						onMoveTilesetDown={this.onMoveTilesetDown.bind(this)}
 						onMoveTilesetUp={this.onMoveTilesetUp.bind(this)}
 						onChangeTilesetName={this.onChangeTilesetName.bind(this)}
-						onSelectTileset={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
 						onChooseTilesetImage={this.onChooseTilesetImage.bind(this)}
+					/>
+				</TabPane>
+				<TabPane tabId={ProjectEditorTab.Entities}>
+					<ProjectEntitiesEditor
+						focused={this.state.activeTab === ProjectEditorTab.Entities}
+						project={this.state.project}
+						resources={this.state.resources}
+						selectedEntityIndex={this.state.selectedEntityIndex}
+						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
+						onAddEntity={this.onAddEntity.bind(this)}
+						onRemoveEntity={this.onRemoveEntity.bind(this)}
+						onMoveEntityDown={this.onMoveEntityDown.bind(this)}
+						onMoveEntityUp={this.onMoveEntityUp.bind(this)}
 					/>
 				</TabPane>
 			</TabContent>

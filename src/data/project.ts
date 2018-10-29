@@ -1,5 +1,6 @@
 import path from 'path';
 import { deepCopyObject } from "../util";
+import Entity from './entity';
 import Tileset from "./tileset";
 
 /** A project containing the settings for a game's levels. */
@@ -18,6 +19,8 @@ export default interface Project {
 	maxMapHeight: number;
 	/** A list of the tilesets that can be used by levels in this project. */
 	tilesets: Tileset[];
+	/** A list of the entities that can be used by levels in this project. */
+	entities: Entity[];
 }
 
 /**
@@ -32,6 +35,7 @@ export function newProject(): Project {
 		maxMapWidth: 1000,
 		maxMapHeight: 1000,
 		tilesets: [],
+		entities: [],
 	};
 }
 
