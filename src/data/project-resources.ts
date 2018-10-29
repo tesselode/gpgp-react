@@ -68,6 +68,6 @@ export function loadProjectResources(project: Project): Promise<ProjectResources
  */
 export function shallowCopyProjectResources(projectResources: ProjectResources): ProjectResources {
 	const resources = newProjectResources();
-	resources.tilesetImages = projectResources.tilesetImages;
+	resources.tilesetImages = projectResources.tilesetImages.slice(0, projectResources.tilesetImages.length);
 	return resources;
 }

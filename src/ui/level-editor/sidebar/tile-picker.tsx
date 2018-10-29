@@ -2,9 +2,9 @@ import React from 'react';
 import Project from '../../../data/project';
 import { TilesetImage } from '../../../data/project-resources';
 import { Rect } from '../../../util';
+import GenericCursor from '../../cursor/generic-cursor';
 import Grid, { GridTool } from '../../grid';
 import SidebarSection from './sidebar-section';
-import GenericCursor from '../../cursor/generic-cursor';
 
 export interface Props {
 	project: Project;

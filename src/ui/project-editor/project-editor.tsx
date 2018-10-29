@@ -22,6 +22,7 @@ import {
 	ProjectResources,
 	shallowCopyProjectResources,
 } from '../../data/project-resources';
+import { newTileset } from '../../data/tileset';
 import { deepCopyObject, shiftDown, shiftUp } from '../../util';
 import AppTab from '../app-tab';
 import ProjectEntitiesEditor from './project-entities-editor';
@@ -91,133 +92,85 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		this.props.onChangeTabTitle(this.state.project.name + (this.state.unsavedChanges ? '*' : ''));
 	}
 
-	private onChangeProjectName(name: string) {
+	private modifyProject(f: (project: Project) => void): void {
 		const project = deepCopyObject(this.state.project);
-		project.name = name;
+		f(project);
 		this.setState({
 			project,
 			unsavedChanges: true,
 		}, () => {this.updateTabTitle(); });
+	}
+
+	private modifyProjectResources(f: (resources: ProjectResources) => void): void {
+		const resources = shallowCopyProjectResources(this.state.resources);
+		f(resources);
+		this.setState({resources});
+	}
+
+	private onChangeProjectName(name: string) {
+		this.modifyProject(project => {project.name = name; });
 	}
 
 	private onChangeTileSize(tileSize: number) {
-		const project = deepCopyObject(this.state.project);
-		project.tileSize = tileSize;
-		this.setState({
-			project,
-			unsavedChanges: true,
-		}, () => {this.updateTabTitle(); });
+		this.modifyProject(project => {project.tileSize = tileSize; });
 	}
 
 	private onChangeDefaultMapWidth(defaultMapWidth: number) {
-		const project = deepCopyObject(this.state.project);
-		project.defaultMapWidth = defaultMapWidth;
-		this.setState({
-			project,
-			unsavedChanges: true,
-		}, () => {this.updateTabTitle(); });
+		this.modifyProject(project => {project.defaultMapWidth = defaultMapWidth; });
 	}
 
 	private onChangeDefaultMapHeight(defaultMapHeight: number) {
-		const project = deepCopyObject(this.state.project);
-		project.defaultMapHeight = defaultMapHeight;
-		this.setState({
-			project,
-			unsavedChanges: true,
-		}, () => {this.updateTabTitle(); });
+		this.modifyProject(project => {project.defaultMapHeight = defaultMapHeight; });
 	}
 
 	private onChangeMaxMapWidth(maxMapWidth: number) {
-		const project = deepCopyObject(this.state.project);
-		project.maxMapWidth = maxMapWidth;
-		this.setState({
-			project,
-			unsavedChanges: true,
-		}, () => {this.updateTabTitle(); });
+		this.modifyProject(project => {project.maxMapWidth = maxMapWidth; });
 	}
 
 	private onChangeMaxMapHeight(maxMapHeight: number) {
-		const project = deepCopyObject(this.state.project);
-		project.maxMapHeight = maxMapHeight;
-		this.setState({
-			project,
-			unsavedChanges: true,
-		}, () => {this.updateTabTitle(); });
+		this.modifyProject(project => {project.maxMapHeight = maxMapHeight; });
 	}
 
 	private onAddTileset() {
-		const project = deepCopyObject(this.state.project);
-		const resources = shallowCopyProjectResources(this.state.resources);
-		project.tilesets.push({
-			name: 'New tileset',
-			imagePath: '',
-		});
-		resources.tilesetImages.push({});
+		this.modifyProject(project => {project.tilesets.push(newTileset()); });
+		this.modifyProjectResources(resources => {resources.tilesetImages.push({}); });
 		this.setState({
-			project,
-			unsavedChanges: true,
-			resources,
 			selectedTilesetIndex: Math.max(this.state.selectedTilesetIndex, 0),
-		}, () => {this.updateTabTitle(); });
+		});
 	}
 
 	private onRemoveTileset(tilesetIndex: number) {
-		const project = deepCopyObject(this.state.project);
-		const resources = shallowCopyProjectResources(this.state.resources);
-		project.tilesets.splice(tilesetIndex, 1);
-		resources.tilesetImages.splice(tilesetIndex, 1);
+		this.modifyProject(project => {project.tilesets.splice(tilesetIndex, 1); });
+		this.modifyProjectResources(resources => {resources.tilesetImages.splice(tilesetIndex, 1); });
 		this.setState({
-			project,
-			unsavedChanges: true,
-			resources,
-			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, project.tilesets.length - 1),
-		}, () => {this.updateTabTitle(); });
+			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, this.state.project.tilesets.length - 2),
+		});
 	}
 
 	private onMoveTilesetUp(tilesetIndex: number) {
 		if (tilesetIndex === 0) return;
-		const project = deepCopyObject(this.state.project);
-		const resources = shallowCopyProjectResources(this.state.resources);
-		shiftUp(project.tilesets, tilesetIndex);
-		shiftUp(resources.tilesetImages, tilesetIndex);
+		this.modifyProject(project => {shiftUp(project.tilesets, tilesetIndex); });
+		this.modifyProjectResources(resources => {shiftUp(resources.tilesetImages, tilesetIndex); });
 		this.setState({
-			project,
-			unsavedChanges: true,
-			resources,
 			selectedTilesetIndex: this.state.selectedTilesetIndex - 1,
-		}, () => {this.updateTabTitle(); });
+		});
 	}
 
 	private onMoveTilesetDown(tilesetIndex: number) {
 		if (tilesetIndex === this.state.project.tilesets.length - 1) return;
-		const project = deepCopyObject(this.state.project);
-		const resources = shallowCopyProjectResources(this.state.resources);
-		shiftDown(project.tilesets, tilesetIndex);
-		shiftDown(resources.tilesetImages, tilesetIndex);
+		this.modifyProject(project => {shiftDown(project.tilesets, tilesetIndex); });
+		this.modifyProjectResources(resources => {shiftDown(resources.tilesetImages, tilesetIndex); });
 		this.setState({
-			project,
-			unsavedChanges: true,
-			resources,
 			selectedTilesetIndex: this.state.selectedTilesetIndex + 1,
-		}, () => {this.updateTabTitle(); });
+		});
 	}
 
 	private onChangeTilesetName(tilesetIndex: number, name: string) {
-		const project = deepCopyObject(this.state.project);
-		project.tilesets[tilesetIndex].name = name;
-		this.setState({
-			project,
-			unsavedChanges: true,
-		}, () => {this.updateTabTitle(); });
+		this.modifyProject(project => {project.tilesets[tilesetIndex].name = name; });
 	}
 
 	private onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
-		const project = deepCopyObject(this.state.project);
-		project.tilesets[tilesetIndex].imagePath = imagePath;
-		this.setState({
-			project,
-			unsavedChanges: true,
-		}, () => {this.updateTabTitle(); });
+		this.modifyProject(project => {project.tilesets[tilesetIndex].imagePath = imagePath; });
 		const resources = shallowCopyProjectResources(this.state.resources);
 		loadTilesetImage(imagePath).then(image => {
 			resources.tilesetImages[tilesetIndex] = image;

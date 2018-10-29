@@ -5,3 +5,10 @@ export default interface Tileset {
 	/** The path to the tileset image. */
 	imagePath: string;
 }
+
+export function newTileset(): Tileset {
+	return {
+		name: 'New tileset',
+		imagePath: '',
+	};
+}
