@@ -179,45 +179,33 @@ export default class ProjectEditor extends AppTab<Props, State> {
 	}
 
 	private onAddEntity() {
-		const project = deepCopyObject(this.state.project);
-		project.entities.push(newEntity());
+		this.modifyProject(project => {project.entities.push(newEntity()); });
 		this.setState({
-			project,
-			unsavedChanges: true,
 			selectedEntityIndex: Math.max(this.state.selectedEntityIndex, 0),
-		}, () => {this.updateTabTitle(); });
+		});
 	}
 
 	private onRemoveEntity(entityIndex: number) {
-		const project = deepCopyObject(this.state.project);
-		project.entities.splice(entityIndex, 1);
+		this.modifyProject(project => {project.entities.splice(entityIndex, 1); });
 		this.setState({
-			project,
-			unsavedChanges: true,
-			selectedEntityIndex: Math.min(this.state.selectedEntityIndex, project.entities.length - 1),
-		}, () => {this.updateTabTitle(); });
+			selectedEntityIndex: Math.min(this.state.selectedEntityIndex, this.state.project.entities.length - 2),
+		});
 	}
 
 	private onMoveEntityUp(entityIndex: number) {
 		if (entityIndex === 0) return;
-		const project = deepCopyObject(this.state.project);
-		shiftUp(project.entities, entityIndex);
+		this.modifyProject(project => {shiftUp(project.entities, entityIndex); });
 		this.setState({
-			project,
-			unsavedChanges: true,
 			selectedEntityIndex: this.state.selectedEntityIndex - 1,
-		}, () => {this.updateTabTitle(); });
+		});
 	}
 
 	private onMoveEntityDown(entityIndex: number) {
 		if (entityIndex === this.state.project.entities.length - 1) return;
-		const project = deepCopyObject(this.state.project);
-		shiftDown(project.entities, entityIndex);
+		this.modifyProject(project => {shiftDown(project.entities, entityIndex); });
 		this.setState({
-			project,
-			unsavedChanges: true,
 			selectedEntityIndex: this.state.selectedEntityIndex + 1,
-		}, () => {this.updateTabTitle(); });
+		});
 	}
 
 	public save(saveAs = false) {
