@@ -11,7 +11,6 @@ import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import Navbar from 'reactstrap/lib/Navbar';
 import NavbarBrand from 'reactstrap/lib/NavbarBrand';
 import Project from '../../data/project';
-import { ProjectResources } from '../../data/project-resources';
 
 const ColorDisplay = (color: string) => <div
 	style={{
@@ -28,7 +27,6 @@ const ColorDisplay = (color: string) => <div
 export interface Props {
 	focused: boolean;
 	project: Project;
-	resources: ProjectResources;
 	selectedEntityIndex: number;
 	onSelectEntity: (entityIndex: number) => void;
 	onAddEntity: () => void;

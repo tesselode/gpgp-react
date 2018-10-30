@@ -1,12 +1,12 @@
 import React from 'react';
-import { TilesetImage } from '../../data/project-resources';
+import Image from '../../data/image-data';
 import { Rect } from '../../util';
 import { GridTool } from '../grid';
 import GenericCursor, { CursorProps } from './generic-cursor';
 
 export interface TileCursorProps extends CursorProps {
 	tool: GridTool;
-	tilesetImage: TilesetImage;
+	tilesetImage: Image;
 	tilesetSelection?: Rect;
 }
 

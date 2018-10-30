@@ -14,14 +14,8 @@ import {
 	TabPane,
 } from 'reactstrap';
 import { newEntity } from '../../data/entity';
-import Project, { exportProject, newProject } from '../../data/project';
-import {
-	loadProjectResources,
-	loadTilesetImage,
-	newProjectResources,
-	ProjectResources,
-	shallowCopyProjectResources,
-} from '../../data/project-resources';
+import Image, { loadImage, loadImages } from '../../data/image-data';
+import Project, { exportProject, getProjectImagePaths, newProject } from '../../data/project';
 import { newTileset } from '../../data/tileset';
 import { deepCopyObject, shiftDown, shiftUp } from '../../util';
 import AppTab from '../app-tab';
@@ -51,8 +45,8 @@ export interface State {
 	project: Project;
 	/** Whether there are unsaved changes to the project. */
 	unsavedChanges: boolean;
-	/** The currently loaded resources for the project. */
-	resources: ProjectResources;
+	/** The currently loaded image data for the project. */
+	images: Map<string, Image>;
 	/** The path to the project file, if it is saved or opened. */
 	projectFilePath?: string;
 	/** The currently active project editor tab. */
@@ -70,17 +64,15 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		this.state = {
 			project: this.props.project ? this.props.project : newProject(),
 			unsavedChanges: false,
-			resources: newProjectResources(),
+			images: new Map<string, Image>(),
 			projectFilePath: this.props.projectFilePath,
 			selectedTilesetIndex: 0,
 			selectedEntityIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
 		if (this.props.project)
-			loadProjectResources(this.props.project).then(resources => {
-				this.setState({
-					resources,
-				});
+			loadImages(getProjectImagePaths(this.props.project)).then(images => {
+				this.setState({images});
 			});
 	}
 
@@ -95,12 +87,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			project,
 			unsavedChanges: true,
 		}, () => {this.updateTabTitle(); });
-	}
-
-	private modifyProjectResources(f: (resources: ProjectResources) => void): void {
-		const resources = shallowCopyProjectResources(this.state.resources);
-		f(resources);
-		this.setState({resources});
 	}
 
 	private onChangeProjectName(name: string) {
@@ -129,7 +115,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 
 	private onAddTileset() {
 		this.modifyProject(project => {project.tilesets.push(newTileset()); });
-		this.modifyProjectResources(resources => {resources.tilesetImages.push({}); });
 		this.setState({
 			selectedTilesetIndex: Math.max(this.state.selectedTilesetIndex, 0),
 		});
@@ -137,7 +122,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 
 	private onRemoveTileset(tilesetIndex: number) {
 		this.modifyProject(project => {project.tilesets.splice(tilesetIndex, 1); });
-		this.modifyProjectResources(resources => {resources.tilesetImages.splice(tilesetIndex, 1); });
 		this.setState({
 			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, this.state.project.tilesets.length - 2),
 		});
@@ -146,7 +130,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 	private onMoveTilesetUp(tilesetIndex: number) {
 		if (tilesetIndex === 0) return;
 		this.modifyProject(project => {shiftUp(project.tilesets, tilesetIndex); });
-		this.modifyProjectResources(resources => {shiftUp(resources.tilesetImages, tilesetIndex); });
 		this.setState({
 			selectedTilesetIndex: this.state.selectedTilesetIndex - 1,
 		});
@@ -155,7 +138,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 	private onMoveTilesetDown(tilesetIndex: number) {
 		if (tilesetIndex === this.state.project.tilesets.length - 1) return;
 		this.modifyProject(project => {shiftDown(project.tilesets, tilesetIndex); });
-		this.modifyProjectResources(resources => {shiftDown(resources.tilesetImages, tilesetIndex); });
 		this.setState({
 			selectedTilesetIndex: this.state.selectedTilesetIndex + 1,
 		});
@@ -167,10 +149,10 @@ export default class ProjectEditor extends AppTab<Props, State> {
 
 	private onChooseTilesetImage(tilesetIndex: number, imagePath: string) {
 		this.modifyProject(project => {project.tilesets[tilesetIndex].imagePath = imagePath; });
-		const resources = shallowCopyProjectResources(this.state.resources);
-		loadTilesetImage(imagePath).then(image => {
-			resources.tilesetImages[tilesetIndex] = image;
-			this.setState({resources});
+		loadImage(imagePath).then(image => {
+			const images = new Map<string, Image>(this.state.images);
+			images.set(imagePath, image);
+			this.setState({images});
 		});
 	}
 
@@ -209,7 +191,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 	}
 
 	private onChangeEntityColor(entityIndex: number, color: string) {
-		console.log(color);
 		this.modifyProject(project => {project.entities[entityIndex].color = color; });
 	}
 
@@ -317,7 +298,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 					<ProjectTilesetsEditor
 						focused={this.state.activeTab === ProjectEditorTab.Tilesets}
 						project={this.state.project}
-						resources={this.state.resources}
+						images={this.state.images}
 						selectedTilesetIndex={this.state.selectedTilesetIndex}
 						onSelectTileset={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
 						onAddTileset={this.onAddTileset.bind(this)}
@@ -332,7 +313,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 					<ProjectEntitiesEditor
 						focused={this.state.activeTab === ProjectEditorTab.Entities}
 						project={this.state.project}
-						resources={this.state.resources}
 						selectedEntityIndex={this.state.selectedEntityIndex}
 						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
 						onAddEntity={this.onAddEntity.bind(this)}

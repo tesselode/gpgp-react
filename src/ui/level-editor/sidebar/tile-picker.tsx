@@ -1,6 +1,6 @@
 import React from 'react';
+import Image from '../../../data/image-data';
 import Project from '../../../data/project';
-import { TilesetImage } from '../../../data/project-resources';
 import { Rect } from '../../../util';
 import GenericCursor from '../../cursor/generic-cursor';
 import Grid, { GridTool } from '../../grid';
@@ -9,7 +9,7 @@ import SidebarSection from './sidebar-section';
 export interface Props {
 	project: Project;
 	tilesetName: string;
-	tilesetImageData?: TilesetImage;
+	tilesetImageData?: Image;
 	selection?: Rect;
 	onSelectTiles: (rect: Rect) => void;
 }

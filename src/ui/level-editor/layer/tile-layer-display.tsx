@@ -1,8 +1,8 @@
 import React from 'react';
+import Image from '../../../data/image-data';
 import TileLayer from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';
-import { TilesetImage } from '../../../data/project-resources';
 
 export interface Props {
 	/** The project the level is for. */
@@ -12,7 +12,7 @@ export interface Props {
 	/** The tile layer to display. */
 	layer: TileLayer;
 	/** The image data for the tileset used by the tile layer. */
-	tilesetImageData?: TilesetImage;
+	tilesetImageData?: Image;
 	/** The depth the layer should be displayed at. */
 	order: number;
 }

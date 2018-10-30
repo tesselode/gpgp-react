@@ -3,13 +3,13 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
+import Image, { loadImages } from '../../data/image-data';
 import { isGeometryLayer, newGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { LayerType } from '../../data/layer/Layer';
 import { isTileLayer, newTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
-import Project from '../../data/project';
-import { loadProjectResources, newProjectResources, ProjectResources } from '../../data/project-resources';
-import { Rect, shiftDown, shiftUp, deepCopyObject } from '../../util';
+import Project, { getProjectImagePaths } from '../../data/project';
+import { deepCopyObject, Rect, shiftDown, shiftUp } from '../../util';
 import AppTab from '../app-tab';
 import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
@@ -37,8 +37,8 @@ export interface Props {
 }
 
 export interface State {
-	/** The resources for the level's project. */
-	resources: ProjectResources;
+	/** The images for the level's project. */
+	images: Map<string, Image>;
 	/** The history of the level data. */
 	levelHistory: Level[];
 	/** The description of each state in the level history. */
@@ -66,7 +66,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			resources: newProjectResources(),
+			images: new Map<string, Image>(),
 			levelHistory: [
 				this.props.level ? this.props.level :
 					newLevel(this.props.project, this.props.projectFilePath),
@@ -80,9 +80,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 			selectedLayerIndex: 0,
 			continuedAction: false,
 		};
-		loadProjectResources(this.props.project).then(resources =>
-			this.setState({resources}),
-		);
+		loadImages(getProjectImagePaths(this.props.project)).then(images => {
+			this.setState({images});
+		});
 	}
 
 	private updateTabTitle() {
@@ -273,6 +273,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	public render() {
 		const level = this.getCurrentLevelState();
 		const selectedLayer = level.layers[this.state.selectedLayerIndex];
+		
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
 				<Col md={3} style={{height: '90vh', overflowY: 'auto'}}>
@@ -313,7 +314,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 					{isTileLayer(selectedLayer) && <TilePicker
 						project={this.props.project}
 						tilesetName={this.props.project.tilesets[selectedLayer.tilesetIndex].name}
-						tilesetImageData={this.state.resources.tilesetImages[selectedLayer.tilesetIndex]}
+						tilesetImageData={this.state.images.get(this.props.project.tilesets[selectedLayer.tilesetIndex].imagePath)}
 						selection={this.state.tilesetSelection}
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
 					/>}
@@ -337,7 +338,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 						additionalCursorProps={
 							isTileLayer(selectedLayer) && {
 								tool: this.state.tool,
-								tilesetImage: this.state.resources.tilesetImages[selectedLayer.tilesetIndex],
+								tilesetImage: this.state.images.get(this.props.project.tilesets[selectedLayer.tilesetIndex].imagePath),
 								tilesetSelection: this.state.tilesetSelection,
 							}
 						}
@@ -356,7 +357,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 									project={this.props.project}
 									level={level}
 									layer={layer}
-									tilesetImageData={this.state.resources.tilesetImages[layer.tilesetIndex]}
+									tilesetImageData={this.state.images.get(this.props.project.tilesets[layer.tilesetIndex].imagePath)}
 									order={order}
 								/>;
 							else if (layer.type === LayerType.Geometry)

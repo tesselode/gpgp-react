@@ -17,14 +17,14 @@ import {
 	NavbarBrand,
 	Row,
 } from 'reactstrap';
+import Image from '../../data/image-data';
 import Project from '../../data/project';
-import { ProjectResources, TilesetImage } from '../../data/project-resources';
 import Grid from '../grid';
 
 export interface Props {
 	focused: boolean;
 	project: Project;
-	resources: ProjectResources;
+	images: Map<string, Image>;
 	selectedTilesetIndex: number;
 	onSelectTileset: (tilesetIndex: number) => void;
 	onAddTileset: () => void;
@@ -48,7 +48,8 @@ function chooseTilesetImage(props: Props): void {
 
 function renderTilesetPreview(props: Props) {
 	if (!props.focused) return;
-	const selectedTilesetImage: TilesetImage = props.resources.tilesetImages[props.selectedTilesetIndex];
+	const selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
+	const selectedTilesetImage: Image = props.images.get(selectedTileset.imagePath);
 	if (!selectedTilesetImage) return;
 	if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>;
 	return <Grid

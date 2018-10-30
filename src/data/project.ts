@@ -62,3 +62,15 @@ export function exportProject(project: Project, projectFilePath: string): Projec
 		tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
 	return exportedProject;
 }
+
+/**
+ * Returns a list of the paths of each image the project depends on.
+ * @param project The project to check.
+ */
+export function getProjectImagePaths(project: Project): string[] {
+	const imagePaths: string[] = [];
+	for (const tileset of project.tilesets) {
+		imagePaths.push(tileset.imagePath);
+	}
+	return imagePaths;
+}
