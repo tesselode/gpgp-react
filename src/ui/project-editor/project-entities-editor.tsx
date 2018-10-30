@@ -1,6 +1,6 @@
 import Octicon, { ArrowDown, ArrowUp, Plus, Trashcan } from '@githubprimer/octicons-react';
 import React from 'react';
-import { ButtonGroup, Row } from 'reactstrap';
+import { ButtonGroup, Row, Form, Input } from 'reactstrap';
 import Button from 'reactstrap/lib/Button';
 import Col from 'reactstrap/lib/Col';
 import ListGroup from 'reactstrap/lib/ListGroup';
@@ -9,6 +9,10 @@ import Navbar from 'reactstrap/lib/Navbar';
 import NavbarBrand from 'reactstrap/lib/NavbarBrand';
 import Project from '../../data/project';
 import { ProjectResources } from '../../data/project-resources';
+import FormGroup from 'reactstrap/lib/FormGroup';
+import Label from 'reactstrap/lib/Label';
+import InputGroup from 'reactstrap/lib/InputGroup';
+import InputGroupAddon from 'reactstrap/lib/InputGroupAddon';
 
 export interface Props {
 	focused: boolean;
@@ -20,6 +24,7 @@ export interface Props {
 	onRemoveEntity: (entityIndex: number) => void;
 	onMoveEntityUp: (entityIndex: number) => void;
 	onMoveEntityDown: (entityIndex: number) => void;
+	onChangeEntityName: (entityIndex: number, name: string) => void;
 }
 
 export default (props: Props) => {
@@ -66,5 +71,18 @@ export default (props: Props) => {
 				}
 			</ListGroup>
 		</Col>
+		{selectedEntity && <Col md={8}>
+			<Form>
+				<FormGroup row>
+					<Label md={2}>Tileset name</Label>
+					<Col md={10}>
+						<Input
+							value={selectedEntity.name}
+							onChange={(event) => props.onChangeEntityName(props.selectedEntityIndex, event.target.value)}
+						/>
+					</Col>
+				</FormGroup>
+			</Form>
+		</Col>}
 	</Row>;
 };

@@ -208,6 +208,10 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		});
 	}
 
+	private onChangeEntityName(entityIndex: number, name: string) {
+		this.modifyProject(project => {project.entities[entityIndex].name = name; });
+	}
+
 	public save(saveAs = false) {
 		let projectFilePath = this.state.projectFilePath;
 		if (!projectFilePath || saveAs) {
@@ -330,6 +334,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						onRemoveEntity={this.onRemoveEntity.bind(this)}
 						onMoveEntityDown={this.onMoveEntityDown.bind(this)}
 						onMoveEntityUp={this.onMoveEntityUp.bind(this)}
+						onChangeEntityName={this.onChangeEntityName.bind(this)}
 					/>
 				</TabPane>
 			</TabContent>
