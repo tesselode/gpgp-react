@@ -84,10 +84,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			});
 	}
 
-	public exit(onExit: () => void) {
-		onExit();
-	}
-
 	private updateTabTitle() {
 		this.props.onChangeTabTitle(this.state.project.name + (this.state.unsavedChanges ? '*' : ''));
 	}
@@ -210,6 +206,15 @@ export default class ProjectEditor extends AppTab<Props, State> {
 
 	private onChangeEntityName(entityIndex: number, name: string) {
 		this.modifyProject(project => {project.entities[entityIndex].name = name; });
+	}
+
+	private onChangeEntityColor(entityIndex: number, color: string) {
+		console.log(color);
+		this.modifyProject(project => {project.entities[entityIndex].color = color; });
+	}
+
+	public exit(onExit: () => void) {
+		onExit();
 	}
 
 	public save(saveAs = false) {
@@ -335,6 +340,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						onMoveEntityDown={this.onMoveEntityDown.bind(this)}
 						onMoveEntityUp={this.onMoveEntityUp.bind(this)}
 						onChangeEntityName={this.onChangeEntityName.bind(this)}
+						onChangeEntityColor={this.onChangeEntityColor.bind(this)}
 					/>
 				</TabPane>
 			</TabContent>
