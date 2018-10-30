@@ -3,14 +3,13 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import HistoryList, { addHistory, changeHistoryPosition, getCurrentHistoryState } from '../../data/history-list';
 import { isGeometryLayer, newGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { LayerType } from '../../data/layer/Layer';
 import { isTileLayer, newTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
 import Project from '../../data/project';
 import { loadProjectResources, newProjectResources, ProjectResources } from '../../data/project-resources';
-import { Rect, shiftDown, shiftUp } from '../../util';
+import { Rect, shiftDown, shiftUp, deepCopyObject } from '../../util';
 import AppTab from '../app-tab';
 import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
@@ -41,7 +40,11 @@ export interface State {
 	/** The resources for the level's project. */
 	resources: ProjectResources;
 	/** The history of the level data. */
-	levelHistory: HistoryList<Level>;
+	levelHistory: Level[];
+	/** The description of each state in the level history. */
+	levelHistoryDescriptions: string[];
+	/** The currently viewed position in the level history. */
+	levelHistoryPosition: number;
 	/** Whether there are unsaved changes to the level. */
 	unsavedChanges: boolean;
 	/** The path to the level file, if it has been saved or opened. */
@@ -64,16 +67,12 @@ export default class LevelEditor extends AppTab<Props, State> {
 		super(props);
 		this.state = {
 			resources: newProjectResources(),
-			levelHistory: {
-				position: 0,
-				steps: [
-					{
-						description: this.props.level ? 'Open level' : 'New level',
-						data: this.props.level ? this.props.level :
-							newLevel(this.props.project, this.props.projectFilePath),
-					},
-				],
-			},
+			levelHistory: [
+				this.props.level ? this.props.level :
+					newLevel(this.props.project, this.props.projectFilePath),
+			],
+			levelHistoryDescriptions: [this.props.level ? 'Open level' : 'New level'],
+			levelHistoryPosition: 0,
 			unsavedChanges: false,
 			levelFilePath: this.props.levelFilePath,
 			tool: GridTool.Pencil,
@@ -84,6 +83,170 @@ export default class LevelEditor extends AppTab<Props, State> {
 		loadProjectResources(this.props.project).then(resources =>
 			this.setState({resources}),
 		);
+	}
+
+	private updateTabTitle() {
+		let tabTitle = this.state.levelFilePath ?
+			path.parse(this.state.levelFilePath).name
+			: 'New level';
+		if (this.state.unsavedChanges) tabTitle += '*';
+		this.props.onChangeTabTitle(tabTitle);
+	}
+
+	private modifyLevel(f: (level: Level) => string | false, continuedAction?: boolean): void {
+		let levelHistoryPosition = this.state.levelHistoryPosition;
+		const levelHistory = this.state.levelHistory.slice(0, levelHistoryPosition + 1);
+		const levelHistoryDescriptions = this.state.levelHistoryDescriptions.slice(
+			0, this.state.levelHistoryPosition + 1);
+		const newState = deepCopyObject(levelHistory[levelHistory.length - 1]);
+		const description = f(newState);
+		if (!description) return;
+		if (this.state.continuedAction) {
+			levelHistory[levelHistory.length - 1] = newState;
+			levelHistoryDescriptions[levelHistoryDescriptions.length - 1] = description;
+		} else {
+			levelHistory.push(newState);
+			levelHistoryDescriptions.push(description);
+			levelHistoryPosition++;
+		}
+		this.setState({
+			levelHistory,
+			levelHistoryDescriptions,
+			levelHistoryPosition,
+			continuedAction,
+			unsavedChanges: true,
+		}, () => {this.updateTabTitle(); });
+	}
+
+	private getCurrentLevelState(): Level {
+		return this.state.levelHistory[this.state.levelHistoryPosition];
+	}
+
+	private onChangeLevelWidth(width: number) {
+		this.modifyLevel(level => {
+			level.width = width;
+			return 'Change level width';
+		}, true);
+	}
+
+	private onChangeLevelHeight(height: number) {
+		this.modifyLevel(level => {
+			level.height = height;
+			return 'Change level height';
+		}, true);
+	}
+
+	private onAddGeometryLayer() {
+		this.modifyLevel(level => {
+			level.layers.splice(this.state.selectedLayerIndex, 0, newGeometryLayer());
+			return 'Add geometry layer';
+		});
+	}
+
+	private onAddTileLayer(tilesetIndex: number) {
+		this.modifyLevel(level => {
+			level.layers.splice(this.state.selectedLayerIndex, 0, newTileLayer(tilesetIndex));
+			return 'Add tile layer';
+		});
+	}
+
+	private onToggleLayerVisibility(layerIndex: number) {
+		this.modifyLevel(level => {
+			const layer = level.layers[layerIndex];
+			layer.visible = !layer.visible;
+			return layer.visible ? 'Show layer "' + layer.name + '"'
+				: 'Hide layer "' + layer.name + '"';
+		});
+	}
+
+	private onChangeLayerName(name: string) {
+		this.modifyLevel(level => {
+			level.layers[this.state.selectedLayerIndex].name = name;
+			return 'Rename layer to "' + name + '"';
+		}, true);
+	}
+
+	private onMoveLayerUp() {
+		this.modifyLevel(level => {
+			if (this.state.selectedLayerIndex === 0) return false;
+			const layer = level.layers[this.state.selectedLayerIndex];
+			shiftUp(level.layers, this.state.selectedLayerIndex);
+			return 'Move layer "' + layer.name + '" up';
+		});
+		this.setState({
+			selectedLayerIndex: this.state.selectedLayerIndex - 1,
+		});
+	}
+
+	private onMoveLayerDown() {
+		this.modifyLevel(level => {
+			if (this.state.selectedLayerIndex === level.layers.length - 1) return false;
+			const layer = level.layers[this.state.selectedLayerIndex];
+			shiftDown(level.layers, this.state.selectedLayerIndex);
+			this.setState({
+				selectedLayerIndex: this.state.selectedLayerIndex + 1,
+			});
+			return 'Move layer "' + layer.name + '" down';
+		});
+	}
+
+	private onDeleteLayer() {
+		this.modifyLevel(level => {
+			if (level.layers.length <= 1) return false;
+			const layer = level.layers[this.state.selectedLayerIndex];
+			level.layers.splice(this.state.selectedLayerIndex, 1);
+			this.setState({
+				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, level.layers.length - 1),
+			});
+			return 'Delete layer "' + layer.name + '"';
+		});
+	}
+
+	private onPlace(rect: Rect) {
+		this.modifyLevel(level => {
+			const layer = level.layers[this.state.selectedLayerIndex];
+			if (isGeometryLayer(layer))
+				placeGeometry(layer, rect);
+			else if (isTileLayer(layer) && this.state.tilesetSelection)
+				placeTile(this.state.tool, layer, rect, this.state.tilesetSelection);
+			return 'Place tiles';
+		}, true);
+	}
+
+	private onRemove(rect: Rect) {
+		this.modifyLevel(level => {
+			const layer = level.layers[this.state.selectedLayerIndex];
+			if (isGeometryLayer(layer))
+				removeGeometry(layer, rect);
+			else if (isTileLayer(layer))
+				removeTile(layer, rect);
+			return 'Remove tiles';
+		}, true);
+	}
+
+	public save(saveAs = false, onSave?: () => void) {
+		let levelFilePath = this.state.levelFilePath;
+		if (!levelFilePath || saveAs) {
+			const chosenSaveLocation = remote.dialog.showSaveDialog({
+				filters: [
+					{name: 'GPGP levels', extensions: ['gpgp']},
+				],
+			});
+			if (!chosenSaveLocation) return;
+			levelFilePath = chosenSaveLocation;
+		}
+		const level = exportLevel(this.getCurrentLevelState(), levelFilePath);
+		fs.writeFile(levelFilePath, JSON.stringify(level), (error) => {
+			if (error) {
+				remote.dialog.showErrorBox('Error saving level', 'The level could not be saved.');
+				return;
+			}
+			this.setState({
+				unsavedChanges: false,
+				levelFilePath,
+			}, () => {this.updateTabTitle(); });
+			if (onSave) onSave();
+		});
 	}
 
 	public exit(onExit: () => void) {
@@ -107,181 +270,8 @@ export default class LevelEditor extends AppTab<Props, State> {
 		}
 	}
 
-	private updateTabTitle() {
-		let tabTitle = this.state.levelFilePath ?
-			path.parse(this.state.levelFilePath).name
-			: 'New level';
-		if (this.state.unsavedChanges) tabTitle += '*';
-		this.props.onChangeTabTitle(tabTitle);
-	}
-
-	private onChangeLevelWidth(width: number) {
-		this.setState({
-			unsavedChanges: true,
-			continuedAction: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				level.width = width;
-				return 'Change level width';
-			}, this.state.continuedAction),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onChangeLevelHeight(height: number) {
-		this.setState({
-			unsavedChanges: true,
-			continuedAction: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				level.height = height;
-				return 'Change level height';
-			}, this.state.continuedAction),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onAddGeometryLayer() {
-		this.setState({
-			unsavedChanges: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				level.layers.splice(this.state.selectedLayerIndex, 0, newGeometryLayer());
-				return 'Add geometry layer';
-			}),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onAddTileLayer(tilesetIndex: number) {
-		this.setState({
-			unsavedChanges: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				level.layers.splice(this.state.selectedLayerIndex, 0, newTileLayer(tilesetIndex));
-				return 'Add tile layer';
-			}),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onToggleLayerVisibility(layerIndex: number) {
-		this.setState({
-			unsavedChanges: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				const layer = level.layers[layerIndex];
-				layer.visible = !layer.visible;
-				return layer.visible ? 'Show layer "' + layer.name + '"'
-				: 'Hide layer "' + layer.name + '"';
-			}),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onChangeLayerName(name: string) {
-		this.setState({
-			unsavedChanges: true,
-			continuedAction: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				level.layers[this.state.selectedLayerIndex].name = name;
-				return 'Rename layer to "' + name + '"';
-			}, this.state.continuedAction),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onMoveLayerUp() {
-		this.setState({
-			unsavedChanges: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				if (this.state.selectedLayerIndex === 0) return false;
-				const layer = level.layers[this.state.selectedLayerIndex];
-				shiftUp(level.layers, this.state.selectedLayerIndex);
-				this.setState({
-					selectedLayerIndex: this.state.selectedLayerIndex - 1,
-				});
-				return 'Move layer "' + layer.name + '" up';
-			}),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onMoveLayerDown() {
-		this.setState({
-			unsavedChanges: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				if (this.state.selectedLayerIndex === level.layers.length - 1) return false;
-				const layer = level.layers[this.state.selectedLayerIndex];
-				shiftDown(level.layers, this.state.selectedLayerIndex);
-				this.setState({
-					selectedLayerIndex: this.state.selectedLayerIndex + 1,
-				});
-				return 'Move layer "' + layer.name + '" down';
-			}),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onDeleteLayer() {
-		this.setState({
-			unsavedChanges: true,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				if (level.layers.length <= 1) return false;
-				const layer = level.layers[this.state.selectedLayerIndex];
-				level.layers.splice(this.state.selectedLayerIndex, 1);
-				this.setState({
-					selectedLayerIndex: Math.min(this.state.selectedLayerIndex, level.layers.length - 1),
-				});
-				return 'Delete layer "' + layer.name + '"';
-			}),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onPlace(rect: Rect) {
-		this.setState({
-			unsavedChanges: true,
-			continuedAction: this.state.tool === GridTool.Pencil,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				const layer = level.layers[this.state.selectedLayerIndex];
-				if (isGeometryLayer(layer))
-					placeGeometry(layer, rect);
-				else if (isTileLayer(layer) && this.state.tilesetSelection)
-					placeTile(this.state.tool, layer, rect, this.state.tilesetSelection);
-				return 'Place tiles';
-			}, this.state.continuedAction),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	private onRemove(rect: Rect) {
-		this.setState({
-			unsavedChanges: true,
-			continuedAction: this.state.tool === GridTool.Pencil,
-			levelHistory: addHistory(this.state.levelHistory, level => {
-				const layer = level.layers[this.state.selectedLayerIndex];
-				if (isGeometryLayer(layer))
-					removeGeometry(layer, rect);
-				else if (isTileLayer(layer))
-					removeTile(layer, rect);
-				return 'Remove tiles';
-			}, this.state.continuedAction),
-		}, () => {this.updateTabTitle(); });
-	}
-
-	public save(saveAs = false, onSave?: () => void) {
-		let levelFilePath = this.state.levelFilePath;
-		if (!levelFilePath || saveAs) {
-			const chosenSaveLocation = remote.dialog.showSaveDialog({
-				filters: [
-					{name: 'GPGP levels', extensions: ['gpgp']},
-				],
-			});
-			if (!chosenSaveLocation) return;
-			levelFilePath = chosenSaveLocation;
-		}
-		const level = exportLevel(getCurrentHistoryState(this.state.levelHistory), levelFilePath);
-		fs.writeFile(levelFilePath, JSON.stringify(level), (error) => {
-			if (error) {
-				remote.dialog.showErrorBox('Error saving level', 'The level could not be saved.');
-				return;
-			}
-			this.setState({
-				unsavedChanges: false,
-				levelFilePath,
-			}, () => {this.updateTabTitle(); });
-			if (onSave) onSave();
-		});
-	}
-
 	public render() {
-		const level = getCurrentHistoryState(this.state.levelHistory);
+		const level = this.getCurrentLevelState();
 		const selectedLayer = level.layers[this.state.selectedLayerIndex];
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
@@ -328,14 +318,10 @@ export default class LevelEditor extends AppTab<Props, State> {
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
 					/>}
 					<HistoryBrowser
-						historyList={this.state.levelHistory}
+						levelHistoryDescriptions={this.state.levelHistoryDescriptions}
+						levelHistoryPosition={this.state.levelHistoryPosition}
 						onHistoryPositionChanged={(position: number) => {
-							this.setState({
-								levelHistory: changeHistoryPosition(
-									this.state.levelHistory,
-									position,
-								),
-							});
+							this.setState({levelHistoryPosition: position});
 						}}
 					/>
 				</Col>
