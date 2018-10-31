@@ -11,6 +11,7 @@ import ListGroup from 'reactstrap/lib/ListGroup';
 import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import Navbar from 'reactstrap/lib/Navbar';
 import NavbarBrand from 'reactstrap/lib/NavbarBrand';
+import { isNumberEntityParameter } from '../../data/entity';
 import Image from '../../data/image-data';
 import Project from '../../data/project';
 
@@ -31,6 +32,7 @@ export interface Props {
 	project: Project;
 	images: Map<string, Image>;
 	selectedEntityIndex: number;
+	selectedEntityParameter: number;
 	onSelectEntity: (entityIndex: number) => void;
 	onAddEntity: () => void;
 	onRemoveEntity: (entityIndex: number) => void;
@@ -41,6 +43,7 @@ export interface Props {
 	onChangeEntityWidth: (entityIndex: number, width: number) => void;
 	onChangeEntityHeight: (entityIndex: number, height: number) => void;
 	onChooseEntityImage: (entityIndex: number, imagePath: string) => void;
+	onAddEntityParameter: (entityIndex: number) => void;
 }
 
 export interface State {
@@ -205,6 +208,62 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 						</Col>
 					</FormGroup>
 				</Form>
+				<Navbar color='light'>
+					<NavbarBrand>Parameters</NavbarBrand>
+					<ButtonGroup>
+						<Button
+						>
+							<Octicon icon={Trashcan}/>
+						</Button>
+						<Button
+							onClick={() => {this.props.onAddEntityParameter(this.props.selectedEntityIndex); }}
+						>
+							<Octicon icon={Plus}/>
+						</Button>
+						<Button
+						>
+							<Octicon icon={ArrowUp}/>
+						</Button>
+						<Button
+						>
+							<Octicon icon={ArrowDown}/>
+						</Button>
+					</ButtonGroup>
+				</Navbar>
+				<ListGroup flush>
+					{selectedEntity.parameters.map((parameter, i) =>
+						<ListGroupItem
+							key={i}
+							active={this.props.selectedEntityParameter === i}
+						>
+							{
+								isNumberEntityParameter(parameter) ? <Form>
+									<h6>{parameter.name}</h6>
+									<FormGroup row>
+										<Label md={2} size='sm'>Name</Label>
+										<Col md={10}>
+											<Input
+												bsSize='sm'
+												value={parameter.name}
+											/>
+										</Col>
+									</FormGroup>
+									<FormGroup row>
+										<Label md={2} size='sm'>Default</Label>
+										<Col md={10}>
+											<Input
+												bsSize='sm'
+												type='number'
+												value={parameter.default}
+											/>
+										</Col>
+									</FormGroup>
+								</Form>
+								: ''
+							}
+						</ListGroupItem>,
+					)}
+				</ListGroup>
 			</Col>}
 		</Row>;
 	}

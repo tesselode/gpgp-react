@@ -13,7 +13,7 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import { newEntity } from '../../data/entity';
+import { newEntity, EntityParameterType } from '../../data/entity';
 import Image, { loadImage, loadImages } from '../../data/image-data';
 import Project, { exportProject, getProjectImagePaths, newProject } from '../../data/project';
 import { newTileset } from '../../data/tileset';
@@ -55,6 +55,8 @@ export interface State {
 	selectedTilesetIndex: number;
 	/** The number of the currently selected entity. */
 	selectedEntityIndex: number;
+	/** The number of the currently selected entity parameter. */
+	selectedEntityParameter: number;
 }
 
 /** The project editor screen, which allows you to create new projects or edit existing ones. */
@@ -68,6 +70,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			projectFilePath: this.props.projectFilePath,
 			selectedTilesetIndex: 0,
 			selectedEntityIndex: 0,
+			selectedEntityParameter: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
 		if (this.props.project)
@@ -211,6 +214,13 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		});
 	}
 
+	private onAddEntityParameter(entityIndex: number) {
+		this.modifyProject(project => {project.entities[entityIndex].parameters.push({
+			name: 'New parameter',
+			type: EntityParameterType.Number,
+		}); });
+	}
+
 	public exit(onExit: () => void) {
 		onExit();
 	}
@@ -332,6 +342,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						project={this.state.project}
 						images={this.state.images}
 						selectedEntityIndex={this.state.selectedEntityIndex}
+						selectedEntityParameter={this.state.selectedEntityParameter}
 						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
 						onAddEntity={this.onAddEntity.bind(this)}
 						onRemoveEntity={this.onRemoveEntity.bind(this)}
@@ -342,6 +353,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						onChangeEntityWidth={this.onChangeEntityWidth.bind(this)}
 						onChangeEntityHeight={this.onChangeEntityHeight.bind(this)}
 						onChooseEntityImage={this.onChooseEntityImage.bind(this)}
+						onAddEntityParameter={this.onAddEntityParameter.bind(this)}
 					/>
 				</TabPane>
 			</TabContent>
