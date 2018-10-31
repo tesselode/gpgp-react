@@ -194,6 +194,23 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		this.modifyProject(project => {project.entities[entityIndex].color = color; });
 	}
 
+	private onChangeEntityWidth(entityIndex: number, width: number) {
+		this.modifyProject(project => {project.entities[entityIndex].width = width; });
+	}
+
+	private onChangeEntityHeight(entityIndex: number, height: number) {
+		this.modifyProject(project => {project.entities[entityIndex].height = height; });
+	}
+
+	private onChooseEntityImage(entityIndex: number, imagePath: string) {
+		this.modifyProject(project => {project.entities[entityIndex].imagePath = imagePath; });
+		loadImage(imagePath).then(image => {
+			const images = new Map<string, Image>(this.state.images);
+			images.set(imagePath, image);
+			this.setState({images});
+		});
+	}
+
 	public exit(onExit: () => void) {
 		onExit();
 	}
@@ -313,6 +330,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 					<ProjectEntitiesEditor
 						focused={this.state.activeTab === ProjectEditorTab.Entities}
 						project={this.state.project}
+						images={this.state.images}
 						selectedEntityIndex={this.state.selectedEntityIndex}
 						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
 						onAddEntity={this.onAddEntity.bind(this)}
@@ -321,6 +339,9 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						onMoveEntityUp={this.onMoveEntityUp.bind(this)}
 						onChangeEntityName={this.onChangeEntityName.bind(this)}
 						onChangeEntityColor={this.onChangeEntityColor.bind(this)}
+						onChangeEntityWidth={this.onChangeEntityWidth.bind(this)}
+						onChangeEntityHeight={this.onChangeEntityHeight.bind(this)}
+						onChooseEntityImage={this.onChooseEntityImage.bind(this)}
 					/>
 				</TabPane>
 			</TabContent>

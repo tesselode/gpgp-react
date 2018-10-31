@@ -1,4 +1,5 @@
-import Octicon, { ArrowDown, ArrowUp, Paintcan, Plus, Trashcan } from '@githubprimer/octicons-react';
+import Octicon, { ArrowDown, ArrowUp, FileDirectory, Paintcan, Plus, Trashcan } from '@githubprimer/octicons-react';
+import { remote } from 'electron';
 import React from 'react';
 import { SketchPicker } from 'react-color';
 import { ButtonGroup, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
@@ -10,6 +11,7 @@ import ListGroup from 'reactstrap/lib/ListGroup';
 import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import Navbar from 'reactstrap/lib/Navbar';
 import NavbarBrand from 'reactstrap/lib/NavbarBrand';
+import Image from '../../data/image-data';
 import Project from '../../data/project';
 
 const ColorDisplay = (color: string) => <div
@@ -27,6 +29,7 @@ const ColorDisplay = (color: string) => <div
 export interface Props {
 	focused: boolean;
 	project: Project;
+	images: Map<string, Image>;
 	selectedEntityIndex: number;
 	onSelectEntity: (entityIndex: number) => void;
 	onAddEntity: () => void;
@@ -35,6 +38,9 @@ export interface Props {
 	onMoveEntityDown: (entityIndex: number) => void;
 	onChangeEntityName: (entityIndex: number, name: string) => void;
 	onChangeEntityColor: (entityIndex: number, color: string) => void;
+	onChangeEntityWidth: (entityIndex: number, width: number) => void;
+	onChangeEntityHeight: (entityIndex: number, height: number) => void;
+	onChooseEntityImage: (entityIndex: number, imagePath: string) => void;
 }
 
 export interface State {
@@ -47,6 +53,17 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 		this.state = {
 			showColorPicker: false,
 		};
+	}
+
+	private chooseEntityImage(): void {
+		remote.dialog.showOpenDialog({
+			filters: [
+				{name: 'Images', extensions: ['jpg', 'png']},
+			],
+		}, paths => {
+			if (paths)
+				this.props.onChooseEntityImage(this.props.selectedEntityIndex, paths[0]);
+		});
 	}
 
 	public render() {
@@ -88,7 +105,17 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 							active={i === this.props.selectedEntityIndex}
 							onClick={() => this.props.onSelectEntity(i)}
 						>
-							{ColorDisplay(entity.color)}
+							{
+								selectedEntity.imagePath && this.props.images.get(selectedEntity.imagePath) ?
+									<img
+										src={this.props.images.get(selectedEntity.imagePath).data}
+										style={{
+											width: 'auto',
+											height: '1em',
+										}}
+									/>
+									: ColorDisplay(entity.color)
+							}
 							&nbsp;&nbsp;
 							{entity.name}
 						</ListGroupItem>)
@@ -98,12 +125,41 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 			{selectedEntity && <Col md={8}>
 				<Form>
 					<FormGroup row>
-						<Label md={2}>Tileset name</Label>
+						<Label md={2}>Entity name</Label>
 						<Col md={10}>
 							<Input
 								value={selectedEntity.name}
 								onChange={(event) => this.props.onChangeEntityName(this.props.selectedEntityIndex, event.target.value)}
 							/>
+						</Col>
+					</FormGroup>
+					<FormGroup row>
+						<Label md={2}>Size</Label>
+						<Col md={10}>
+							<InputGroup>
+								<Input
+									type='number'
+									value={selectedEntity.width}
+									onChange={event => {
+										const value = Number(event.target.value);
+										if (!isNaN(value) && value > 0)
+											this.props.onChangeEntityWidth(this.props.selectedEntityIndex, value);
+									}}
+								/>
+								<InputGroupAddon addonType='append'>
+									<InputGroupText style={{borderRight: 'none'}}>x</InputGroupText>
+								</InputGroupAddon>
+								<Input
+									type='number'
+									value={selectedEntity.height}
+									onChange={event => {
+										const value = Number(event.target.value);
+										if (!isNaN(value) && value > 0)
+											this.props.onChangeEntityHeight(this.props.selectedEntityIndex, value);
+									}}
+								/>
+								<InputGroupAddon addonType='append'>tiles</InputGroupAddon>
+							</InputGroup>
 						</Col>
 					</FormGroup>
 					<FormGroup row>
@@ -128,6 +184,24 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 								onChangeComplete={color => this.props.onChangeEntityColor(this.props.selectedEntityIndex, color.hex)}
 								disableAlpha
 							/>}
+						</Col>
+					</FormGroup>
+					<FormGroup row>
+						<Label md={2}>Image path</Label>
+						<Col md={10}>
+							<InputGroup>
+								<InputGroupAddon addonType='prepend'>
+									<Button
+										onClick={this.chooseEntityImage.bind(this)}
+									>
+										<Octicon icon={FileDirectory} />
+									</Button>
+								</InputGroupAddon>
+								<Input
+									disabled
+									value={selectedEntity.imagePath}
+								/>
+							</InputGroup>
 						</Col>
 					</FormGroup>
 				</Form>
