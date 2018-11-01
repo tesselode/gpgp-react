@@ -20,6 +20,7 @@ import {
 import Image from '../../data/image-data';
 import Project from '../../data/project';
 import Grid from '../grid';
+import ItemList from './item-list';
 
 export interface Props {
 	focused: boolean;
@@ -65,45 +66,17 @@ export default (props: Props) => {
 	const selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
 	return <Row>
 		<Col md={4}>
-			<Navbar color='light'>
-				<NavbarBrand>Tilesets</NavbarBrand>
-				<ButtonGroup>
-					<Button
-						disabled={!selectedTileset}
-						onClick={() => props.onRemoveTileset(props.selectedTilesetIndex)}
-					>
-						<Octicon icon={Trashcan}/>
-					</Button>
-					<Button
-						onClick={() => props.onAddTileset()}
-					>
-						<Octicon icon={Plus}/>
-					</Button>
-					<Button
-						disabled={!(selectedTileset && props.selectedTilesetIndex !== 0)}
-						onClick={() => props.onMoveTilesetUp(props.selectedTilesetIndex)}
-					>
-						<Octicon icon={ArrowUp}/>
-					</Button>
-					<Button
-						disabled={!(selectedTileset && props.selectedTilesetIndex !== props.project.tilesets.length - 1)}
-						onClick={() => props.onMoveTilesetDown(props.selectedTilesetIndex)}
-					>
-						<Octicon icon={ArrowDown}/>
-					</Button>
-				</ButtonGroup>
-			</Navbar>
-			<ListGroup flush>
-				{props.project.tilesets.map((tileset, i) =>
-					<ListGroupItem
-						key={i}
-						active={i === props.selectedTilesetIndex}
-						onClick={() => props.onSelectTileset(i)}
-					>
-						{tileset.name}
-					</ListGroupItem>)
-				}
-			</ListGroup>
+			<ItemList
+				title='Tilesets'
+				selectedItemIndex={props.selectedTilesetIndex}
+				items={props.project.tilesets}
+				onSelectItem={props.onSelectTileset}
+				onAddItem={props.onAddTileset}
+				onRemoveItem={props.onRemoveTileset}
+				onMoveItemUp={props.onMoveTilesetUp}
+				onMoveItemDown={props.onMoveTilesetDown}
+				renderItem={tileset => tileset.name}
+			/>
 		</Col>
 		{selectedTileset && <Col md={8}>
 			<Form>

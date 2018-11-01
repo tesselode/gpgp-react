@@ -112,32 +112,20 @@ export default class ProjectEditor extends AppTab<Props, State> {
 
 	private onAddTileset() {
 		this.modifyProject(project => {project.tilesets.push(newTileset()); });
-		this.setState({
-			selectedTilesetIndex: Math.max(this.state.selectedTilesetIndex, 0),
-		});
 	}
 
 	private onRemoveTileset(tilesetIndex: number) {
 		this.modifyProject(project => {project.tilesets.splice(tilesetIndex, 1); });
-		this.setState({
-			selectedTilesetIndex: Math.min(this.state.selectedTilesetIndex, this.state.project.tilesets.length - 2),
-		});
 	}
 
 	private onMoveTilesetUp(tilesetIndex: number) {
 		if (tilesetIndex === 0) return;
 		this.modifyProject(project => {shiftUp(project.tilesets, tilesetIndex); });
-		this.setState({
-			selectedTilesetIndex: this.state.selectedTilesetIndex - 1,
-		});
 	}
 
 	private onMoveTilesetDown(tilesetIndex: number) {
 		if (tilesetIndex === this.state.project.tilesets.length - 1) return;
 		this.modifyProject(project => {shiftDown(project.tilesets, tilesetIndex); });
-		this.setState({
-			selectedTilesetIndex: this.state.selectedTilesetIndex + 1,
-		});
 	}
 
 	private onChangeTilesetName(tilesetIndex: number, name: string) {
