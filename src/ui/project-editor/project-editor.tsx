@@ -53,10 +53,6 @@ export interface State {
 	activeTab: ProjectEditorTab;
 	/** The number of the currently selected tileset. */
 	selectedTilesetIndex: number;
-	/** The number of the currently selected entity. */
-	selectedEntityIndex: number;
-	/** The number of the currently selected entity parameter. */
-	selectedEntityParameter: number;
 }
 
 /** The project editor screen, which allows you to create new projects or edit existing ones. */
@@ -69,8 +65,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			images: new Map<string, Image>(),
 			projectFilePath: this.props.projectFilePath,
 			selectedTilesetIndex: 0,
-			selectedEntityIndex: 0,
-			selectedEntityParameter: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
 		if (this.props.project)
@@ -161,32 +155,20 @@ export default class ProjectEditor extends AppTab<Props, State> {
 
 	private onAddEntity() {
 		this.modifyProject(project => {project.entities.push(newEntity()); });
-		this.setState({
-			selectedEntityIndex: Math.max(this.state.selectedEntityIndex, 0),
-		});
 	}
 
 	private onRemoveEntity(entityIndex: number) {
 		this.modifyProject(project => {project.entities.splice(entityIndex, 1); });
-		this.setState({
-			selectedEntityIndex: Math.min(this.state.selectedEntityIndex, this.state.project.entities.length - 2),
-		});
 	}
 
 	private onMoveEntityUp(entityIndex: number) {
 		if (entityIndex === 0) return;
 		this.modifyProject(project => {shiftUp(project.entities, entityIndex); });
-		this.setState({
-			selectedEntityIndex: this.state.selectedEntityIndex - 1,
-		});
 	}
 
 	private onMoveEntityDown(entityIndex: number) {
 		if (entityIndex === this.state.project.entities.length - 1) return;
 		this.modifyProject(project => {shiftDown(project.entities, entityIndex); });
-		this.setState({
-			selectedEntityIndex: this.state.selectedEntityIndex + 1,
-		});
 	}
 
 	private onChangeEntityName(entityIndex: number, name: string) {
@@ -341,9 +323,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						focused={this.state.activeTab === ProjectEditorTab.Entities}
 						project={this.state.project}
 						images={this.state.images}
-						selectedEntityIndex={this.state.selectedEntityIndex}
-						selectedEntityParameter={this.state.selectedEntityParameter}
-						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
 						onAddEntity={this.onAddEntity.bind(this)}
 						onRemoveEntity={this.onRemoveEntity.bind(this)}
 						onMoveEntityDown={this.onMoveEntityDown.bind(this)}
