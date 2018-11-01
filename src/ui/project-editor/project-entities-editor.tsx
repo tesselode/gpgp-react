@@ -236,31 +236,93 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 							key={i}
 							active={this.props.selectedEntityParameter === i}
 						>
-							{
-								isNumberEntityParameter(parameter) ? <Form>
-									<h6>{parameter.name}</h6>
-									<FormGroup row>
-										<Label md={2} size='sm'>Name</Label>
-										<Col md={10}>
-											<Input
-												bsSize='sm'
-												value={parameter.name}
-											/>
-										</Col>
-									</FormGroup>
-									<FormGroup row>
-										<Label md={2} size='sm'>Default</Label>
-										<Col md={10}>
-											<Input
-												bsSize='sm'
-												type='number'
-												value={parameter.default}
-											/>
-										</Col>
-									</FormGroup>
-								</Form>
-								: ''
-							}
+							<Form>
+								<h6>{parameter.name}</h6>
+								<Row>
+									<Col md={6}>
+										<FormGroup row>
+											<Label md={2} size='sm'>Name</Label>
+											<Col md={10}>
+												<Input
+													bsSize='sm'
+													value={parameter.name}
+												/>
+											</Col>
+										</FormGroup>
+									</Col>
+									<Col md={6}>
+										<FormGroup row>
+											<Label md={2} size='sm'>Type</Label>
+											<Col md={10}>
+												<Input
+													bsSize='sm'
+													type='select'
+												>
+													<option>Text</option>
+													<option>Number</option>
+													<option>Choice</option>
+													<option>Switch</option>
+												</Input>
+											</Col>
+										</FormGroup>
+									</Col>
+								</Row>
+								{
+									isNumberEntityParameter(parameter) ? <div>
+										<Row>
+											<Col md={6}>
+												<FormGroup row>
+													<Label md={2} size='sm'>Min</Label>
+													<Col md={10}>
+														<InputGroup size='sm'>
+															<InputGroupAddon addonType='prepend'>
+																<InputGroupText>
+																	<Input addon type='checkbox' checked={parameter.hasMin} />
+																</InputGroupText>
+															</InputGroupAddon>
+															<Input
+																type='number'
+																disabled={!parameter.hasMin}
+																value={parameter.min}
+															/>
+														</InputGroup>
+													</Col>
+												</FormGroup>
+											</Col>
+											<Col md={6}>
+												<FormGroup row>
+													<Label md={2} size='sm'>Max</Label>
+													<Col md={10}>
+														<InputGroup size='sm'>
+															<InputGroupAddon addonType='prepend'>
+																<InputGroupText>
+																	<Input addon type='checkbox' checked={parameter.hasMax} />
+																</InputGroupText>
+															</InputGroupAddon>
+															<Input
+																type='number'
+																disabled={!parameter.hasMax}
+																value={parameter.max}
+															/>
+														</InputGroup>
+													</Col>
+												</FormGroup>
+											</Col>
+										</Row>
+										<FormGroup row>
+											<Label md={2} size='sm'>Default</Label>
+											<Col md={10}>
+												<Input
+													bsSize='sm'
+													type='number'
+													value={parameter.default}
+												/>
+											</Col>
+										</FormGroup>
+									</div>
+									: ''
+								}
+							</Form>
 						</ListGroupItem>,
 					)}
 				</ListGroup>

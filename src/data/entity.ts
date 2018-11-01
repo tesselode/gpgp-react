@@ -30,8 +30,12 @@ export function isTextEntityParameter(p: EntityParameter): p is TextEntityParame
 
 /** A number parameter for an entity. */
 export interface NumberEntityParameter extends EntityParameter {
+	/** Whether the parameter has a minimum value. */
+	hasMin?: boolean;
 	/** The minimum value of the parameter. */
 	min?: number;
+	/** Whether the parameter has a maximum value. */
+	hasMax?: boolean;
 	/** The maximum value of the parameter. */
 	max?: number;
 	/** Whether to lock the value to an integer. */
