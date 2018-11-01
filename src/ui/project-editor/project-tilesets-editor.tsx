@@ -1,9 +1,8 @@
-import Octicon, { ArrowDown, ArrowUp, FileDirectory, Plus, Trashcan } from '@githubprimer/octicons-react';
+import Octicon, { FileDirectory } from '@githubprimer/octicons-react';
 import { remote } from 'electron';
 import React from 'react';
 import {
 	Button,
-	ButtonGroup,
 	Col,
 	Form,
 	FormGroup,
@@ -11,10 +10,6 @@ import {
 	InputGroup,
 	InputGroupAddon,
 	Label,
-	ListGroup,
-	ListGroupItem,
-	Navbar,
-	NavbarBrand,
 	Row,
 } from 'reactstrap';
 import Image from '../../data/image-data';
@@ -26,8 +21,6 @@ export interface Props {
 	focused: boolean;
 	project: Project;
 	images: Map<string, Image>;
-	selectedTilesetIndex: number;
-	onSelectTileset: (tilesetIndex: number) => void;
 	onAddTileset: () => void;
 	onRemoveTileset: (tilesetIndex: number) => void;
 	onMoveTilesetUp: (tilesetIndex: number) => void;
@@ -36,79 +29,92 @@ export interface Props {
 	onChooseTilesetImage: (tilesetIndex: number, imagePath: string) => void;
 }
 
-function chooseTilesetImage(props: Props): void {
-	remote.dialog.showOpenDialog({
-		filters: [
-			{name: 'Images', extensions: ['jpg', 'png']},
-		],
-	}, paths => {
-		if (paths)
-			props.onChooseTilesetImage(props.selectedTilesetIndex, paths[0]);
-	});
+export interface State {
+	selectedTilesetIndex: number;
 }
 
-function renderTilesetPreview(props: Props) {
-	if (!props.focused) return;
-	const selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
-	const selectedTilesetImage: Image = props.images.get(selectedTileset.imagePath);
-	if (!selectedTilesetImage) return;
-	if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>;
-	return <Grid
-		tileSize={props.project.tileSize}
-		width={Math.ceil(selectedTilesetImage.width / props.project.tileSize)}
-		height={Math.ceil(selectedTilesetImage.height / props.project.tileSize)}
-	>
-		<img src={selectedTilesetImage.data} />
-	</Grid>;
-}
+export default class extends React.Component<Props, State> {
+	constructor(props) {
+		super(props);
+		this.state = {
+			selectedTilesetIndex: 0,
+		};
+	}
 
-export default (props: Props) => {
-	const selectedTileset = props.project.tilesets[props.selectedTilesetIndex];
-	return <Row>
-		<Col md={4}>
-			<ItemList
-				title='Tilesets'
-				selectedItemIndex={props.selectedTilesetIndex}
-				items={props.project.tilesets}
-				onSelectItem={props.onSelectTileset}
-				onAddItem={props.onAddTileset}
-				onRemoveItem={props.onRemoveTileset}
-				onMoveItemUp={props.onMoveTilesetUp}
-				onMoveItemDown={props.onMoveTilesetDown}
-				renderItem={tileset => tileset.name}
-			/>
-		</Col>
-		{selectedTileset && <Col md={8}>
-			<Form>
-				<FormGroup row>
-					<Label md={2}>Tileset name</Label>
-					<Col md={10}>
-						<Input
-							value={selectedTileset.name}
-							onChange={(event) => props.onChangeTilesetName(props.selectedTilesetIndex, event.target.value)}
-						/>
-					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Label md={2}>Image path</Label>
-					<Col md={10}>
-						<InputGroup>
-							<InputGroupAddon addonType='prepend'>
-								<Button
-									onClick={() => chooseTilesetImage(props)}
-								>
-									<Octicon icon={FileDirectory} />
-								</Button>
-							</InputGroupAddon>
+	private chooseTilesetImage() {
+		remote.dialog.showOpenDialog({
+			filters: [
+				{name: 'Images', extensions: ['jpg', 'png']},
+			],
+		}, paths => {
+			if (paths)
+				this.props.onChooseTilesetImage(this.state.selectedTilesetIndex, paths[0]);
+		});
+	}
+
+	private renderTilesetPreview() {
+		if (!this.props.focused) return;
+		const selectedTileset = this.props.project.tilesets[this.state.selectedTilesetIndex];
+		const selectedTilesetImage: Image = this.props.images.get(selectedTileset.imagePath);
+		if (!selectedTilesetImage) return;
+		if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>;
+		return <Grid
+			tileSize={this.props.project.tileSize}
+			width={Math.ceil(selectedTilesetImage.width / this.props.project.tileSize)}
+			height={Math.ceil(selectedTilesetImage.height / this.props.project.tileSize)}
+		>
+			<img src={selectedTilesetImage.data} />
+		</Grid>;
+	}
+
+	public render() {
+		const selectedTileset = this.props.project.tilesets[this.state.selectedTilesetIndex];
+		return <Row>
+			<Col md={4}>
+				<ItemList
+					title='Tilesets'
+					selectedItemIndex={this.state.selectedTilesetIndex}
+					items={this.props.project.tilesets}
+					onSelectItem={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
+					onAddItem={this.props.onAddTileset}
+					onRemoveItem={this.props.onRemoveTileset}
+					onMoveItemUp={this.props.onMoveTilesetUp}
+					onMoveItemDown={this.props.onMoveTilesetDown}
+					renderItem={tileset => tileset.name}
+				/>
+			</Col>
+			{selectedTileset && <Col md={8}>
+				<Form>
+					<FormGroup row>
+						<Label md={2}>Tileset name</Label>
+						<Col md={10}>
 							<Input
-								disabled
-								value={selectedTileset.imagePath}
+								value={selectedTileset.name}
+								onChange={(event) => this.props.onChangeTilesetName(this.state.selectedTilesetIndex, event.target.value)}
 							/>
-						</InputGroup>
-					</Col>
-				</FormGroup>
-			</Form>
-			{renderTilesetPreview(props)}
-		</Col>}
-	</Row>;
+						</Col>
+					</FormGroup>
+					<FormGroup row>
+						<Label md={2}>Image path</Label>
+						<Col md={10}>
+							<InputGroup>
+								<InputGroupAddon addonType='prepend'>
+									<Button
+										onClick={() => this.chooseTilesetImage()}
+									>
+										<Octicon icon={FileDirectory} />
+									</Button>
+								</InputGroupAddon>
+								<Input
+									disabled
+									value={selectedTileset.imagePath}
+								/>
+							</InputGroup>
+						</Col>
+					</FormGroup>
+				</Form>
+				{this.renderTilesetPreview()}
+			</Col>}
+		</Row>;
+	}
 };

@@ -13,7 +13,7 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import { newEntity, EntityParameterType } from '../../data/entity';
+import { EntityParameterType, newEntity } from '../../data/entity';
 import Image, { loadImage, loadImages } from '../../data/image-data';
 import Project, { exportProject, getProjectImagePaths, newProject } from '../../data/project';
 import { newTileset } from '../../data/tileset';
@@ -51,8 +51,6 @@ export interface State {
 	projectFilePath?: string;
 	/** The currently active project editor tab. */
 	activeTab: ProjectEditorTab;
-	/** The number of the currently selected tileset. */
-	selectedTilesetIndex: number;
 }
 
 /** The project editor screen, which allows you to create new projects or edit existing ones. */
@@ -64,7 +62,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			unsavedChanges: false,
 			images: new Map<string, Image>(),
 			projectFilePath: this.props.projectFilePath,
-			selectedTilesetIndex: 0,
 			activeTab: ProjectEditorTab.Settings,
 		};
 		if (this.props.project)
@@ -296,8 +293,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						focused={this.state.activeTab === ProjectEditorTab.Tilesets}
 						project={this.state.project}
 						images={this.state.images}
-						selectedTilesetIndex={this.state.selectedTilesetIndex}
-						onSelectTileset={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
 						onAddTileset={this.onAddTileset.bind(this)}
 						onRemoveTileset={this.onRemoveTileset.bind(this)}
 						onMoveTilesetDown={this.onMoveTilesetDown.bind(this)}
