@@ -1,17 +1,23 @@
-import Octicon, { ArrowDown, ArrowUp, FileDirectory, Paintcan, Plus, Trashcan } from '@githubprimer/octicons-react';
+import Octicon, { FileDirectory, Paintcan } from '@githubprimer/octicons-react';
 import { remote } from 'electron';
 import React from 'react';
 import { SketchPicker } from 'react-color';
-import { ButtonGroup, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import { Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row, ButtonGroup } from 'reactstrap';
 import Button from 'reactstrap/lib/Button';
 import Col from 'reactstrap/lib/Col';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import Label from 'reactstrap/lib/Label';
-import ListGroup from 'reactstrap/lib/ListGroup';
-import ListGroupItem from 'reactstrap/lib/ListGroupItem';
-import Navbar from 'reactstrap/lib/Navbar';
-import NavbarBrand from 'reactstrap/lib/NavbarBrand';
-import Entity, { EntityParameter, isNumberEntityParameter, NumberEntityParameter } from '../../data/entity';
+import Entity,
+{
+	EntityParameter,
+	EntityParameterType,
+	isNumberEntityParameter,
+	isSwitchEntityParameter,
+	isTextEntityParameter,
+	NumberEntityParameter,
+	SwitchEntityParameter,
+	TextEntityParameter,
+} from '../../data/entity';
 import Image from '../../data/image-data';
 import Project from '../../data/project';
 import ItemList from './item-list';
@@ -27,6 +33,18 @@ const ColorDisplay = (color: string) => <div
 		background: color,
 	}}
 />;
+
+const TextParameterForm = (parameter: TextEntityParameter) => <div>
+	<FormGroup row>
+		<Label md={1} size='sm'>Default</Label>
+		<Col md={11}>
+			<Input
+				bsSize='sm'
+				value={parameter.default}
+			/>
+		</Col>
+	</FormGroup>
+</div>;
 
 const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
 	<Row>
@@ -69,9 +87,19 @@ const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
 			</FormGroup>
 		</Col>
 	</Row>
+	{parameter.hasMin && parameter.hasMax && <FormGroup row>
+		<Label md={1} size='sm'>Show slider</Label>
+		<Col md={11}>
+			<Input
+				bsSize='sm'
+				type='checkbox'
+				checked={parameter.useSlider}
+			/>
+		</Col>
+	</FormGroup>}
 	<FormGroup row>
-		<Label md={2} size='sm'>Default</Label>
-		<Col md={10}>
+		<Label md={1} size='sm'>Default</Label>
+		<Col md={11}>
 			<Input
 				bsSize='sm'
 				type='number'
@@ -81,8 +109,36 @@ const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
 	</FormGroup>
 </div>;
 
-const ParameterEditor = (parameter: EntityParameter) => <Form>
-	<h6>{parameter.name}</h6>
+const SwitchParameterForm = (parameter: SwitchEntityParameter, selectedParameter: boolean) => <div>
+	<ButtonGroup size='sm'>
+		<Button
+			outline
+			color={selectedParameter ? 'light' : 'dark'}
+			active={!parameter.default}
+			onClick={() => {}}
+		>
+			Off by default
+		</Button>
+		<Button
+			outline
+			color={selectedParameter ? 'light' : 'dark'}
+			active={parameter.default}
+			onClick={() => {}}
+		>
+			On by default
+		</Button>
+	</ButtonGroup>
+</div>;
+
+interface ParameterEditorProps {
+	parameter: EntityParameter;
+	selectedParameter: boolean;
+	onChangeParameterName: (name: string) => void;
+	onChangeParameterType: (type: EntityParameterType) => void;
+}
+
+const ParameterEditor = (props: ParameterEditorProps) => <Form>
+	<h6>{props.parameter.name}</h6>
 	<Row>
 		<Col md={6}>
 			<FormGroup row>
@@ -90,7 +146,8 @@ const ParameterEditor = (parameter: EntityParameter) => <Form>
 				<Col md={10}>
 					<Input
 						bsSize='sm'
-						value={parameter.name}
+						value={props.parameter.name}
+						onChange={event => props.onChangeParameterName(event.target.value)}
 					/>
 				</Col>
 			</FormGroup>
@@ -102,10 +159,10 @@ const ParameterEditor = (parameter: EntityParameter) => <Form>
 					<Input
 						bsSize='sm'
 						type='select'
+						onChange={event => props.onChangeParameterType(event.target.value as EntityParameterType)}
 					>
 						<option>Text</option>
 						<option>Number</option>
-						<option>Choice</option>
 						<option>Switch</option>
 					</Input>
 				</Col>
@@ -113,7 +170,9 @@ const ParameterEditor = (parameter: EntityParameter) => <Form>
 		</Col>
 	</Row>
 	{
-		isNumberEntityParameter(parameter) ? NumberParameterForm(parameter)
+		isTextEntityParameter(props.parameter) ? TextParameterForm(props.parameter)
+		: isNumberEntityParameter(props.parameter) ? NumberParameterForm(props.parameter)
+		: isSwitchEntityParameter(props.parameter) ? SwitchParameterForm(props.parameter, props.selectedParameter)
 		: ''
 	}
 </Form>;
@@ -126,7 +185,9 @@ interface EntityEditorProps {
 	onChangeEntityWidth: (width: number) => void;
 	onChangeEntityHeight: (height: number) => void;
 	onChooseEntityImage: (imagePath: string) => void;
-	onAddEntityParameter: () => void;
+	onAddParameter: () => void;
+	onChangeParameterName: (parameterIndex: number, name: string) => void;
+	onChangeParameterType: (parameterIndex: number, type: EntityParameterType) => void;
 }
 
 interface EntityEditorState {
@@ -241,11 +302,16 @@ class EntityEditor extends React.Component<EntityEditorProps, EntityEditorState>
 				selectedItemIndex={this.props.selectedEntityParameter}
 				items={this.props.entity.parameters}
 				onSelectItem={() => {}}
-				onAddItem={this.props.onAddEntityParameter}
+				onAddItem={this.props.onAddParameter}
 				onRemoveItem={() => {}}
 				onMoveItemUp={() => {}}
 				onMoveItemDown={() => {}}
-				renderItem={parameter => ParameterEditor(parameter)}
+				renderItem={(parameter, i) => <ParameterEditor
+					parameter={parameter}
+					selectedParameter={i === this.props.selectedEntityParameter}
+					onChangeParameterName={name => this.props.onChangeParameterName(i, name)}
+					onChangeParameterType={type => this.props.onChangeParameterType(i, type)}
+				/>}
 			/>
 		</div>;
 	}
@@ -264,7 +330,9 @@ export interface Props {
 	onChangeEntityWidth: (entityIndex: number, width: number) => void;
 	onChangeEntityHeight: (entityIndex: number, height: number) => void;
 	onChooseEntityImage: (entityIndex: number, imagePath: string) => void;
-	onAddEntityParameter: (entityIndex: number) => void;
+	onAddParameter: (entityIndex: number) => void;
+	onChangeParameterName: (entityIndex: number, parameterIndex: number, name: string) => void;
+	onChangeParameterType: (entityIndex: number, parameterIndex: number, type: EntityParameterType) => void;
 }
 
 export interface State {
@@ -320,7 +388,13 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 					onChangeEntityWidth={width => this.props.onChangeEntityWidth(this.state.selectedEntityIndex, width)}
 					onChangeEntityHeight={height => this.props.onChangeEntityHeight(this.state.selectedEntityIndex, height)}
 					onChooseEntityImage={imagePath => this.props.onChooseEntityImage(this.state.selectedEntityIndex, imagePath)}
-					onAddEntityParameter={() => this.props.onAddEntityParameter(this.state.selectedEntityIndex)}
+					onAddParameter={() => this.props.onAddParameter(this.state.selectedEntityIndex)}
+					onChangeParameterName={(parameterIndex, name) =>
+						this.props.onChangeParameterName(this.state.selectedEntityIndex, parameterIndex, name)
+					}
+					onChangeParameterType={(parameterIndex, type) =>
+						this.props.onChangeParameterType(this.state.selectedEntityIndex, parameterIndex, type)
+					}
 				/>
 			</Col>}
 		</Row>;

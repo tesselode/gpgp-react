@@ -1,9 +1,8 @@
 /** The types of parameters that can be defined. */
 export enum EntityParameterType {
-	Text,
-	Number,
-	Choice,
-	Switch,
+	Text = 'Text',
+	Number = 'Number',
+	Switch = 'Switch',
 }
 
 /** A parameter that can be set for an entity instance. */
@@ -52,22 +51,6 @@ export interface NumberEntityParameter extends EntityParameter {
  */
 export function isNumberEntityParameter(p: EntityParameter): p is NumberEntityParameter {
 	return p.type === EntityParameterType.Number;
-}
-
-/** A choice parameter for an entity. */
-export interface ChoiceEntityParameter extends EntityParameter {
-	/** The possible choices for the parameter. */
-	choices: string[];
-	/** The number of the default choice. */
-	default?: number;
-}
-
-/**
- * Returns if the entity parameter is a choice parameter.
- * @param p The parameter to check.
- */
-export function isChoiceEntityParameter(p: EntityParameter): p is ChoiceEntityParameter {
-	return p.type === EntityParameterType.Choice;
 }
 
 /** A switch parameter for an entity. */

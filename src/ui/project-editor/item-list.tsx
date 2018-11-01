@@ -14,7 +14,7 @@ export interface Props<T> {
 	onRemoveItem: (itemIndex: number) => void;
 	onMoveItemUp: (itemIndex: number) => void;
 	onMoveItemDown: (itemIndex: number) => void;
-	renderItem: (item: T) => JSX.Element | string;
+	renderItem: (item: T, itemIndex: number) => JSX.Element | string;
 }
 
 export default function ItemList<T>(props: Props<T>) {
@@ -67,7 +67,7 @@ export default function ItemList<T>(props: Props<T>) {
 					active={i === props.selectedItemIndex}
 					onClick={() => {props.onSelectItem(i); }}
 				>
-					{props.renderItem(item)}
+					{props.renderItem(item, i)}
 				</ListGroupItem>)
 			}
 		</ListGroup>

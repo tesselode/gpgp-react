@@ -184,8 +184,16 @@ export default class ProjectEditor extends AppTab<Props, State> {
 	private onAddEntityParameter(entityIndex: number) {
 		this.modifyProject(project => {project.entities[entityIndex].parameters.push({
 			name: 'New parameter',
-			type: EntityParameterType.Number,
+			type: EntityParameterType.Text,
 		}); });
+	}
+
+	private onChangeEntityParameterName(entityIndex: number, parameterIndex: number, name: string) {
+		this.modifyProject(project => {project.entities[entityIndex].parameters[parameterIndex].name = name; });
+	}
+
+	private onChangeEntityParameterType(entityIndex: number, parameterIndex: number, type: EntityParameterType) {
+		this.modifyProject(project => {project.entities[entityIndex].parameters[parameterIndex].type = type; });
 	}
 
 	public exit(onExit: () => void) {
@@ -315,7 +323,9 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						onChangeEntityWidth={this.onChangeEntityWidth.bind(this)}
 						onChangeEntityHeight={this.onChangeEntityHeight.bind(this)}
 						onChooseEntityImage={this.onChooseEntityImage.bind(this)}
-						onAddEntityParameter={this.onAddEntityParameter.bind(this)}
+						onAddParameter={this.onAddEntityParameter.bind(this)}
+						onChangeParameterName={this.onChangeEntityParameterName.bind(this)}
+						onChangeParameterType={this.onChangeEntityParameterType.bind(this)}
 					/>
 				</TabPane>
 			</TabContent>
