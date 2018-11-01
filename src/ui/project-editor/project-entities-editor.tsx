@@ -1,28 +1,14 @@
-import Octicon, { FileDirectory, Paintcan } from '@githubprimer/octicons-react';
-import { remote } from 'electron';
 import React from 'react';
-import { SketchPicker } from 'react-color';
-import { Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row, ButtonGroup } from 'reactstrap';
-import Button from 'reactstrap/lib/Button';
+import { Row } from 'reactstrap';
 import Col from 'reactstrap/lib/Col';
-import FormGroup from 'reactstrap/lib/FormGroup';
-import Label from 'reactstrap/lib/Label';
-import Entity,
-{
-	EntityParameter,
+import {
 	EntityParameterType,
-	isNumberEntityParameter,
-	isSwitchEntityParameter,
-	isTextEntityParameter,
-	NumberEntityParameter,
-	SwitchEntityParameter,
-	TextEntityParameter,
 } from '../../data/entity';
 import Image from '../../data/image-data';
 import Project from '../../data/project';
+import ColorDisplay from './color-display';
 import ItemList from './item-list';
 import EntityEditor from './project-entity-editor';
-import ColorDisplay from './color-display';
 
 export interface Props {
 	focused: boolean;
@@ -38,13 +24,16 @@ export interface Props {
 	onChangeEntityHeight: (entityIndex: number, height: number) => void;
 	onChooseEntityImage: (entityIndex: number, imagePath: string) => void;
 	onAddParameter: (entityIndex: number) => void;
+	onRemoveParameter: (entityIndex: number, parameterIndex: number) => void;
+	onMoveParameterUp: (entityIndex: number, parameterIndex: number) => void;
+	onMoveParameterDown: (entityIndex: number, parameterIndex: number) => void;
 	onChangeParameterName: (entityIndex: number, parameterIndex: number, name: string) => void;
 	onChangeParameterType: (entityIndex: number, parameterIndex: number, type: EntityParameterType) => void;
 }
 
 export interface State {
 	selectedEntityIndex: number;
-	selectedEntityParameter: number;
+	selectedParameterIndex: number;
 }
 
 export default class ProjectEntitiesEditor extends React.Component<Props, State> {
@@ -52,7 +41,7 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 		super(props);
 		this.state = {
 			selectedEntityIndex: 0,
-			selectedEntityParameter: 0,
+			selectedParameterIndex: 0,
 		};
 	}
 
@@ -89,13 +78,19 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 			{selectedEntity && <Col md={8}>
 				<EntityEditor
 					entity={selectedEntity}
-					selectedEntityParameter={this.state.selectedEntityParameter}
+					selectedParameterIndex={this.state.selectedParameterIndex}
 					onChangeEntityName={name => this.props.onChangeEntityName(this.state.selectedEntityIndex, name)}
 					onChangeEntityColor={color => this.props.onChangeEntityColor(this.state.selectedEntityIndex, color)}
 					onChangeEntityWidth={width => this.props.onChangeEntityWidth(this.state.selectedEntityIndex, width)}
 					onChangeEntityHeight={height => this.props.onChangeEntityHeight(this.state.selectedEntityIndex, height)}
 					onChooseEntityImage={imagePath => this.props.onChooseEntityImage(this.state.selectedEntityIndex, imagePath)}
+					onSelectParameter={parameterIndex => this.setState({selectedParameterIndex: parameterIndex})}
 					onAddParameter={() => this.props.onAddParameter(this.state.selectedEntityIndex)}
+					onRemoveParameter={parameterIndex => this.props.onRemoveParameter(this.state.selectedEntityIndex, parameterIndex)}
+					onMoveParameterDown={parameterIndex =>
+						this.props.onMoveParameterDown(this.state.selectedEntityIndex, parameterIndex)
+					}
+					onMoveParameterUp={parameterIndex => this.props.onMoveParameterUp(this.state.selectedEntityIndex, parameterIndex)}
 					onChangeParameterName={(parameterIndex, name) =>
 						this.props.onChangeParameterName(this.state.selectedEntityIndex, parameterIndex, name)
 					}

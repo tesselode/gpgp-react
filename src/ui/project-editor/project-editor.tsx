@@ -188,6 +188,20 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}); });
 	}
 
+	private onRemoveEntityParameter(entityIndex: number, parameterIndex: number) {
+		this.modifyProject(project => {project.entities[entityIndex].parameters.splice(parameterIndex, 1); });
+	}
+
+	private onMoveEntityParameterUp(entityIndex: number, parameterIndex: number) {
+		if (parameterIndex === 0) return;
+		this.modifyProject(project => {shiftUp(project.entities[entityIndex].parameters, parameterIndex); });
+	}
+
+	private onMoveEntityParameterDown(entityIndex: number, parameterIndex: number) {
+		if (parameterIndex === this.state.project.entities[entityIndex].parameters.length - 1) return;
+		this.modifyProject(project => {shiftDown(project.entities[entityIndex].parameters, parameterIndex); });
+	}
+
 	private onChangeEntityParameterName(entityIndex: number, parameterIndex: number, name: string) {
 		this.modifyProject(project => {project.entities[entityIndex].parameters[parameterIndex].name = name; });
 	}
@@ -324,6 +338,9 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						onChangeEntityHeight={this.onChangeEntityHeight.bind(this)}
 						onChooseEntityImage={this.onChooseEntityImage.bind(this)}
 						onAddParameter={this.onAddEntityParameter.bind(this)}
+						onRemoveParameter={this.onRemoveEntityParameter.bind(this)}
+						onMoveParameterUp={this.onMoveEntityParameterUp.bind(this)}
+						onMoveParameterDown={this.onMoveEntityParameterDown.bind(this)}
 						onChangeParameterName={this.onChangeEntityParameterName.bind(this)}
 						onChangeParameterType={this.onChangeEntityParameterType.bind(this)}
 					/>

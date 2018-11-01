@@ -2,25 +2,25 @@ import Octicon, { FileDirectory, Paintcan } from '@githubprimer/octicons-react';
 import { remote } from 'electron';
 import React from 'react';
 import { SketchPicker } from 'react-color';
-import { Form, Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
-import Button from 'reactstrap/lib/Button';
-import Col from 'reactstrap/lib/Col';
-import FormGroup from 'reactstrap/lib/FormGroup';
-import Label from 'reactstrap/lib/Label';
+import { Button, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
 import Entity, { EntityParameterType } from '../../data/entity';
-import ItemList from './item-list';
 import ColorDisplay from './color-display';
 import ParameterEditor from './entity-parameter-editor';
+import ItemList from './item-list';
 
 export interface Props {
 	entity: Entity;
-	selectedEntityParameter: number;
+	selectedParameterIndex: number;
 	onChangeEntityName: (name: string) => void;
 	onChangeEntityColor: (color: string) => void;
 	onChangeEntityWidth: (width: number) => void;
 	onChangeEntityHeight: (height: number) => void;
 	onChooseEntityImage: (imagePath: string) => void;
+	onSelectParameter: (parameterIndex: number) => void;
 	onAddParameter: () => void;
+	onRemoveParameter: (parameterIndex: number) => void;
+	onMoveParameterUp: (parameterIndex: number) => void;
+	onMoveParameterDown: (parameterIndex: number) => void;
 	onChangeParameterName: (parameterIndex: number, name: string) => void;
 	onChangeParameterType: (parameterIndex: number, type: EntityParameterType) => void;
 }
@@ -134,16 +134,16 @@ export default class EntityEditor extends React.Component<Props, State> {
 			</Form>
 			<ItemList
 				title='Parameters'
-				selectedItemIndex={this.props.selectedEntityParameter}
+				selectedItemIndex={this.props.selectedParameterIndex}
 				items={this.props.entity.parameters}
-				onSelectItem={() => {}}
+				onSelectItem={this.props.onSelectParameter}
 				onAddItem={this.props.onAddParameter}
-				onRemoveItem={() => {}}
-				onMoveItemUp={() => {}}
-				onMoveItemDown={() => {}}
+				onRemoveItem={this.props.onRemoveParameter}
+				onMoveItemUp={this.props.onMoveParameterUp}
+				onMoveItemDown={this.props.onMoveParameterDown}
 				renderItem={(parameter, i) => <ParameterEditor
 					parameter={parameter}
-					selectedParameter={i === this.props.selectedEntityParameter}
+					selectedParameter={i === this.props.selectedParameterIndex}
 					onChangeParameterName={name => this.props.onChangeParameterName(i, name)}
 					onChangeParameterType={type => this.props.onChangeParameterType(i, type)}
 				/>}
