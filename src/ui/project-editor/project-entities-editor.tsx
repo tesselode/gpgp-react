@@ -14,6 +14,7 @@ import NavbarBrand from 'reactstrap/lib/NavbarBrand';
 import Entity, { EntityParameter, isNumberEntityParameter, NumberEntityParameter } from '../../data/entity';
 import Image from '../../data/image-data';
 import Project from '../../data/project';
+import ItemList from './item-list';
 
 const ColorDisplay = (color: string) => <div
 	style={{
@@ -235,38 +236,17 @@ class EntityEditor extends React.Component<EntityEditorProps, EntityEditorState>
 					</Col>
 				</FormGroup>
 			</Form>
-			<Navbar color='light'>
-				<NavbarBrand>Parameters</NavbarBrand>
-				<ButtonGroup>
-					<Button
-					>
-						<Octicon icon={Trashcan}/>
-					</Button>
-					<Button
-						onClick={() => {this.props.onAddEntityParameter(); }}
-					>
-						<Octicon icon={Plus}/>
-					</Button>
-					<Button
-					>
-						<Octicon icon={ArrowUp}/>
-					</Button>
-					<Button
-					>
-						<Octicon icon={ArrowDown}/>
-					</Button>
-				</ButtonGroup>
-			</Navbar>
-			<ListGroup flush>
-				{this.props.entity.parameters.map((parameter, i) =>
-					<ListGroupItem
-						key={i}
-						active={this.props.selectedEntityParameter === i}
-					>
-						{ParameterEditor(parameter)}
-					</ListGroupItem>,
-				)}
-			</ListGroup>
+			<ItemList
+				title='Parameters'
+				selectedItemIndex={this.props.selectedEntityParameter}
+				items={this.props.entity.parameters}
+				onSelectItem={() => {}}
+				onAddItem={this.props.onAddEntityParameter}
+				onRemoveItem={() => {}}
+				onMoveItemUp={() => {}}
+				onMoveItemDown={() => {}}
+				renderItem={parameter => ParameterEditor(parameter)}
+			/>
 		</div>;
 	}
 }
@@ -305,57 +285,31 @@ export default class ProjectEntitiesEditor extends React.Component<Props, State>
 		const selectedEntity = this.props.project.entities[this.state.selectedEntityIndex];
 		return <Row>
 			<Col md={4}>
-				<Navbar color='light'>
-					<NavbarBrand>Entities</NavbarBrand>
-					<ButtonGroup>
-						<Button
-							disabled={!selectedEntity}
-							onClick={() => this.props.onRemoveEntity(this.state.selectedEntityIndex)}
-						>
-							<Octicon icon={Trashcan}/>
-						</Button>
-						<Button
-							onClick={() => this.props.onAddEntity()}
-						>
-							<Octicon icon={Plus}/>
-						</Button>
-						<Button
-							disabled={!(selectedEntity && this.state.selectedEntityIndex !== 0)}
-							onClick={() => this.props.onMoveEntityUp(this.state.selectedEntityIndex)}
-						>
-							<Octicon icon={ArrowUp}/>
-						</Button>
-						<Button
-							disabled={!(selectedEntity && this.state.selectedEntityIndex !== this.props.project.entities.length - 1)}
-							onClick={() => this.props.onMoveEntityDown(this.state.selectedEntityIndex)}
-						>
-							<Octicon icon={ArrowDown}/>
-						</Button>
-					</ButtonGroup>
-				</Navbar>
-				<ListGroup flush>
-					{this.props.project.entities.map((entity, i) =>
-						<ListGroupItem
-							key={i}
-							active={i === this.state.selectedEntityIndex}
-							onClick={() => {this.setState({selectedEntityIndex: i}); }}
-						>
-							{
-								selectedEntity.imagePath && this.props.images.get(selectedEntity.imagePath) ?
-									<img
-										src={this.props.images.get(selectedEntity.imagePath).data}
-										style={{
-											width: 'auto',
-											height: '1em',
-										}}
-									/>
-									: ColorDisplay(entity.color)
-							}
-							&nbsp;&nbsp;
-							{entity.name}
-						</ListGroupItem>)
-					}
-				</ListGroup>
+				<ItemList
+					title='Entities'
+					selectedItemIndex={this.state.selectedEntityIndex}
+					items={this.props.project.entities}
+					onSelectItem={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
+					onAddItem={this.props.onAddEntity}
+					onRemoveItem={this.props.onRemoveEntity}
+					onMoveItemUp={this.props.onMoveEntityUp}
+					onMoveItemDown={this.props.onMoveEntityDown}
+					renderItem={entity => <div>
+						{
+							entity.imagePath && this.props.images.get(entity.imagePath) ?
+								<img
+									src={this.props.images.get(entity.imagePath).data}
+									style={{
+										width: 'auto',
+										height: '1em',
+									}}
+								/>
+								: ColorDisplay(entity.color)
+						}
+						&nbsp;&nbsp;
+						{entity.name}
+					</div>}
+				/>
 			</Col>
 			{selectedEntity && <Col md={8}>
 				<EntityEditor
