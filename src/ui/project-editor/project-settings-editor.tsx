@@ -12,12 +12,7 @@ import Project from '../../data/project';
 
 export interface Props {
 	project: Project;
-	onChangeProjectName: (name: string) => void;
-	onChangeTileSize: (tileSize: number) => void;
-	onChangeDefaultMapWidth: (defaultMapWidth: number) => void;
-	onChangeDefaultMapHeight: (defaultMapHeight: number) => void;
-	onChangeMaxMapWidth: (maxMapWidth: number) => void;
-	onChangeMaxMapHeight: (maxMapHeight: number) => void;
+	modifyProject: (f: (project: Project) => void) => void;
 }
 
 export default (props: Props) => <Form>
@@ -26,7 +21,7 @@ export default (props: Props) => <Form>
 		<Col md={10}>
 			<Input
 				value={props.project.name}
-				onChange={event => props.onChangeProjectName(event.target.value)}
+				onChange={event => props.modifyProject(project => {project.name = event.target.value; })}
 			/>
 		</Col>
 	</FormGroup>
@@ -40,7 +35,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.onChangeTileSize(value);
+							props.modifyProject(project => {project.tileSize = value; });
 						}
 					}}
 				/>
@@ -58,7 +53,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.onChangeDefaultMapWidth(value);
+							props.modifyProject(project => {project.defaultMapWidth = value; });
 						}
 					}}
 				/>
@@ -76,7 +71,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.onChangeDefaultMapHeight(value);
+							props.modifyProject(project => {project.defaultMapHeight = value; });
 						}
 					}}
 				/>
@@ -94,7 +89,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.onChangeMaxMapWidth(value);
+							props.modifyProject(project => {project.maxMapWidth = value; });
 						}
 					}}
 				/>
@@ -112,7 +107,7 @@ export default (props: Props) => <Form>
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.onChangeMaxMapHeight(value);
+							props.modifyProject(project => {project.maxMapHeight = value; });
 						}
 					}}
 				/>
