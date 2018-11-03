@@ -1,7 +1,4 @@
-import Octicon, { FileDirectory, Paintcan } from '@githubprimer/octicons-react';
-import { remote } from 'electron';
 import React from 'react';
-import { SketchPicker } from 'react-color';
 import { ButtonGroup, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 import Button from 'reactstrap/lib/Button';
 import Col from 'reactstrap/lib/Col';
@@ -18,19 +15,28 @@ import {
 	TextEntityParameter,
 } from '../../data/entity';
 
-const TextParameterForm = (parameter: TextEntityParameter) => <div>
+const TextParameterForm = (
+	parameter: TextEntityParameter,
+	modifyParameter: (f: (parameter: TextEntityParameter) => void) => void,
+) => <div>
 	<FormGroup row>
 		<Label md={1} size='sm'>Default</Label>
 		<Col md={11}>
 			<Input
 				bsSize='sm'
 				value={parameter.default}
+				onChange={event => modifyParameter(parameter => {
+					parameter.default = event.target.value;
+				})}
 			/>
 		</Col>
 	</FormGroup>
 </div>;
 
-const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
+const NumberParameterForm = (
+	parameter: NumberEntityParameter,
+	modifyParameter: (f: (parameter: NumberEntityParameter) => void) => void,
+) => <div>
 	<Row>
 		<Col md={6}>
 			<FormGroup row>
@@ -39,13 +45,23 @@ const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
 					<InputGroup size='sm'>
 						<InputGroupAddon addonType='prepend'>
 							<InputGroupText>
-								<Input addon type='checkbox' checked={parameter.hasMin} />
+								<Input
+									addon
+									type='checkbox'
+									checked={parameter.hasMin}
+									onChange={() => modifyParameter(parameter => {
+										parameter.hasMin = !parameter.hasMin;
+									})}
+								/>
 							</InputGroupText>
 						</InputGroupAddon>
 						<Input
 							type='number'
 							disabled={!parameter.hasMin}
 							value={parameter.min}
+							onChange={event => modifyParameter(parameter => {
+								parameter.min = Number(event.target.value);
+							})}
 						/>
 					</InputGroup>
 				</Col>
@@ -58,13 +74,23 @@ const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
 					<InputGroup size='sm'>
 						<InputGroupAddon addonType='prepend'>
 							<InputGroupText>
-								<Input addon type='checkbox' checked={parameter.hasMax} />
+								<Input
+									addon
+									type='checkbox'
+									checked={parameter.hasMax}
+									onChange={() => modifyParameter(parameter => {
+										parameter.hasMax = !parameter.hasMax;
+									})}
+								/>
 							</InputGroupText>
 						</InputGroupAddon>
 						<Input
 							type='number'
 							disabled={!parameter.hasMax}
 							value={parameter.max}
+							onChange={event => modifyParameter(parameter => {
+								parameter.max = Number(event.target.value);
+							})}
 						/>
 					</InputGroup>
 				</Col>
@@ -78,6 +104,9 @@ const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
 				bsSize='sm'
 				type='checkbox'
 				checked={parameter.useSlider}
+				onChange={() => modifyParameter(parameter => {
+					parameter.useSlider = !parameter.useSlider;
+				})}
 			/>
 		</Col>
 	</FormGroup>}
@@ -88,18 +117,27 @@ const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
 				bsSize='sm'
 				type='number'
 				value={parameter.default}
+				onChange={event => modifyParameter(parameter => {
+					parameter.default = Number(event.target.value);
+				})}
 			/>
 		</Col>
 	</FormGroup>
 </div>;
 
-const SwitchParameterForm = (parameter: SwitchEntityParameter, selectedParameter: boolean) => <div>
+const SwitchParameterForm = (
+	parameter: SwitchEntityParameter,
+	selectedParameter: boolean,
+	modifyParameter: (f: (parameter: SwitchEntityParameter) => void) => void,
+) => <div>
 	<ButtonGroup size='sm'>
 		<Button
 			outline
 			color={selectedParameter ? 'light' : 'dark'}
 			active={!parameter.default}
-			onClick={() => {}}
+			onClick={() => modifyParameter(parameter => {
+				parameter.default = false;
+			})}
 		>
 			Off by default
 		</Button>
@@ -107,7 +145,9 @@ const SwitchParameterForm = (parameter: SwitchEntityParameter, selectedParameter
 			outline
 			color={selectedParameter ? 'light' : 'dark'}
 			active={parameter.default}
-			onClick={() => {}}
+			onClick={() => modifyParameter(parameter => {
+				parameter.default = true;
+			})}
 		>
 			On by default
 		</Button>
@@ -155,9 +195,19 @@ const ParameterEditor = (props: ParameterEditorProps) => <Form>
 		</Col>
 	</Row>
 	{
-		isTextEntityParameter(props.parameter) ? TextParameterForm(props.parameter)
-		: isNumberEntityParameter(props.parameter) ? NumberParameterForm(props.parameter)
-		: isSwitchEntityParameter(props.parameter) ? SwitchParameterForm(props.parameter, props.selectedParameter)
+		isTextEntityParameter(props.parameter) ? TextParameterForm(
+			props.parameter,
+			props.modifyParameter,
+		)
+		: isNumberEntityParameter(props.parameter) ? NumberParameterForm(
+			props.parameter,
+			props.modifyParameter,
+		)
+		: isSwitchEntityParameter(props.parameter) ? SwitchParameterForm(
+			props.parameter,
+			props.selectedParameter,
+			props.modifyParameter,
+		)
 		: ''
 	}
 </Form>;
