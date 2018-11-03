@@ -14,6 +14,8 @@ import {
 } from 'reactstrap';
 import Image from '../../data/image-data';
 import Project from '../../data/project';
+import { newTileset } from '../../data/tileset';
+import { shiftDown, shiftUp } from '../../util';
 import Grid from '../grid';
 import ItemList from './item-list';
 
@@ -21,12 +23,7 @@ export interface Props {
 	focused: boolean;
 	project: Project;
 	images: Map<string, Image>;
-	onAddTileset: () => void;
-	onRemoveTileset: (tilesetIndex: number) => void;
-	onMoveTilesetUp: (tilesetIndex: number) => void;
-	onMoveTilesetDown: (tilesetIndex: number) => void;
-	onChangeTilesetName: (tilesetIndex: number, name: string) => void;
-	onChooseTilesetImage: (tilesetIndex: number, imagePath: string) => void;
+	modifyProject: (f: (project: Project) => void) => void;
 }
 
 export interface State {
@@ -48,7 +45,9 @@ export default class extends React.Component<Props, State> {
 			],
 		}, paths => {
 			if (paths)
-				this.props.onChooseTilesetImage(this.state.selectedTilesetIndex, paths[0]);
+				this.props.modifyProject(project => {
+					project.tilesets[this.state.selectedTilesetIndex].imagePath = paths[0];
+				});
 		});
 	}
 
@@ -76,10 +75,18 @@ export default class extends React.Component<Props, State> {
 					selectedItemIndex={this.state.selectedTilesetIndex}
 					items={this.props.project.tilesets}
 					onSelectItem={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
-					onAddItem={this.props.onAddTileset}
-					onRemoveItem={this.props.onRemoveTileset}
-					onMoveItemUp={this.props.onMoveTilesetUp}
-					onMoveItemDown={this.props.onMoveTilesetDown}
+					onAddItem={() => this.props.modifyProject(project => {
+						project.tilesets.push(newTileset());
+					})}
+					onRemoveItem={tilesetIndex => this.props.modifyProject(project => {
+						project.tilesets.splice(tilesetIndex, 1);
+					})}
+					onMoveItemUp={tilesetIndex => this.props.modifyProject(project => {
+						shiftUp(project.tilesets, tilesetIndex);
+					})}
+					onMoveItemDown={tilesetIndex => this.props.modifyProject(project => {
+						shiftDown(project.tilesets, tilesetIndex);
+					})}
 					renderItem={tileset => tileset.name}
 				/>
 			</Col>
@@ -90,7 +97,9 @@ export default class extends React.Component<Props, State> {
 						<Col md={10}>
 							<Input
 								value={selectedTileset.name}
-								onChange={(event) => this.props.onChangeTilesetName(this.state.selectedTilesetIndex, event.target.value)}
+								onChange={event => this.props.modifyProject(project => {
+									project.tilesets[this.state.selectedTilesetIndex].name = event.target.value;
+								})}
 							/>
 						</Col>
 					</FormGroup>
@@ -117,4 +126,4 @@ export default class extends React.Component<Props, State> {
 			</Col>}
 		</Row>;
 	}
-};
+}

@@ -14,7 +14,7 @@ import {
 	TabPane,
 } from 'reactstrap';
 import { EntityParameterType, newEntity } from '../../data/entity';
-import Image, { loadImage, loadImages } from '../../data/image-data';
+import Image, { loadImage } from '../../data/image-data';
 import Project, { exportProject, getProjectImagePaths, newProject } from '../../data/project';
 import { newTileset } from '../../data/tileset';
 import { deepCopyObject, shiftDown, shiftUp } from '../../util';
@@ -64,14 +64,22 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			projectFilePath: this.props.projectFilePath,
 			activeTab: ProjectEditorTab.Settings,
 		};
-		if (this.props.project)
-			loadImages(getProjectImagePaths(this.props.project)).then(images => {
-				this.setState({images});
-			});
+		this.loadImages();
 	}
 
 	private updateTabTitle() {
 		this.props.onChangeTabTitle(this.state.project.name + (this.state.unsavedChanges ? '*' : ''));
+	}
+
+	private loadImages() {
+		for (const tileset of this.state.project.tilesets) {
+			if (tileset.imagePath && !this.state.images.get(tileset.imagePath))
+				loadImage(tileset.imagePath).then(image => {
+					const images = new Map(this.state.images);
+					images.set(tileset.imagePath, image);
+					this.setState({images});
+				});
+		}
 	}
 
 	private modifyProject(f: (project: Project) => void): void {
@@ -81,6 +89,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			project,
 			unsavedChanges: true,
 		}, () => {this.updateTabTitle(); });
+		this.loadImages();
 	}
 
 	public exit(onExit: () => void) {
@@ -175,6 +184,14 @@ export default class ProjectEditor extends AppTab<Props, State> {
 				<TabPane tabId={ProjectEditorTab.Settings}>
 					<ProjectSettingsEditor
 						project={this.state.project}
+						modifyProject={this.modifyProject.bind(this)}
+					/>
+				</TabPane>
+				<TabPane tabId={ProjectEditorTab.Tilesets}>
+					<ProjectTilesetsEditor
+						focused={this.state.activeTab === ProjectEditorTab.Tilesets}
+						project={this.state.project}
+						images={this.state.images}
 						modifyProject={this.modifyProject.bind(this)}
 					/>
 				</TabPane>
