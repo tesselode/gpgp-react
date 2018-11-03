@@ -1,4 +1,7 @@
+import Octicon, { FileDirectory, Paintcan } from '@githubprimer/octicons-react';
+import { remote } from 'electron';
 import React from 'react';
+import { SketchPicker } from 'react-color';
 import { ButtonGroup, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 import Button from 'reactstrap/lib/Button';
 import Col from 'reactstrap/lib/Col';
@@ -15,35 +18,19 @@ import {
 	TextEntityParameter,
 } from '../../data/entity';
 
-interface TextParameterFormProps {
-	parameter: TextEntityParameter;
-	onChangeDefault: (defaultValue: string) => void;
-}
-
-const TextParameterForm = (props: TextParameterFormProps) => <div>
+const TextParameterForm = (parameter: TextEntityParameter) => <div>
 	<FormGroup row>
 		<Label md={1} size='sm'>Default</Label>
 		<Col md={11}>
 			<Input
 				bsSize='sm'
-				value={props.parameter.default}
-				onChange={event => props.onChangeDefault(event.target.value)}
+				value={parameter.default}
 			/>
 		</Col>
 	</FormGroup>
 </div>;
 
-interface NumberParameterFormProps {
-	parameter: NumberEntityParameter;
-	onToggleHasMin: () => void;
-	onChangeMin: (min: number) => void;
-	onToggleHasMax: () => void;
-	onChangeMax: (max: number) => void;
-	onToggleSlider: () => void;
-	onChangeDefault: (defaultValue: number) => void;
-}
-
-const NumberParameterForm = (props: NumberParameterFormProps) => <div>
+const NumberParameterForm = (parameter: NumberEntityParameter) => <div>
 	<Row>
 		<Col md={6}>
 			<FormGroup row>
@@ -52,19 +39,13 @@ const NumberParameterForm = (props: NumberParameterFormProps) => <div>
 					<InputGroup size='sm'>
 						<InputGroupAddon addonType='prepend'>
 							<InputGroupText>
-								<Input
-									addon
-									type='checkbox'
-									checked={props.parameter.hasMin}
-									onChange={() => props.onToggleHasMin()}
-								/>
+								<Input addon type='checkbox' checked={parameter.hasMin} />
 							</InputGroupText>
 						</InputGroupAddon>
 						<Input
 							type='number'
-							disabled={!props.parameter.hasMin}
-							value={props.parameter.min}
-							onChange={event => props.onChangeMin(Number(event.target.value))}
+							disabled={!parameter.hasMin}
+							value={parameter.min}
 						/>
 					</InputGroup>
 				</Col>
@@ -77,33 +58,26 @@ const NumberParameterForm = (props: NumberParameterFormProps) => <div>
 					<InputGroup size='sm'>
 						<InputGroupAddon addonType='prepend'>
 							<InputGroupText>
-								<Input
-									addon
-									type='checkbox'
-									checked={props.parameter.hasMax}
-									onChange={() => props.onToggleHasMax()}
-								/>
+								<Input addon type='checkbox' checked={parameter.hasMax} />
 							</InputGroupText>
 						</InputGroupAddon>
 						<Input
 							type='number'
-							disabled={!props.parameter.hasMax}
-							value={props.parameter.max}
-							onChange={event => props.onChangeMax(Number(event.target.value))}
+							disabled={!parameter.hasMax}
+							value={parameter.max}
 						/>
 					</InputGroup>
 				</Col>
 			</FormGroup>
 		</Col>
 	</Row>
-	{props.parameter.hasMin && props.parameter.hasMax && <FormGroup row>
+	{parameter.hasMin && parameter.hasMax && <FormGroup row>
 		<Label md={1} size='sm'>Show slider</Label>
 		<Col md={11}>
 			<Input
 				bsSize='sm'
 				type='checkbox'
-				checked={props.parameter.useSlider}
-				onChange={() => props.onToggleSlider()}
+				checked={parameter.useSlider}
 			/>
 		</Col>
 	</FormGroup>}
@@ -113,38 +87,27 @@ const NumberParameterForm = (props: NumberParameterFormProps) => <div>
 			<Input
 				bsSize='sm'
 				type='number'
-				value={props.parameter.default}
-				onChange={event => props.onChangeDefault(Number(event.target.value))}
+				value={parameter.default}
 			/>
 		</Col>
 	</FormGroup>
 </div>;
 
-interface SwitchParameterFormProps {
-	parameter: SwitchEntityParameter;
-	selectedParameter: boolean;
-	onToggleDefault: () => void;
-}
-
-const SwitchParameterForm = (props: SwitchParameterFormProps) => <div>
+const SwitchParameterForm = (parameter: SwitchEntityParameter, selectedParameter: boolean) => <div>
 	<ButtonGroup size='sm'>
 		<Button
 			outline
-			color={props.selectedParameter ? 'light' : 'dark'}
-			active={!props.parameter.default}
-			onClick={() => {
-				if (props.parameter.default) props.onToggleDefault();
-			}}
+			color={selectedParameter ? 'light' : 'dark'}
+			active={!parameter.default}
+			onClick={() => {}}
 		>
 			Off by default
 		</Button>
 		<Button
 			outline
-			color={props.selectedParameter ? 'light' : 'dark'}
-			active={props.parameter.default}
-			onClick={() => {
-				if (!props.parameter.default) props.onToggleDefault();
-			}}
+			color={selectedParameter ? 'light' : 'dark'}
+			active={parameter.default}
+			onClick={() => {}}
 		>
 			On by default
 		</Button>
@@ -156,14 +119,6 @@ interface ParameterEditorProps {
 	selectedParameter: boolean;
 	onChangeParameterName: (name: string) => void;
 	onChangeParameterType: (type: EntityParameterType) => void;
-	onChangeDefaultText: (defaultValue: string) => void;
-	onToggleHasMin: () => void;
-	onChangeMin: (min: number) => void;
-	onToggleHasMax: () => void;
-	onChangeMax: (max: number) => void;
-	onToggleSlider: () => void;
-	onChangeDefaultNumber: (defaultValue: number) => void;
-	onToggleDefaultSwitchValue: () => void;
 }
 
 const ParameterEditor = (props: ParameterEditorProps) => <Form>
@@ -199,24 +154,9 @@ const ParameterEditor = (props: ParameterEditorProps) => <Form>
 		</Col>
 	</Row>
 	{
-		isTextEntityParameter(props.parameter) ? <TextParameterForm
-			parameter={props.parameter}
-			onChangeDefault={props.onChangeDefaultText}
-		/>
-		: isNumberEntityParameter(props.parameter) ? <NumberParameterForm
-			parameter={props.parameter}
-			onToggleHasMin={props.onToggleHasMin}
-			onChangeMin={props.onChangeMin}
-			onToggleHasMax={props.onToggleHasMax}
-			onChangeMax={props.onChangeMax}
-			onToggleSlider={props.onToggleSlider}
-			onChangeDefault={props.onChangeDefaultNumber}
-		/>
-		: isSwitchEntityParameter(props.parameter) ? <SwitchParameterForm
-			parameter={props.parameter}
-			selectedParameter={props.selectedParameter}
-			onToggleDefault={props.onToggleDefaultSwitchValue}
-		/>
+		isTextEntityParameter(props.parameter) ? TextParameterForm(props.parameter)
+		: isNumberEntityParameter(props.parameter) ? NumberParameterForm(props.parameter)
+		: isSwitchEntityParameter(props.parameter) ? SwitchParameterForm(props.parameter, props.selectedParameter)
 		: ''
 	}
 </Form>;
