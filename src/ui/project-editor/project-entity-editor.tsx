@@ -4,28 +4,18 @@ import React from 'react';
 import { SketchPicker } from 'react-color';
 import { Button, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
 import Entity, { EntityParameterType } from '../../data/entity';
+import { shiftDown, shiftUp } from '../../util';
 import ColorDisplay from './color-display';
 import ParameterEditor from './entity-parameter-editor';
 import ItemList from './item-list';
 
 export interface Props {
 	entity: Entity;
-	selectedParameterIndex: number;
-	onChangeEntityName: (name: string) => void;
-	onChangeEntityColor: (color: string) => void;
-	onChangeEntityWidth: (width: number) => void;
-	onChangeEntityHeight: (height: number) => void;
-	onChooseEntityImage: (imagePath: string) => void;
-	onSelectParameter: (parameterIndex: number) => void;
-	onAddParameter: () => void;
-	onRemoveParameter: (parameterIndex: number) => void;
-	onMoveParameterUp: (parameterIndex: number) => void;
-	onMoveParameterDown: (parameterIndex: number) => void;
-	onChangeParameterName: (parameterIndex: number, name: string) => void;
-	onChangeParameterType: (parameterIndex: number, type: EntityParameterType) => void;
+	modifyEntity: (f: (entity: Entity) => void) => void;
 }
 
 export interface State {
+	selectedParameterIndex: number;
 	showColorPicker: boolean;
 }
 
@@ -33,6 +23,7 @@ export default class EntityEditor extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
+			selectedParameterIndex: 0,
 			showColorPicker: false,
 		};
 	}
@@ -44,7 +35,7 @@ export default class EntityEditor extends React.Component<Props, State> {
 			],
 		}, paths => {
 			if (paths)
-				this.props.onChooseEntityImage(paths[0]);
+				this.props.modifyEntity(entity => {entity.imagePath = paths[0]; });
 		});
 	}
 
@@ -56,7 +47,7 @@ export default class EntityEditor extends React.Component<Props, State> {
 					<Col md={10}>
 						<Input
 							value={this.props.entity.name}
-							onChange={(event) => this.props.onChangeEntityName(event.target.value)}
+							onChange={event => this.props.modifyEntity(entity => {entity.name = event.target.value; })}
 						/>
 					</Col>
 				</FormGroup>
@@ -70,7 +61,7 @@ export default class EntityEditor extends React.Component<Props, State> {
 								onChange={event => {
 									const value = Number(event.target.value);
 									if (!isNaN(value) && value > 0)
-										this.props.onChangeEntityWidth(value);
+										this.props.modifyEntity(entity => {entity.width = value; });
 								}}
 							/>
 							<InputGroupAddon addonType='append'>
@@ -82,7 +73,7 @@ export default class EntityEditor extends React.Component<Props, State> {
 								onChange={event => {
 									const value = Number(event.target.value);
 									if (!isNaN(value) && value > 0)
-										this.props.onChangeEntityHeight(value);
+									this.props.modifyEntity(entity => {entity.height = value; });
 								}}
 							/>
 							<InputGroupAddon addonType='append'>tiles</InputGroupAddon>
@@ -108,7 +99,9 @@ export default class EntityEditor extends React.Component<Props, State> {
 						</InputGroup>
 						{this.state.showColorPicker && <SketchPicker
 							color={this.props.entity.color}
-							onChangeComplete={color => this.props.onChangeEntityColor(color.hex)}
+							onChangeComplete={color => this.props.modifyEntity(entity => {
+								entity.color = color.hex;
+							})}
 							disableAlpha
 						/>}
 					</Col>
@@ -134,18 +127,27 @@ export default class EntityEditor extends React.Component<Props, State> {
 			</Form>
 			<ItemList
 				title='Parameters'
-				selectedItemIndex={this.props.selectedParameterIndex}
+				selectedItemIndex={this.state.selectedParameterIndex}
 				items={this.props.entity.parameters}
-				onSelectItem={this.props.onSelectParameter}
-				onAddItem={this.props.onAddParameter}
-				onRemoveItem={this.props.onRemoveParameter}
-				onMoveItemUp={this.props.onMoveParameterUp}
-				onMoveItemDown={this.props.onMoveParameterDown}
+				onSelectItem={parameterIndex => this.setState({selectedParameterIndex: parameterIndex})}
+				onAddItem={() => this.props.modifyEntity(entity => {
+					entity.parameters.push({name: 'New parameter', type: EntityParameterType.Text});
+				})}
+				onRemoveItem={parameterIndex => this.props.modifyEntity(entity => {
+					entity.parameters.splice(parameterIndex, 1);
+				})}
+				onMoveItemUp={parameterIndex => this.props.modifyEntity(entity => {
+					shiftUp(entity.parameters, parameterIndex);
+				})}
+				onMoveItemDown={parameterIndex => this.props.modifyEntity(entity => {
+					shiftDown(entity.parameters, parameterIndex);
+				})}
 				renderItem={(parameter, i) => <ParameterEditor
 					parameter={parameter}
-					selectedParameter={i === this.props.selectedParameterIndex}
-					onChangeParameterName={name => this.props.onChangeParameterName(i, name)}
-					onChangeParameterType={type => this.props.onChangeParameterType(i, type)}
+					selectedParameter={i === this.state.selectedParameterIndex}
+					modifyParameter={f => this.props.modifyEntity(entity => {
+						f(entity.parameters[i]);
+					})}
 				/>}
 			/>
 		</div>;

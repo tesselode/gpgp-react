@@ -117,8 +117,7 @@ const SwitchParameterForm = (parameter: SwitchEntityParameter, selectedParameter
 interface ParameterEditorProps {
 	parameter: EntityParameter;
 	selectedParameter: boolean;
-	onChangeParameterName: (name: string) => void;
-	onChangeParameterType: (type: EntityParameterType) => void;
+	modifyParameter: (f: (parameter: EntityParameter) => void) => void;
 }
 
 const ParameterEditor = (props: ParameterEditorProps) => <Form>
@@ -131,7 +130,7 @@ const ParameterEditor = (props: ParameterEditorProps) => <Form>
 					<Input
 						bsSize='sm'
 						value={props.parameter.name}
-						onChange={event => props.onChangeParameterName(event.target.value)}
+						onChange={event => props.modifyParameter(parameter => {parameter.name = event.target.value; })}
 					/>
 				</Col>
 			</FormGroup>
@@ -143,7 +142,9 @@ const ParameterEditor = (props: ParameterEditorProps) => <Form>
 					<Input
 						bsSize='sm'
 						type='select'
-						onChange={event => props.onChangeParameterType(event.target.value as EntityParameterType)}
+						onChange={event => props.modifyParameter(parameter => {
+							parameter.type = event.target.value as EntityParameterType;
+						})}
 					>
 						<option>Text</option>
 						<option>Number</option>

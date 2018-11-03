@@ -80,6 +80,14 @@ export default class ProjectEditor extends AppTab<Props, State> {
 					this.setState({images});
 				});
 		}
+		for (const entity of this.state.project.entities) {
+			if (entity.imagePath && !this.state.images.get(entity.imagePath))
+				loadImage(entity.imagePath).then(image => {
+					const images = new Map(this.state.images);
+					images.set(entity.imagePath, image);
+					this.setState({images});
+				});
+		}
 	}
 
 	private modifyProject(f: (project: Project) => void): void {
@@ -190,6 +198,13 @@ export default class ProjectEditor extends AppTab<Props, State> {
 				<TabPane tabId={ProjectEditorTab.Tilesets}>
 					<ProjectTilesetsEditor
 						focused={this.state.activeTab === ProjectEditorTab.Tilesets}
+						project={this.state.project}
+						images={this.state.images}
+						modifyProject={this.modifyProject.bind(this)}
+					/>
+				</TabPane>
+				<TabPane tabId={ProjectEditorTab.Entities}>
+					<ProjectEntitiesEditor
 						project={this.state.project}
 						images={this.state.images}
 						modifyProject={this.modifyProject.bind(this)}
