@@ -20,6 +20,8 @@ export interface Props {
 	width: number;
 	/** The height of the grid (in tiles). */
 	height: number;
+	/** The background color of the grid. */
+	background?: string;
 	/** The zoom multiplier when the grid is first displayed (defaults to 2.0). */
 	startingZoom?: number;
 	/** The tool that is currently being used (defaults to the pencil tool). */
@@ -241,6 +243,7 @@ export default class Grid extends React.Component<Props, State> {
 					position: 'absolute',
 					left: 0,
 					top: 0,
+					background: this.props.background,
 					border: '1px solid black',
 					transform: 'scale(' + (1 / gridRenderingScale) + ')',
 					transformOrigin: '0% 0%',

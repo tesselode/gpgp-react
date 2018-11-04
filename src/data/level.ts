@@ -12,6 +12,10 @@ export default interface Level {
 	width: number;
 	/** The height of the level (in tiles). */
 	height: number;
+	/** Whether the level has a background color. */
+	hasBackgroundColor?: boolean;
+	/** The background color of the level. */
+	backgroundColor?: string;
 	/** The layers the level is made up of. */
 	layers: Layer[];
 }

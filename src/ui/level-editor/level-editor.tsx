@@ -243,6 +243,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 						tileSize={this.props.project.tileSize}
 						width={level.width}
 						height={level.height}
+						background={level.hasBackgroundColor && level.backgroundColor}
 						tool={this.state.tool}
 						cursor={
 							selectedLayer.type === LayerType.Tile ? TileCursor : GenericCursor
