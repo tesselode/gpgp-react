@@ -16,7 +16,7 @@ import {
 } from 'reactstrap';
 import Entity, { EntityParameterType } from '../../data/entity';
 import { getUniqueId, shiftDown, shiftUp } from '../../util';
-import ColorDisplay from './color-display';
+import ColorDisplay from '../common/color-display';
 import ParameterEditor from './entity-parameter-editor';
 import ItemList from './item-list';
 

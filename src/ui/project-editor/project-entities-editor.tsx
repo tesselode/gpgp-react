@@ -5,7 +5,7 @@ import { newEntity } from '../../data/entity';
 import Image from '../../data/image-data';
 import Project from '../../data/project';
 import { shiftDown, shiftUp } from '../../util';
-import ColorDisplay from './color-display';
+import ColorDisplay from '../common/color-display';
 import ItemList from './item-list';
 import EntityEditor from './project-entity-editor';
 
