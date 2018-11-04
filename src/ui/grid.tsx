@@ -50,7 +50,7 @@ export interface State {
 	 */
 	cursorR?: number;
 	/** The bottom coordinate of the rectangular cursor region (in tiles).
-	 * Assumed to be the same as the left coordinate if null.
+	 * Assumed to be the same as the top coordinate if null.
 	 */
 	cursorB?: number;
 	/** The number of the mouse button that is held down, or false if no button is held.
@@ -131,6 +131,10 @@ export default class Grid extends React.Component<Props, State> {
 		this.setState({mouseDown: event.button});
 		switch (this.props.tool) {
 			case GridTool.Rectangle:
+				this.setState({
+					cursorR: this.state.cursorL,
+					cursorB: this.state.cursorT,
+				});
 				break;
 			default:
 				switch (event.button) {
