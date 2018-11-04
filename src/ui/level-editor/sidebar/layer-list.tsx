@@ -1,4 +1,4 @@
-import Octicon, { Eye, Plus } from '@githubprimer/octicons-react';
+import Octicon, { Eye, Plus, Trashcan, ArrowUp, ArrowDown } from '@githubprimer/octicons-react';
 import React from 'react';
 import {
 	Button,
@@ -17,6 +17,7 @@ import { isTileLayer, newTileLayer } from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';
 import SidebarSection from './sidebar-section';
+import { shiftUp, shiftDown } from '../../../util';
 
 export interface Props {
 	project: Project;
@@ -60,6 +61,24 @@ export default class LayerList extends React.Component<Props, State> {
 				>
 					Highlight selected layer
 				</UncontrolledTooltip>
+				<Button
+					id='removeLayerButton'
+					size='sm'
+					disabled={this.props.level.layers.length < 2}
+					onClick={() => this.props.modifyLevel(level => {
+						const layer = level.layers[this.props.selectedLayerIndex];
+						level.layers.splice(this.props.selectedLayerIndex, 1);
+						return 'Remove layer "' + layer.name + '"';
+					})}
+				>
+					<Octicon icon={Trashcan} />
+				</Button>
+				<UncontrolledTooltip
+					delay={{show: 500, hide: 0}}
+					target='removeLayerButton'
+				>
+					Remove selected layer
+				</UncontrolledTooltip>
 				<ButtonDropdown
 					isOpen={this.state.dropdownOpen}
 					toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
@@ -97,6 +116,42 @@ export default class LayerList extends React.Component<Props, State> {
 					target='addLayerButton'
 				>
 					Add layer...
+				</UncontrolledTooltip>
+				<Button
+					id='moveLayerUpButton'
+					size='sm'
+					disabled={this.props.selectedLayerIndex === 0}
+					onClick={() => this.props.modifyLevel(level => {
+						const layer = level.layers[this.props.selectedLayerIndex];
+						shiftUp(level.layers, this.props.selectedLayerIndex);
+						return 'Move layer "' + layer.name + '" up';
+					})}
+				>
+					<Octicon icon={ArrowUp} />
+				</Button>
+				<UncontrolledTooltip
+					delay={{show: 500, hide: 0}}
+					target='moveLayerUpButton'
+				>
+					Move selected layer up
+				</UncontrolledTooltip>
+				<Button
+					id='moveLayerDownButton'
+					size='sm'
+					disabled={this.props.selectedLayerIndex === this.props.level.layers.length - 1}
+					onClick={() => this.props.modifyLevel(level => {
+						const layer = level.layers[this.props.selectedLayerIndex];
+						shiftDown(level.layers, this.props.selectedLayerIndex);
+						return 'Move layer "' + layer.name + '" down';
+					})}
+				>
+					<Octicon icon={ArrowDown} />
+				</Button>
+				<UncontrolledTooltip
+					delay={{show: 500, hide: 0}}
+					target='moveLayerDownButton'
+				>
+					Move selected layer down
 				</UncontrolledTooltip>
 			</ButtonGroup>}
 		>
