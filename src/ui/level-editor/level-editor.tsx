@@ -4,12 +4,12 @@ import path from 'path';
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import Image, { loadImages } from '../../data/image-data';
-import { isGeometryLayer, newGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
+import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { LayerType } from '../../data/layer/Layer';
-import { isTileLayer, newTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
+import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
 import Project, { getProjectImagePaths } from '../../data/project';
-import { deepCopyObject, Rect, shiftDown, shiftUp } from '../../util';
+import { deepCopyObject, Rect } from '../../util';
 import AppTab from '../app-tab';
 import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
@@ -122,86 +122,6 @@ export default class LevelEditor extends AppTab<Props, State> {
 		return this.state.levelHistory[this.state.levelHistoryPosition];
 	}
 
-	private onChangeLevelWidth(width: number) {
-		this.modifyLevel(level => {
-			level.width = width;
-			return 'Change level width';
-		}, true);
-	}
-
-	private onChangeLevelHeight(height: number) {
-		this.modifyLevel(level => {
-			level.height = height;
-			return 'Change level height';
-		}, true);
-	}
-
-	private onAddGeometryLayer() {
-		this.modifyLevel(level => {
-			level.layers.splice(this.state.selectedLayerIndex, 0, newGeometryLayer());
-			return 'Add geometry layer';
-		});
-	}
-
-	private onAddTileLayer(tilesetIndex: number) {
-		this.modifyLevel(level => {
-			level.layers.splice(this.state.selectedLayerIndex, 0, newTileLayer(tilesetIndex));
-			return 'Add tile layer';
-		});
-	}
-
-	private onToggleLayerVisibility(layerIndex: number) {
-		this.modifyLevel(level => {
-			const layer = level.layers[layerIndex];
-			layer.visible = !layer.visible;
-			return layer.visible ? 'Show layer "' + layer.name + '"'
-				: 'Hide layer "' + layer.name + '"';
-		});
-	}
-
-	private onChangeLayerName(name: string) {
-		this.modifyLevel(level => {
-			level.layers[this.state.selectedLayerIndex].name = name;
-			return 'Rename layer to "' + name + '"';
-		}, true);
-	}
-
-	private onMoveLayerUp() {
-		this.modifyLevel(level => {
-			if (this.state.selectedLayerIndex === 0) return false;
-			const layer = level.layers[this.state.selectedLayerIndex];
-			shiftUp(level.layers, this.state.selectedLayerIndex);
-			return 'Move layer "' + layer.name + '" up';
-		});
-		this.setState({
-			selectedLayerIndex: this.state.selectedLayerIndex - 1,
-		});
-	}
-
-	private onMoveLayerDown() {
-		this.modifyLevel(level => {
-			if (this.state.selectedLayerIndex === level.layers.length - 1) return false;
-			const layer = level.layers[this.state.selectedLayerIndex];
-			shiftDown(level.layers, this.state.selectedLayerIndex);
-			this.setState({
-				selectedLayerIndex: this.state.selectedLayerIndex + 1,
-			});
-			return 'Move layer "' + layer.name + '" down';
-		});
-	}
-
-	private onDeleteLayer() {
-		this.modifyLevel(level => {
-			if (level.layers.length <= 1) return false;
-			const layer = level.layers[this.state.selectedLayerIndex];
-			level.layers.splice(this.state.selectedLayerIndex, 1);
-			this.setState({
-				selectedLayerIndex: Math.min(this.state.selectedLayerIndex, level.layers.length - 1),
-			});
-			return 'Delete layer "' + layer.name + '"';
-		});
-	}
-
 	private onPlace(rect: Rect) {
 		this.modifyLevel(level => {
 			const layer = level.layers[this.state.selectedLayerIndex];
@@ -273,7 +193,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	public render() {
 		const level = this.getCurrentLevelState();
 		const selectedLayer = level.layers[this.state.selectedLayerIndex];
-		
+
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
 				<Col md={3} style={{height: '90vh', overflowY: 'auto'}}>
@@ -283,8 +203,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 					/>
 					<LevelOptions
 						level={level}
-						onChangeLevelWidth={this.onChangeLevelWidth.bind(this)}
-						onChangeLevelHeight={this.onChangeLevelHeight.bind(this)}
+						modifyLevel={this.modifyLevel.bind(this)}
 						onBlur={() => this.setState({continuedAction: false})}
 					/>
 					<LayerList
@@ -296,19 +215,12 @@ export default class LevelEditor extends AppTab<Props, State> {
 							showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop,
 						})}
 						onSelectLayer={(layerIndex: number) => this.setState({selectedLayerIndex: layerIndex})}
-						onAddGeometryLayer={this.onAddGeometryLayer.bind(this)}
-						onAddTileLayer={this.onAddTileLayer.bind(this)}
-						onToggleLayerVisibility={this.onToggleLayerVisibility.bind(this)}
+						modifyLevel={this.modifyLevel.bind(this)}
 					/>
 					<LayerOptions
-						layer={selectedLayer}
-						canMoveLayerUp={this.state.selectedLayerIndex > 0}
-						canMoveLayerDown={this.state.selectedLayerIndex < level.layers.length - 1}
-						canDeleteLayer={level.layers.length > 1}
-						onChangeLayerName={this.onChangeLayerName.bind(this)}
-						onMoveLayerUp={this.onMoveLayerUp.bind(this)}
-						onMoveLayerDown={this.onMoveLayerDown.bind(this)}
-						onDeleteLayer={this.onDeleteLayer.bind(this)}
+						level={level}
+						selectedLayerIndex={this.state.selectedLayerIndex}
+						modifyLevel={this.modifyLevel.bind(this)}
 						onBlur={() => this.setState({continuedAction: false})}
 					/>
 					{isTileLayer(selectedLayer) && <TilePicker

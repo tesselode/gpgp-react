@@ -5,8 +5,7 @@ import SidebarSection from './sidebar-section';
 
 export interface Props {
 	level: Level;
-	onChangeLevelWidth: (width: number) => void;
-	onChangeLevelHeight: (height: number) => void;
+	modifyLevel: (f: (level: Level) => string | false, continuedAction?: boolean) => void;
 	onBlur: () => void;
 }
 
@@ -23,7 +22,10 @@ export default (props: Props) => <SidebarSection
 					onChange={event => {
 						const width = Number(event.target.value);
 						if (!isNaN(width) && width > 0)
-							props.onChangeLevelWidth(width);
+							props.modifyLevel(level => {
+								level.width = width;
+								return 'Change level width';
+							});
 					}}
 					onBlur={() => props.onBlur()}
 				/>
@@ -39,7 +41,10 @@ export default (props: Props) => <SidebarSection
 					onChange={event => {
 						const height = Number(event.target.value);
 						if (!isNaN(height) && height > 0)
-							props.onChangeLevelHeight(height);
+							props.modifyLevel(level => {
+								level.height = height;
+								return 'Change level height';
+							});
 					}}
 					onBlur={() => props.onBlur()}
 				/>

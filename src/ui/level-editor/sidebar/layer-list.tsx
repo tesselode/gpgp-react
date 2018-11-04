@@ -12,7 +12,8 @@ import {
 	Navbar,
 	UncontrolledTooltip,
 } from 'reactstrap';
-import { isTileLayer } from '../../../data/layer/tile-layer';
+import { newGeometryLayer } from '../../../data/layer/geometry-layer';
+import { isTileLayer, newTileLayer } from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';
 import SidebarSection from './sidebar-section';
@@ -24,9 +25,7 @@ export interface Props {
 	showSelectedLayerOnTop: boolean;
 	onToggleShowSelectedLayerOnTop: () => void;
 	onSelectLayer: (layerIndex: number) => void;
-	onToggleLayerVisibility: (layerIndex: number) => void;
-	onAddGeometryLayer: () => void;
-	onAddTileLayer: (tilesetIndex: number) => void;
+	modifyLevel: (f: (level: Level) => string | false, continuedAction?: boolean) => void;
 }
 
 export interface State {
@@ -73,14 +72,20 @@ export default class LayerList extends React.Component<Props, State> {
 					</DropdownToggle>
 					<DropdownMenu>
 						<DropdownItem
-							onClick={() => this.props.onAddGeometryLayer()}
+							onClick={() => this.props.modifyLevel(level => {
+								level.layers.splice(this.props.selectedLayerIndex, 0, newGeometryLayer());
+								return 'Add geometry layer';
+							})}
 						>
 							Geometry
 						</DropdownItem>
 						{this.props.project.tilesets.map((tileset, i) =>
 							<DropdownItem
 								key={i}
-								onClick={() => this.props.onAddTileLayer(i)}
+								onClick={() => this.props.modifyLevel(level => {
+									level.layers.splice(this.props.selectedLayerIndex, 0, newTileLayer(i));
+									return 'Add tile layer';
+								})}
 							>
 								Tile - {tileset.name}
 							</DropdownItem>,
@@ -114,7 +119,12 @@ export default class LayerList extends React.Component<Props, State> {
 								outline={!layer.visible}
 								color={this.props.selectedLayerIndex === i ? 'light' : 'dark'}
 								size='sm'
-								onClick={() => this.props.onToggleLayerVisibility(i)}
+								onClick={() => this.props.modifyLevel(level => {
+									const layer = level.layers[i];
+									layer.visible = !layer.visible;
+									return layer.visible ? 'Show layer "' + layer.name + '"'
+										: 'Hide layer "' + layer.name + '"';
+								})}
 							>
 								<Octicon icon={Eye} />
 							</Button>
