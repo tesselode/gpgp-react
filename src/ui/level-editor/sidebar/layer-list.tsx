@@ -10,7 +10,6 @@ import {
 	ListGroup,
 	ListGroupItem,
 	Navbar,
-	UncontrolledTooltip,
 } from 'reactstrap';
 import { newGeometryLayer } from '../../../data/layer/geometry-layer';
 import { isTileLayer, newTileLayer } from '../../../data/layer/tile-layer';
@@ -55,12 +54,6 @@ export default class LayerList extends React.Component<Props, State> {
 				>
 					<Octicon icon={Eye} />
 				</Button>
-				<UncontrolledTooltip
-					delay={{show: 500, hide: 0}}
-					target='toggleShowSelectedLayerOnTopButton'
-				>
-					Highlight selected layer
-				</UncontrolledTooltip>
 				<Button
 					id='removeLayerButton'
 					size='sm'
@@ -74,12 +67,6 @@ export default class LayerList extends React.Component<Props, State> {
 				>
 					<Octicon icon={Trashcan} />
 				</Button>
-				<UncontrolledTooltip
-					delay={{show: 500, hide: 0}}
-					target='removeLayerButton'
-				>
-					Remove selected layer
-				</UncontrolledTooltip>
 				<ButtonDropdown
 					isOpen={this.state.dropdownOpen}
 					toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
@@ -114,12 +101,6 @@ export default class LayerList extends React.Component<Props, State> {
 						)}
 					</DropdownMenu>
 				</ButtonDropdown>
-				<UncontrolledTooltip
-					delay={{show: 500, hide: 0}}
-					target='addLayerButton'
-				>
-					Add layer...
-				</UncontrolledTooltip>
 				<Button
 					id='moveLayerUpButton'
 					size='sm'
@@ -133,12 +114,6 @@ export default class LayerList extends React.Component<Props, State> {
 				>
 					<Octicon icon={ArrowUp} />
 				</Button>
-				<UncontrolledTooltip
-					delay={{show: 500, hide: 0}}
-					target='moveLayerUpButton'
-				>
-					Move selected layer up
-				</UncontrolledTooltip>
 				<Button
 					id='moveLayerDownButton'
 					size='sm'
@@ -152,12 +127,6 @@ export default class LayerList extends React.Component<Props, State> {
 				>
 					<Octicon icon={ArrowDown} />
 				</Button>
-				<UncontrolledTooltip
-					delay={{show: 500, hide: 0}}
-					target='moveLayerDownButton'
-				>
-					Move selected layer down
-				</UncontrolledTooltip>
 			</ButtonGroup>}
 		>
 			<ListGroup flush>
@@ -188,12 +157,6 @@ export default class LayerList extends React.Component<Props, State> {
 							>
 								<Octicon icon={Eye} />
 							</Button>
-							<UncontrolledTooltip
-								delay={{show: 500, hide: 0}}
-								target={'toggleLayerVisibilityButton' + i}
-							>
-								Toggle layer visibility
-							</UncontrolledTooltip>
 						</Navbar>
 					</ListGroupItem>,
 				)}
