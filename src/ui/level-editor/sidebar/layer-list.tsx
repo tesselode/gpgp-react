@@ -1,4 +1,4 @@
-import Octicon, { Eye, Plus, Trashcan, ArrowUp, ArrowDown } from '@githubprimer/octicons-react';
+import Octicon, { ArrowDown, ArrowUp, Eye, Plus, Trashcan } from '@githubprimer/octicons-react';
 import React from 'react';
 import {
 	Button,
@@ -16,8 +16,8 @@ import { newGeometryLayer } from '../../../data/layer/geometry-layer';
 import { isTileLayer, newTileLayer } from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';
+import { shiftDown, shiftUp } from '../../../util';
 import SidebarSection from './sidebar-section';
-import { shiftUp, shiftDown } from '../../../util';
 
 export interface Props {
 	project: Project;
@@ -68,6 +68,7 @@ export default class LayerList extends React.Component<Props, State> {
 					onClick={() => this.props.modifyLevel(level => {
 						const layer = level.layers[this.props.selectedLayerIndex];
 						level.layers.splice(this.props.selectedLayerIndex, 1);
+						this.props.onSelectLayer(Math.min(this.props.selectedLayerIndex, level.layers.length - 1));
 						return 'Remove layer "' + layer.name + '"';
 					})}
 				>
@@ -93,6 +94,7 @@ export default class LayerList extends React.Component<Props, State> {
 						<DropdownItem
 							onClick={() => this.props.modifyLevel(level => {
 								level.layers.splice(this.props.selectedLayerIndex, 0, newGeometryLayer());
+								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
 								return 'Add geometry layer';
 							})}
 						>
@@ -103,6 +105,7 @@ export default class LayerList extends React.Component<Props, State> {
 								key={i}
 								onClick={() => this.props.modifyLevel(level => {
 									level.layers.splice(this.props.selectedLayerIndex, 0, newTileLayer(i));
+									this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
 									return 'Add tile layer';
 								})}
 							>
@@ -124,6 +127,7 @@ export default class LayerList extends React.Component<Props, State> {
 					onClick={() => this.props.modifyLevel(level => {
 						const layer = level.layers[this.props.selectedLayerIndex];
 						shiftUp(level.layers, this.props.selectedLayerIndex);
+						this.props.onSelectLayer(this.props.selectedLayerIndex - 1);
 						return 'Move layer "' + layer.name + '" up';
 					})}
 				>
@@ -142,6 +146,7 @@ export default class LayerList extends React.Component<Props, State> {
 					onClick={() => this.props.modifyLevel(level => {
 						const layer = level.layers[this.props.selectedLayerIndex];
 						shiftDown(level.layers, this.props.selectedLayerIndex);
+						this.props.onSelectLayer(this.props.selectedLayerIndex + 1);
 						return 'Move layer "' + layer.name + '" down';
 					})}
 				>

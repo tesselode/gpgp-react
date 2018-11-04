@@ -1,8 +1,6 @@
-import Octicon, { ArrowDown, ArrowUp, Trashcan } from '@githubprimer/octicons-react';
 import React from 'react';
-import { Button, ButtonGroup, Form, FormGroup, Input, Label, Navbar, UncontrolledTooltip } from 'reactstrap';
+import { Form, FormGroup, Input, Label } from 'reactstrap';
 import Level from '../../../data/level';
-import { shiftDown, shiftUp } from '../../../util';
 import SidebarSection from './sidebar-section';
 
 export interface Props {
