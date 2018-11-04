@@ -47,7 +47,11 @@ export function newProject(): Project {
 export function importProject(project: Project, projectFilePath: string): Project {
 	const importedProject = deepCopyObject(project);
 	for (const tileset of importedProject.tilesets)
-		tileset.imagePath = path.resolve(path.dirname(projectFilePath), tileset.imagePath);
+		if (tileset.imagePath)
+			tileset.imagePath = path.resolve(path.dirname(projectFilePath), tileset.imagePath);
+	for (const entity of importedProject.entities)
+		if (entity.imagePath)
+			entity.imagePath = path.resolve(path.dirname(projectFilePath), entity.imagePath);
 	return importedProject;
 }
 
@@ -59,7 +63,11 @@ export function importProject(project: Project, projectFilePath: string): Projec
 export function exportProject(project: Project, projectFilePath: string): Project {
 	const exportedProject = deepCopyObject(project);
 	for (const tileset of exportedProject.tilesets)
-		tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
+		if (tileset.imagePath)
+			tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
+	for (const entity of exportedProject.entities)
+		if (entity.imagePath)
+			entity.imagePath = path.relative(path.dirname(projectFilePath), entity.imagePath);
 	return exportedProject;
 }
 
