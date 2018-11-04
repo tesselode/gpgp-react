@@ -2,9 +2,20 @@ import Octicon, { FileDirectory, Paintcan } from '@githubprimer/octicons-react';
 import { remote } from 'electron';
 import React from 'react';
 import { SketchPicker } from 'react-color';
-import { Button, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
+import {
+	Button,
+	Col,
+	Form,
+	FormGroup,
+	Input,
+	InputGroup,
+	InputGroupAddon,
+	InputGroupText,
+	Label,
+	Popover,
+} from 'reactstrap';
 import Entity, { EntityParameterType } from '../../data/entity';
-import { shiftDown, shiftUp } from '../../util';
+import { getUniqueId, shiftDown, shiftUp } from '../../util';
 import ColorDisplay from './color-display';
 import ParameterEditor from './entity-parameter-editor';
 import ItemList from './item-list';
@@ -17,6 +28,7 @@ export interface Props {
 export interface State {
 	selectedParameterIndex: number;
 	showColorPicker: boolean;
+	uniqueId: number;
 }
 
 export default class EntityEditor extends React.Component<Props, State> {
@@ -25,6 +37,7 @@ export default class EntityEditor extends React.Component<Props, State> {
 		this.state = {
 			selectedParameterIndex: 0,
 			showColorPicker: false,
+			uniqueId: getUniqueId(),
 		};
 	}
 
@@ -86,6 +99,7 @@ export default class EntityEditor extends React.Component<Props, State> {
 						<InputGroup>
 							<InputGroupAddon addonType='prepend'>
 								<Button
+									id={'showColorPicker' + this.state.uniqueId.toString()}
 									onClick={() => {this.setState({showColorPicker: !this.state.showColorPicker}); }}
 								>
 									<Octicon icon={Paintcan} />
@@ -97,13 +111,20 @@ export default class EntityEditor extends React.Component<Props, State> {
 								disabled
 							/>
 						</InputGroup>
-						{this.state.showColorPicker && <SketchPicker
-							color={this.props.entity.color}
-							onChangeComplete={color => this.props.modifyEntity(entity => {
-								entity.color = color.hex;
-							})}
-							disableAlpha
-						/>}
+						<Popover
+							placement='bottom'
+							target={'showColorPicker' + this.state.uniqueId.toString()}
+							isOpen={this.state.showColorPicker}
+							toggle={() => this.setState({showColorPicker: !this.state.showColorPicker})}
+						>
+							<SketchPicker
+								color={this.props.entity.color}
+								onChangeComplete={color => this.props.modifyEntity(entity => {
+									entity.color = color.hex;
+								})}
+								disableAlpha
+							/>
+						</Popover>
 					</Col>
 				</FormGroup>
 				<FormGroup row>

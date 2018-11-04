@@ -24,3 +24,10 @@ export function shiftDown(array: any[], position: number): void {
 	array[position + 1] = current;
 	array[position] = below;
 }
+
+let uniqueId = 0;
+
+export function getUniqueId(): number {
+	uniqueId++;
+	return uniqueId;
+}

@@ -1,8 +1,19 @@
 import Octicon, { Paintcan } from '@githubprimer/octicons-react';
 import React from 'react';
 import { SketchPicker } from 'react-color';
-import { Button, Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
+import {
+	Button,
+	Form,
+	FormGroup,
+	Input,
+	InputGroup,
+	InputGroupAddon,
+	InputGroupText,
+	Label,
+	Popover,
+} from 'reactstrap';
 import Level from '../../../data/level';
+import { getUniqueId } from '../../../util';
 import ColorDisplay from '../../project-editor/color-display';
 import SidebarSection from './sidebar-section';
 
@@ -14,6 +25,7 @@ export interface Props {
 
 export interface State {
 	showColorPicker: boolean;
+	uniqueId: number;
 }
 
 export default class LevelOptions extends React.Component<Props, State> {
@@ -21,6 +33,7 @@ export default class LevelOptions extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			showColorPicker: false,
+			uniqueId: getUniqueId(),
 		};
 	}
 
@@ -84,6 +97,7 @@ export default class LevelOptions extends React.Component<Props, State> {
 								/>
 							</InputGroupText>
 							<Button
+								id={'showColorPicker' + this.state.uniqueId.toString()}
 								onClick={() => {this.setState({showColorPicker: !this.state.showColorPicker}); }}
 							>
 								<Octicon icon={Paintcan} />
@@ -95,15 +109,21 @@ export default class LevelOptions extends React.Component<Props, State> {
 							disabled
 						/>
 					</InputGroup>
-					{this.state.showColorPicker && <SketchPicker
-						width='90%'
-						color={this.props.level.backgroundColor}
-						onChangeComplete={color => this.props.modifyLevel(level => {
-							level.backgroundColor = color.hex;
-							return 'Change background color to ' + color.hex;
-						})}
-						disableAlpha
-					/>}
+					<Popover
+						placement='bottom'
+						target={'showColorPicker' + this.state.uniqueId.toString()}
+						isOpen={this.state.showColorPicker}
+						toggle={() => this.setState({showColorPicker: !this.state.showColorPicker})}
+					>
+						<SketchPicker
+							color={this.props.level.backgroundColor}
+							onChangeComplete={color => this.props.modifyLevel(level => {
+								level.backgroundColor = color.hex;
+								return 'Change background color to ' + color.hex;
+							})}
+							disableAlpha
+						/>
+					</Popover>
 				</FormGroup>
 			</Form>
 		</SidebarSection>;
