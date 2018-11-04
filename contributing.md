@@ -48,8 +48,10 @@ Once the project is saved, you can create a new level based on that project. Eac
 	- In the level editor, you could create entity layers where you place entities and customize the parameters for each instance
 - [ ] More editing tools
 	- Right now I have a pencil tool (working well) and a rectangle tool (mostly there). Ideas for other tools:
-		- 9patch
+		- Select
+		- Move
 		- Fill
+		- 9patch
 - [ ] Dark theme/custom window frame - it's all the rage !
 - [ ] More customization for tilesets
 	- Some tileset images have weird padding, spacing between tiles, etc., so that should probably be supported
