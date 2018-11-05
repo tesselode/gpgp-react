@@ -1,16 +1,19 @@
 import React from 'react';
 import Image from '../../data/image-data';
 import { Rect } from '../../util';
-import { GridTool } from '../grid';
-import GenericCursor, { CursorProps } from './generic-cursor';
+import { EditTool } from '../level-editor/edit-tool';
+import GenericCursor from './generic-cursor';
 
-export interface TileCursorProps extends CursorProps {
-	tool: GridTool;
+interface Props {
+	tileSize: number;
+	cursor: Rect;
+	removing?: boolean;
+	tool: EditTool;
 	tilesetImage: Image;
 	tilesetSelection?: Rect;
 }
 
-export default class TileCursor extends React.Component<TileCursorProps> {
+export default class TileCursor extends React.Component<Props> {
 	private renderCroppedTilesetImage(
 		tileSize: number,
 		imageData: string,
@@ -91,7 +94,6 @@ export default class TileCursor extends React.Component<TileCursorProps> {
 	public render() {
 		return <div>
 			<GenericCursor
-				enabled={this.props.enabled}
 				tileSize={this.props.tileSize}
 				cursor={this.props.cursor}
 				removing={this.props.removing}
@@ -100,13 +102,9 @@ export default class TileCursor extends React.Component<TileCursorProps> {
 				this.props.tilesetSelection &&
 				this.props.tilesetImage &&
 				this.props.tilesetImage.data &&
-				<div
-					style={{
-						opacity: this.props.enabled ? .67 : 0,
-					}}
-				>
-					{this.props.tool === GridTool.Pencil ? this.pencil()
-						: this.props.tool === GridTool.Rectangle ? this.rectangle()
+				<div>
+					{this.props.tool === EditTool.Pencil ? this.pencil()
+						: this.props.tool === EditTool.Rectangle ? this.rectangle()
 						: ''
 					}
 				</div>

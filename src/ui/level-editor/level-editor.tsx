@@ -5,15 +5,15 @@ import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import Image, { loadImages } from '../../data/image-data';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
-import { LayerType } from '../../data/layer/Layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
 import Project, { getProjectImagePaths } from '../../data/project';
-import { deepCopyObject, Rect } from '../../util';
+import { deepCopyObject, normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
 import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
-import Grid, { GridTool } from '../grid';
+import Grid from '../grid';
+import { EditTool } from './edit-tool';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import TileLayerDisplay from './layer/tile-layer-display';
 import HistoryBrowser from './sidebar/history-browser';
@@ -23,7 +23,13 @@ import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
 
-export interface Props {
+enum CursorState {
+	Idle,
+	Place,
+	Remove,
+}
+
+interface Props {
 	/** The project the currently edited level belongs to. */
 	project: Project;
 	/** The path to the project file. */
@@ -36,7 +42,7 @@ export interface Props {
 	onChangeTabTitle: (title: string) => void;
 }
 
-export interface State {
+interface State {
 	/** The images for the level's project. */
 	images: Map<string, Image>;
 	/** The history of the level data. */
@@ -50,7 +56,7 @@ export interface State {
 	/** The path to the level file, if it has been saved or opened. */
 	levelFilePath?: string;
 	/** The currently used editing tool. */
-	tool: GridTool;
+	tool: EditTool;
 	/** Whether the currently selected layer should be shown above all other layers. */
 	showSelectedLayerOnTop: boolean;
 	/** The number of the currently selected layer. */
@@ -59,6 +65,14 @@ export interface State {
 	tilesetSelection?: Rect;
 	/** Whether an action is currently taking place. */
 	continuedAction: boolean;
+	/** The last x position of the cursor. */
+	cursorX: number;
+	/** The last y position of the cursor. */
+	cursorY: number;
+	/** The current cursor rect. */
+	cursorRect: Rect;
+	/** The current cursor state. */
+	cursorState: CursorState;
 }
 
 /** The level editor screen, which allows you to create or edit levels. */
@@ -75,10 +89,14 @@ export default class LevelEditor extends AppTab<Props, State> {
 			levelHistoryPosition: 0,
 			unsavedChanges: false,
 			levelFilePath: this.props.levelFilePath,
-			tool: GridTool.Pencil,
+			tool: EditTool.Pencil,
 			showSelectedLayerOnTop: true,
 			selectedLayerIndex: 0,
 			continuedAction: false,
+			cursorX: 0,
+			cursorY: 0,
+			cursorRect: {l: 0, t: 0, r: 0, b: 0},
+			cursorState: CursorState.Idle,
 		};
 		loadImages(getProjectImagePaths(this.props.project)).then(images => {
 			this.setState({images});
@@ -120,6 +138,74 @@ export default class LevelEditor extends AppTab<Props, State> {
 
 	private getCurrentLevelState(): Level {
 		return this.state.levelHistory[this.state.levelHistoryPosition];
+	}
+
+	private onMoveCursor(x: number, y: number): void {
+		this.setState({cursorX: x, cursorY: y});
+		switch (this.state.cursorState) {
+			case CursorState.Idle:
+				this.setState({cursorRect: {l: x, t: y, r: x, b: y}});
+				break;
+			case CursorState.Place:
+			case CursorState.Remove:
+				switch (this.state.tool) {
+					case EditTool.Pencil:
+						this.setState({cursorRect: {l: x, t: y, r: x, b: y}});
+						switch (this.state.cursorState) {
+							case CursorState.Place:
+								this.onPlace({l: x, t: y, r: x, b: y});
+								break;
+							case CursorState.Remove:
+								this.onRemove({l: x, t: y, r: x, b: y});
+								break;
+						}
+						break;
+					case EditTool.Rectangle:
+						this.setState({cursorRect: {
+							l: this.state.cursorRect.l,
+							t: this.state.cursorRect.t,
+							r: x,
+							b: y,
+						}});
+				}
+		}
+	}
+
+	private onClickGrid(button: number): void {
+		switch (button) {
+			case 0:
+				this.setState({cursorState: CursorState.Place});
+				if (this.state.tool === EditTool.Pencil)
+					this.onPlace(normalizeRect(this.state.cursorRect));
+				break;
+			case 2:
+				this.setState({cursorState: CursorState.Remove});
+				if (this.state.tool === EditTool.Pencil)
+					this.onRemove(normalizeRect(this.state.cursorRect));
+				break;
+		}
+	}
+
+	private onReleaseGrid(button: number): void {
+		switch (this.state.tool) {
+			case EditTool.Rectangle:
+				switch (this.state.cursorState) {
+					case CursorState.Place:
+						this.onPlace(normalizeRect(this.state.cursorRect));
+						break;
+					case CursorState.Remove:
+						this.onRemove(normalizeRect(this.state.cursorRect));
+						break;
+				}
+				this.setState({cursorRect: {
+					l: this.state.cursorX,
+					t: this.state.cursorY,
+					r: this.state.cursorX,
+					b: this.state.cursorY,
+				}});
+				break;
+		}
+		this.setState({cursorState: CursorState.Idle});
 	}
 
 	private onPlace(rect: Rect) {
@@ -227,7 +313,6 @@ export default class LevelEditor extends AppTab<Props, State> {
 						project={this.props.project}
 						tilesetName={this.props.project.tilesets[selectedLayer.tilesetIndex].name}
 						tilesetImageData={this.state.images.get(this.props.project.tilesets[selectedLayer.tilesetIndex].imagePath)}
-						selection={this.state.tilesetSelection}
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
 					/>}
 					<HistoryBrowser
@@ -244,20 +329,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 						width={level.width}
 						height={level.height}
 						background={level.hasBackgroundColor && level.backgroundColor}
-						tool={this.state.tool}
-						cursor={
-							selectedLayer.type === LayerType.Tile ? TileCursor : GenericCursor
-						}
-						additionalCursorProps={
-							isTileLayer(selectedLayer) && {
-								tool: this.state.tool,
-								tilesetImage: this.state.images.get(this.props.project.tilesets[selectedLayer.tilesetIndex].imagePath),
-								tilesetSelection: this.state.tilesetSelection,
-							}
-						}
-						onPlace={this.onPlace.bind(this)}
-						onRemove={this.onRemove.bind(this)}
-						onMouseUp={() => this.setState({continuedAction: false})}
+						onMove={this.onMoveCursor.bind(this)}
+						onClick={this.onClickGrid.bind(this)}
+						onRelease={this.onReleaseGrid.bind(this)}
 					>
 						{level.layers.map((layer, i) => {
 							if (!layer.visible) return '';
@@ -273,7 +347,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 									tilesetImageData={this.state.images.get(this.props.project.tilesets[layer.tilesetIndex].imagePath)}
 									order={order}
 								/>;
-							else if (layer.type === LayerType.Geometry)
+							else if (isGeometryLayer(layer))
 								return <GeometryLayerDisplay
 									key={i}
 									project={this.props.project}
@@ -283,6 +357,20 @@ export default class LevelEditor extends AppTab<Props, State> {
 								/>;
 							return '';
 						})}
+						{
+							isTileLayer(selectedLayer) ? <TileCursor
+								tileSize={this.props.project.tileSize}
+								cursor={normalizeRect(this.state.cursorRect)}
+								removing={this.state.cursorState === CursorState.Remove}
+								tool={this.state.tool}
+								tilesetImage={this.state.images.get(this.props.project.tilesets[selectedLayer.tilesetIndex].imagePath)}
+								tilesetSelection={this.state.tilesetSelection}
+							/> : <GenericCursor
+								tileSize={this.props.project.tileSize}
+								cursor={normalizeRect(this.state.cursorRect)}
+								removing={this.state.cursorState === CursorState.Remove}
+							/>
+						}
 					</Grid>
 				</Col>
 			</Row>

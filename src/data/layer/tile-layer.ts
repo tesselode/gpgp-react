@@ -1,6 +1,6 @@
-import { GridTool } from "../../ui/grid";
 import { Rect } from "../../util";
 import Layer, { LayerItem, LayerType } from "./layer";
+import { EditTool } from "../../ui/level-editor/edit-tool";
 
 /** A tile that can be placed on a tile layer. */
 export interface TileLayerItem extends LayerItem {
@@ -56,10 +56,10 @@ export function removeTile(layer: TileLayer, rect: Rect) {
  * @param rect The region of the layer to place tiles on.
  * @param tiles The region on the tileset to pull tiles from.
  */
-export function placeTile(tool: GridTool, layer: TileLayer, rect: Rect, tiles: Rect) {
+export function placeTile(tool: EditTool, layer: TileLayer, rect: Rect, tiles: Rect) {
 	removeTile(layer, rect);
 	switch (tool) {
-		case GridTool.Rectangle:
+		case EditTool.Rectangle:
 			let tileX = tiles.l - 1;
 			for (let x = rect.l; x <= rect.r; x++) {
 				tileX++;
