@@ -1,5 +1,6 @@
 import React from 'react';
 
+/** A circle filled in with a color. */
 const ColorDisplay = (color: string) => <div
 	style={{
 		display: 'inline-block',

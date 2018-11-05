@@ -316,8 +316,8 @@ export default class LevelEditor extends AppTab<Props, State> {
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
 					/>}
 					<HistoryBrowser
-						levelHistoryDescriptions={this.state.levelHistoryDescriptions}
-						levelHistoryPosition={this.state.levelHistoryPosition}
+						historyDescriptions={this.state.levelHistoryDescriptions}
+						historyPosition={this.state.levelHistoryPosition}
 						onHistoryPositionChanged={(position: number) => {
 							this.setState({levelHistoryPosition: position});
 						}}

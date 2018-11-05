@@ -18,16 +18,22 @@ import ColorDisplay from '../../common/color-display';
 import SidebarSection from './sidebar-section';
 
 export interface Props {
+	/** The currently opened level. */
 	level: Level;
+	/** A function that is called when the level is modified. Returns the description of the action taken. */
 	modifyLevel: (f: (level: Level) => string | false, continuedAction?: boolean) => void;
+	/** A function that is called when an input is blurred. */
 	onBlur: () => void;
 }
 
 export interface State {
+	/** Whether the color picker is currently being shown. */
 	showColorPicker: boolean;
+	/** A unique ID that distinguishes this element from all others. */
 	uniqueId: number;
 }
 
+/** A form for changing a level's options. */
 export default class LevelOptions extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);

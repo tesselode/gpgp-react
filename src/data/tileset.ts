@@ -6,6 +6,7 @@ export default interface Tileset {
 	imagePath?: string;
 }
 
+/** Creates a new, empty tileset. */
 export function newTileset(): Tileset {
 	return {
 		name: 'New tileset',

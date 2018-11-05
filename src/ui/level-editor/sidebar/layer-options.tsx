@@ -4,12 +4,17 @@ import Level from '../../../data/level';
 import SidebarSection from './sidebar-section';
 
 export interface Props {
+	/** The currently opened level. */
 	level: Level;
+	/** The number of the selected layer. */
 	selectedLayerIndex: number;
+	/** A function that is called when the level is modified. Returns the description of the action taken. */
 	modifyLevel: (f: (level: Level) => string | false, continuedAction?: boolean) => void;
+	/** A function that is called when an input is blurred. */
 	onBlur: () => void;
 }
 
+/** A form for changing a layer's settings. */
 export default (props: Props) => {
 	const selectedLayer = props.level.layers[props.selectedLayerIndex];
 	return <SidebarSection

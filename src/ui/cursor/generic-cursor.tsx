@@ -2,11 +2,15 @@ import React from 'react';
 import { Rect } from '../../util';
 
 interface Props {
+	/** The tile size of the grid. */
 	tileSize: number;
+	/** The rectangular region of the cursor. */
 	cursor: Rect;
+	/** Whether the user is removing tiles. If so, the cursor will be red instead of blue. */
 	removing?: boolean;
 }
 
+/** A visual representation of a rectangular cursor on a grid. */
 const GenericCursor = (props: Props) => <div
 	style={{
 		position: 'absolute',

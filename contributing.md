@@ -5,13 +5,15 @@ Hiya! If you want to help me develop GPGP, here's a quick rundown of what the HE
 ## How you're meant to use GPGP
 
 ### Step 1 - create a new project
-A project file in GPGP contains the settings for your levels, such as tile size and default level size. It also contains a list of tilesets that you can use with tile layers. Multiple levels can be based on the same project, so it makes sense to have one project file for each game you're working on, and one level file for each level in that game.
+A project file in GPGP contains the settings for your levels, such as tile size and default level size. It also contains a list of tilesets and entities. Multiple levels can be based on the same project, so it makes sense to have one project file for each game you're working on, and one level file for each level in that game.
 
 ### Step 2 - create a level
 Once the project is saved, you can create a new level based on that project. Each level can have any number of layers of different types:
 - Geometry layers: good for defining where the level has collisions
 - Tile layers: good for decorating the level
 	- Each tile layer is associated with a specific tileset defined in the project file
+- Entity layers: good for adding objects to the level, like players, enemies, pickups, etc.
+	- Each entity has customizable parameters (defined in the project editor) - good for things like speed, IDs, etc.
 
 ## Libraries used
 - **typescript** for strong typing; most important for data interfaces
@@ -40,7 +42,6 @@ Once the project is saved, you can create a new level based on that project. Eac
 - `project-editor.tsx` - optionally receives project data (if opening an existing project) or creates a new blank project. also holds project resources in the state (for now just tileset images)
 - `level-editor.tsx` - receives project data and optionally receives level data. also loads its own copy of the project resources
 - `grid.tsx` - meant to be a reusable interactive grid, so only receives the bare minimum data, like tile size, width, and height. has callbacks for cursor movement, mouse click/release, etc.
-- cursors - mainly receives props from the grid. the grid can also pass in additional props that it gets from the level editor
 
 ## Todo
 - [ ] Add entity layers and entity configuration in project

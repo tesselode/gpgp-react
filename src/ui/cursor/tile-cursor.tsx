@@ -5,14 +5,21 @@ import { EditTool } from '../level-editor/edit-tool';
 import GenericCursor from './generic-cursor';
 
 interface Props {
+	/** The tile size of the grid. */
 	tileSize: number;
+	/** The rectangular region of the cursor. */
 	cursor: Rect;
+	/** Whether the user is removing tiles. */
 	removing?: boolean;
+	/** The currently used editing tool. */
 	tool: EditTool;
+	/** The image for the currently used tileset. */
 	tilesetImage: Image;
+	/** The selected region of the tileset. */
 	tilesetSelection?: Rect;
 }
 
+/** A preview of what a tile layer placement will do. */
 export default class TileCursor extends React.Component<Props> {
 	private renderCroppedTilesetImage(
 		tileSize: number,

@@ -1,6 +1,6 @@
+import { EditTool } from "../../ui/level-editor/edit-tool";
 import { Rect } from "../../util";
 import Layer, { LayerItem, LayerType } from "./layer";
-import { EditTool } from "../../ui/level-editor/edit-tool";
 
 /** A tile that can be placed on a tile layer. */
 export interface TileLayerItem extends LayerItem {

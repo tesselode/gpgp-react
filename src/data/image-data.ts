@@ -31,6 +31,12 @@ export function loadImage(imagePath: string): Promise<Image> {
 		}));
 }
 
+/**
+ * Loads a list of images and returns a promise that resolves when all the images are loaded.
+ * (If there's issues loading an image, an Image object with an error message will be returned,
+ * and the promise can resolve normally.)
+ * @param imagePaths The list of image paths to load.
+ */
 export function loadImages(imagePaths: string[]): Promise<Map<string, Image>> {
 	const images = new Map<string, Image>();
 	return Promise.all(imagePaths.map(imagePath =>

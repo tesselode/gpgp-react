@@ -19,19 +19,28 @@ import { shiftDown, shiftUp } from '../../../util';
 import SidebarSection from './sidebar-section';
 
 export interface Props {
+	/** The project the level belongs to. */
 	project: Project;
+	/** The currently open level. */
 	level: Level;
+	/** The number of the selected layer. */
 	selectedLayerIndex: number;
+	/** Whether the selected layer should be shown on top. */
 	showSelectedLayerOnTop: boolean;
+	/** A function that is called when the show selected layer on top option is toggled. */
 	onToggleShowSelectedLayerOnTop: () => void;
+	/** A function that is called when a layer is clicked. */
 	onSelectLayer: (layerIndex: number) => void;
+	/** A function that is called when the level is modified. Returns the description of the action taken. */
 	modifyLevel: (f: (level: Level) => string | false, continuedAction?: boolean) => void;
 }
 
 export interface State {
+	/** Whether the "add layer" dropdown is open. */
 	dropdownOpen: boolean;
 }
 
+/** A list of the layers in a level. */
 export default class LayerList extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
