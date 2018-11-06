@@ -11,6 +11,7 @@ import {
 	ListGroupItem,
 	Navbar,
 } from 'reactstrap';
+import { newEntityLayer } from '../../../data/layer/entity-layer';
 import { newGeometryLayer } from '../../../data/layer/geometry-layer';
 import { isTileLayer, newTileLayer } from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
@@ -95,6 +96,15 @@ export default class LayerList extends React.Component<Props, State> {
 							})}
 						>
 							Geometry
+						</DropdownItem>
+						<DropdownItem
+							onClick={() => this.props.modifyLevel(level => {
+								level.layers.splice(this.props.selectedLayerIndex, 0, newEntityLayer());
+								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
+								return 'Add entity layer';
+							})}
+						>
+							Entity
 						</DropdownItem>
 						{this.props.project.tilesets.map((tileset, i) =>
 							<DropdownItem

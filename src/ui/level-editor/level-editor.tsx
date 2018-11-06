@@ -22,6 +22,8 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
+import { isEntityLayer } from '../../data/layer/entity-layer';
+import EntityPicker from './sidebar/entity-picker';
 
 enum CursorState {
 	Idle,
@@ -63,6 +65,8 @@ interface State {
 	selectedLayerIndex: number;
 	/** The currently selected region of the tileset. */
 	tilesetSelection?: Rect;
+	/** The number of the currently selected entity. */
+	selectedEntityIndex: number;
 	/** Whether an action is currently taking place. */
 	continuedAction: boolean;
 	/** The last x position of the cursor. */
@@ -92,6 +96,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			tool: EditTool.Pencil,
 			showSelectedLayerOnTop: true,
 			selectedLayerIndex: 0,
+			selectedEntityIndex: 0,
 			continuedAction: false,
 			cursorX: 0,
 			cursorY: 0,
@@ -283,10 +288,10 @@ export default class LevelEditor extends AppTab<Props, State> {
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
 				<Col md={3} style={{height: '90vh', overflowY: 'auto'}}>
-					<ToolPalette
+					{!isEntityLayer(selectedLayer) && <ToolPalette
 						tool={this.state.tool}
 						onToolChanged={(tool) => this.setState({tool})}
-					/>
+					/>}
 					<LevelOptions
 						level={level}
 						modifyLevel={this.modifyLevel.bind(this)}
@@ -316,6 +321,12 @@ export default class LevelEditor extends AppTab<Props, State> {
 							getProjectTileset(this.props.project, selectedLayer.tilesetName).imagePath,
 						)}
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
+					/>}
+					{isEntityLayer(selectedLayer) && <EntityPicker
+						project={this.props.project}
+						images={this.state.images}
+						selectedEntityIndex={this.state.selectedEntityIndex}
+						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
 					/>}
 					<HistoryBrowser
 						historyDescriptions={this.state.levelHistoryDescriptions}
