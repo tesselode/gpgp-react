@@ -12,22 +12,22 @@ export interface TileLayerItem extends LayerItem {
 
 /** A layer on which tiles can be placed. Generally used for arranging the visual decorations in a level. */
 export default interface TileLayer extends Layer {
-	/** The number of the tileset in the project for the level. */
-	tilesetIndex: number;
+	/** The name of the tileset used by this layer.. */
+	tilesetName: string;
 	/** The tiles placed on the layer. */
 	items: TileLayerItem[];
 }
 
 /**
  * Creates a new, empty tile layer.
- * @param tilesetIndex The number of the tileset to use in the project.
+ * @param tilesetName The name of the layer to use.
  */
-export function newTileLayer(tilesetIndex: number): TileLayer {
+export function newTileLayer(tilesetName: string): TileLayer {
 	return {
 		name: 'New tile layer',
 		type: LayerType.Tile,
 		visible: true,
-		tilesetIndex,
+		tilesetName,
 		items: [],
 	};
 }

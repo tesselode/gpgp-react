@@ -7,7 +7,7 @@ import Image, { loadImages } from '../../data/image-data';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
-import Project, { getProjectImagePaths } from '../../data/project';
+import Project, { getProjectImagePaths, getProjectTileset } from '../../data/project';
 import { deepCopyObject, normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
 import GenericCursor from '../cursor/generic-cursor';
@@ -311,8 +311,10 @@ export default class LevelEditor extends AppTab<Props, State> {
 					/>
 					{isTileLayer(selectedLayer) && <TilePicker
 						project={this.props.project}
-						tilesetName={this.props.project.tilesets[selectedLayer.tilesetIndex].name}
-						tilesetImageData={this.state.images.get(this.props.project.tilesets[selectedLayer.tilesetIndex].imagePath)}
+						tilesetName={selectedLayer.tilesetName}
+						tilesetImageData={this.state.images.get(
+							getProjectTileset(this.props.project, selectedLayer.tilesetName).imagePath,
+						)}
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
 					/>}
 					<HistoryBrowser
@@ -344,7 +346,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 									project={this.props.project}
 									level={level}
 									layer={layer}
-									tilesetImageData={this.state.images.get(this.props.project.tilesets[layer.tilesetIndex].imagePath)}
+									tilesetImageData={this.state.images.get(
+										getProjectTileset(this.props.project, layer.tilesetName).imagePath,
+									)}
 									order={order}
 								/>;
 							else if (isGeometryLayer(layer))
@@ -363,7 +367,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 								cursor={normalizeRect(this.state.cursorRect)}
 								removing={this.state.cursorState === CursorState.Remove}
 								tool={this.state.tool}
-								tilesetImage={this.state.images.get(this.props.project.tilesets[selectedLayer.tilesetIndex].imagePath)}
+								tilesetImage={this.state.images.get(
+									getProjectTileset(this.props.project, selectedLayer.tilesetName).imagePath,
+								)}
 								tilesetSelection={this.state.tilesetSelection}
 							/> : <GenericCursor
 								tileSize={this.props.project.tileSize}

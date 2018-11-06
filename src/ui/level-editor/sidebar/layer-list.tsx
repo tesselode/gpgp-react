@@ -100,7 +100,7 @@ export default class LayerList extends React.Component<Props, State> {
 							<DropdownItem
 								key={i}
 								onClick={() => this.props.modifyLevel(level => {
-									level.layers.splice(this.props.selectedLayerIndex, 0, newTileLayer(i));
+									level.layers.splice(this.props.selectedLayerIndex, 0, newTileLayer(tileset.name));
 									this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
 									return 'Add tile layer';
 								})}
@@ -148,8 +148,7 @@ export default class LayerList extends React.Component<Props, State> {
 					>
 						<Navbar style={{padding: 0}}>
 							{
-								isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' +
-									this.props.project.tilesets[layer.tilesetIndex].name + ')'
+								isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + layer.tilesetName + ')'
 								: layer.name + ' (' + layer.type + ')'
 							}
 							<Button

@@ -40,6 +40,22 @@ export function newProject(): Project {
 }
 
 /**
+ * Returns a list of the paths of each image the project depends on.
+ * @param project The project to check.
+ */
+export function getProjectImagePaths(project: Project): string[] {
+	const imagePaths: string[] = [];
+	for (const tileset of project.tilesets) {
+		imagePaths.push(tileset.imagePath);
+	}
+	return imagePaths;
+}
+
+export function getProjectTileset(project: Project, tilesetName: string): Tileset {
+	return project.tilesets.find(tileset => tileset.name === tilesetName);
+}
+
+/**
  * Imports a project for use after loading it from the filesystem.
  * @param project The project to import.
  * @param projectFilePath The path to the project file.
@@ -69,16 +85,4 @@ export function exportProject(project: Project, projectFilePath: string): Projec
 		if (entity.imagePath)
 			entity.imagePath = path.relative(path.dirname(projectFilePath), entity.imagePath);
 	return exportedProject;
-}
-
-/**
- * Returns a list of the paths of each image the project depends on.
- * @param project The project to check.
- */
-export function getProjectImagePaths(project: Project): string[] {
-	const imagePaths: string[] = [];
-	for (const tileset of project.tilesets) {
-		imagePaths.push(tileset.imagePath);
-	}
-	return imagePaths;
 }
