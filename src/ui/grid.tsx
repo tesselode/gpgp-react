@@ -26,11 +26,19 @@ interface Props {
 interface State {
 	/** The current zoom level of the grid. */
 	zoom: number;
-	/** The current x position of the cursor. */
+	/** The previous x position of the mouse. */
+	previousMouseX: number;
+	/** The previous y position of the mouse. */
+	previousMouseY: number;
+	/** The current horizontal panning of the grid (in pixels). */
+	panX: number;
+	/** The current vertical panning of the grid (in pixels). */
+	panY: number;
+	/** The current x position of the cursor (in tiles). */
 	cursorX: number;
-	/** The current y position of the cursor. */
+	/** The current y position of the cursor (in tiles). */
 	cursorY: number;
-	/** The currently pressed mouse button. */
+	/** The currently pressed mouse button. (0 = left, 2 = right) */
 	button: number | false;
 }
 
@@ -45,6 +53,10 @@ export default class Grid extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			zoom: this.props.startingZoom ? this.props.startingZoom : 2,
+			previousMouseX: 0,
+			previousMouseY: 0,
+			panX: 0,
+			panY: 0,
 			cursorX: 0,
 			cursorY: 0,
 			button: false,
@@ -52,15 +64,24 @@ export default class Grid extends React.Component<Props, State> {
 	}
 
 	private onMouseMove(x, y) {
-		const scale = this.props.tileSize * this.state.zoom;
-		const relativeMouseX = x / scale;
-		const relativeMouseY = y / scale;
-		const cursorX = Math.min(Math.floor(relativeMouseX), this.props.width - 1);
-		const cursorY = Math.min(Math.floor(relativeMouseY), this.props.height - 1);
-		if (cursorX !== this.state.cursorX || cursorY !== this.state.cursorY) {
-			if (this.props.onMove) this.props.onMove(cursorX, cursorY);
-			this.setState({cursorX, cursorY});
+		if (this.state.button === 1) {
+			this.setState({
+				panX: this.state.panX + (x - this.state.previousMouseX),
+				panY: this.state.panY + (y - this.state.previousMouseY),
+			});
+		} else {
+			const canvasRect = this.canvasRef.current.getBoundingClientRect();
+			const scale = this.props.tileSize * this.state.zoom;
+			const relativeMouseX = (x - canvasRect.left) / scale;
+			const relativeMouseY = (y - canvasRect.top) / scale;
+			const cursorX = Math.floor(relativeMouseX);
+			const cursorY = Math.floor(relativeMouseY);
+			if (cursorX !== this.state.cursorX || cursorY !== this.state.cursorY) {
+				if (this.props.onMove) this.props.onMove(cursorX, cursorY);
+				this.setState({cursorX, cursorY});
+			}
 		}
+		this.setState({previousMouseX: x, previousMouseY: y});
 	}
 
 	private onMouseDown(event) {
@@ -119,34 +140,37 @@ export default class Grid extends React.Component<Props, State> {
 	public render() {
 		return <div
 			style={{
-				width: 0,
-				height: 0,
-				transformOrigin: '0% 0%',
-				transform: 'scale(' + this.state.zoom + ')',
-				imageRendering: 'pixelated',
-				transition: '.15s',
+				width: '100%',
+				height: '100%',
 			}}
 			onMouseDown={this.onMouseDown.bind(this)}
 			onMouseUp={this.onMouseUp.bind(this)}
 			onWheel={this.onWheel.bind(this)}
+			onMouseMove={(event) => {this.onMouseMove(event.clientX, event.clientY); }}
 		>
-			<canvas
-				ref={this.canvasRef}
+			<div
 				style={{
-					position: 'absolute',
-					left: 0,
-					top: 0,
-					background: this.props.background,
-					border: '1px solid black',
-					transform: 'scale(' + (1 / gridRenderingScale) + ')',
-					transformOrigin: '0% 0%',
+					width: 0,
+					height: 0,
+					transform: 'translate(' + this.state.panX + 'px, ' + this.state.panY + 'px) ' +
+						'scale(' + this.state.zoom + ')',
+					imageRendering: 'pixelated',
 				}}
-				onMouseMove={(event) => {
-					const rect = this.canvasRef.current.getBoundingClientRect();
-					this.onMouseMove(event.clientX - rect.left, event.clientY - rect.top);
-				}}
-			/>
-			{this.props.children}
+			>
+				<canvas
+					ref={this.canvasRef}
+					style={{
+						position: 'absolute',
+						left: 0,
+						top: 0,
+						background: this.props.background,
+						border: '1px solid black',
+						transform: 'scale(' + (1 / gridRenderingScale) + ')',
+						transformOrigin: '0% 0%',
+					}}
+				/>
+				{this.props.children}
+			</div>
 		</div>;
 	}
 }
