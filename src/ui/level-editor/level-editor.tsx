@@ -3,27 +3,28 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import Image, { loadImages } from '../../data/image-data';
+import Image, { loadImage } from '../../data/image-data';
+import { isEntityLayer } from '../../data/layer/entity-layer';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
-import Project, { getProjectImagePaths, getProjectTileset } from '../../data/project';
+import Project, { getProjectTileset } from '../../data/project';
 import { deepCopyObject, normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
+import EntityCursor from '../cursor/entity-cursor';
 import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
 import Grid from '../grid';
 import { EditTool } from './edit-tool';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import TileLayerDisplay from './layer/tile-layer-display';
+import EntityPicker from './sidebar/entity-picker';
 import HistoryBrowser from './sidebar/history-browser';
 import LayerList from './sidebar/layer-list';
 import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
-import { isEntityLayer } from '../../data/layer/entity-layer';
-import EntityPicker from './sidebar/entity-picker';
 
 enum CursorState {
 	Idle,
@@ -103,9 +104,26 @@ export default class LevelEditor extends AppTab<Props, State> {
 			cursorRect: {l: 0, t: 0, r: 0, b: 0},
 			cursorState: CursorState.Idle,
 		};
-		loadImages(getProjectImagePaths(this.props.project)).then(images => {
-			this.setState({images});
-		});
+		this.loadImages();
+	}
+
+	private loadImages() {
+		for (const tileset of this.props.project.tilesets) {
+			if (tileset.imagePath && !this.state.images.get(tileset.imagePath))
+				loadImage(tileset.imagePath).then(image => {
+					const images = new Map(this.state.images);
+					images.set(tileset.imagePath, image);
+					this.setState({images});
+				});
+		}
+		for (const entity of this.props.project.entities) {
+			if (entity.imagePath && !this.state.images.get(entity.imagePath))
+				loadImage(entity.imagePath).then(image => {
+					const images = new Map(this.state.images);
+					images.set(entity.imagePath, image);
+					this.setState({images});
+				});
+		}
 	}
 
 	private updateTabTitle() {
@@ -382,6 +400,12 @@ export default class LevelEditor extends AppTab<Props, State> {
 									getProjectTileset(this.props.project, selectedLayer.tilesetName).imagePath,
 								)}
 								tilesetSelection={this.state.tilesetSelection}
+							/> : isEntityLayer(selectedLayer) ? <EntityCursor
+								tileSize={this.props.project.tileSize}
+								x={this.state.cursorX}
+								y={this.state.cursorY}
+								entity={this.props.project.entities[this.state.selectedEntityIndex]}
+								images={this.state.images}
 							/> : <GenericCursor
 								tileSize={this.props.project.tileSize}
 								cursor={normalizeRect(this.state.cursorRect)}

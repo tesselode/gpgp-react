@@ -15,7 +15,7 @@ import {
 } from 'reactstrap';
 import { EntityParameterType, newEntity } from '../../data/entity';
 import Image, { loadImage } from '../../data/image-data';
-import Project, { exportProject, getProjectImagePaths, newProject } from '../../data/project';
+import Project, { exportProject, newProject } from '../../data/project';
 import { newTileset } from '../../data/tileset';
 import { deepCopyObject, shiftDown, shiftUp } from '../../util';
 import AppTab from '../app-tab';

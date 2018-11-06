@@ -39,18 +39,6 @@ export function newProject(): Project {
 	};
 }
 
-/**
- * Returns a list of the paths of each image the project depends on.
- * @param project The project to check.
- */
-export function getProjectImagePaths(project: Project): string[] {
-	const imagePaths: string[] = [];
-	for (const tileset of project.tilesets) {
-		imagePaths.push(tileset.imagePath);
-	}
-	return imagePaths;
-}
-
 export function getProjectTileset(project: Project, tilesetName: string): Tileset {
 	return project.tilesets.find(tileset => tileset.name === tilesetName);
 }
