@@ -1,6 +1,7 @@
 export enum LayerType {
 	Geometry = 'Geometry',
 	Tile = 'Tile',
+	Entity = 'Entity',
 }
 
 /** An item that can be placed on a layer. */
