@@ -35,8 +35,8 @@ export default class TileCursor extends React.Component<Props> {
 				position: 'absolute',
 				left: x * tileSize + 1 + 'px',
 				top: y * tileSize + 1 + 'px',
-				width: tileSize * (region.r - region.l + 1) + 'px',
-				height: tileSize * (region.b - region.t + 1) + 'px',
+				width: tileSize * (region.r - region.l + 1) - 1 + 'px',
+				height: tileSize * (region.b - region.t + 1) - 1 + 'px',
 				pointerEvents: 'none',
 				overflow: 'hidden',
 			}}
