@@ -328,6 +328,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 					/>
 					<LayerOptions
 						level={level}
+						project={this.props.project}
 						selectedLayerIndex={this.state.selectedLayerIndex}
 						modifyLevel={this.modifyLevel.bind(this)}
 						onBlur={() => this.setState({continuedAction: false})}

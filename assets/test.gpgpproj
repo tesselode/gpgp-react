@@ -1,1 +1,0 @@
-{"name":"test project please ignore","tileSize":16,"defaultMapWidth":16,"defaultMapHeight":9,"maxMapWidth":1000,"maxMapHeight":1000,"tilesets":[{"name":"Main tiles","imagePath":"sheet.png"}],"entities":[{"name":"Player","width":1,"height":1,"color":"#ee0000","parameters":[],"imagePath":"player.png"}]}

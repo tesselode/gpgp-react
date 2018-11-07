@@ -2,10 +2,14 @@ import React from 'react';
 import { Form, FormGroup, Input, Label } from 'reactstrap';
 import Level from '../../../data/level';
 import SidebarSection from './sidebar-section';
+import { isTileLayer } from '../../../data/layer/tile-layer';
+import Project from '../../../data/project';
 
 export interface Props {
 	/** The currently opened level. */
 	level: Level;
+	/** The project the level belongs to. */
+	project: Project;
 	/** The number of the selected layer. */
 	selectedLayerIndex: number;
 	/** A function that is called when the level is modified. Returns the description of the action taken. */
@@ -33,6 +37,27 @@ export default (props: Props) => {
 					onBlur={() => props.onBlur()}
 				/>
 			</FormGroup>
+			{isTileLayer(selectedLayer) && <FormGroup>
+				<Label size='sm'>Tileset</Label>
+				<Input
+					bsSize='sm'
+					type='select'
+					value={selectedLayer.tilesetName}
+					onChange={event => props.modifyLevel(level => {
+						const layer = level.layers[props.selectedLayerIndex];
+						if (isTileLayer(layer)) {
+							layer.tilesetName = event.target.value;
+							return 'Set ' + layer.name + ' tileset to ' + layer.tilesetName;
+						}
+					})}
+				>
+					{props.project.tilesets.map((tileset, i) => <option
+						key={i}
+					>
+						{tileset.name}
+					</option>)}
+				</Input>
+			</FormGroup>}
 		</Form>
 	</SidebarSection>;
 };
