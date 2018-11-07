@@ -109,7 +109,7 @@ export default class TileCursor extends React.Component<Props> {
 				this.props.tilesetSelection &&
 				this.props.tilesetImage &&
 				this.props.tilesetImage.data &&
-				<div>
+				<div style={{opacity: .67}}>
 					{this.props.tool === EditTool.Pencil ? this.pencil()
 						: this.props.tool === EditTool.Rectangle ? this.rectangle()
 						: ''

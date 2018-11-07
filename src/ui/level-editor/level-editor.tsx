@@ -367,9 +367,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 					>
 						{level.layers.map((layer, i) => {
 							if (!layer.visible) return '';
-							let order = level.layers.length - i;
+							let order = -(i + 2);
 							if (this.state.showSelectedLayerOnTop && i === this.state.selectedLayerIndex)
-								order = level.layers.length;
+								order = -1;
 							if (isTileLayer(layer))
 								return <TileLayerDisplay
 									key={i}
