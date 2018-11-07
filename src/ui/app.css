@@ -1,3 +1,7 @@
+#app {
+	user-select: none;
+}
+
 .compact-list-group-item {
 	padding: .5em !important;
 	font-size: .875em;

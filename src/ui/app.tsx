@@ -193,7 +193,7 @@ export default class App extends React.Component<{}, State> {
 				onOpenProject={() => this.onOpenProject()}
 				onOpenLevel={() => this.onOpenLevel()}
 			/>;
-		return <div>
+		return <div id='app'>
 			<Nav tabs>
 				{this.state.tabs.map((tab, i) => <NavItem key={i}>
 					<NavLink
