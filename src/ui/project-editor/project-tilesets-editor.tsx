@@ -90,7 +90,7 @@ export default class extends React.Component<Props, State> {
 					renderItem={tileset => tileset.name}
 				/>
 			</Col>
-			{selectedTileset && <Col md={8}>
+			{selectedTileset && <Col md={8} key={this.state.selectedTilesetIndex}>
 				<Form>
 					<FormGroup row>
 						<Label md={2}>Tileset name</Label>
