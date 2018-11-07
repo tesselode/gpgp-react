@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from '../../../data/image-data';
 import Project from '../../../data/project';
-import { Rect } from '../../../util';
+import { Rect, normalizeRect } from '../../../util';
 import Grid from '../../grid';
 import SidebarSection from './sidebar-section';
 
@@ -44,7 +44,7 @@ export default class TilePicker extends React.Component<Props, State> {
 	private onRelease() {
 		if (this.state.selection) {
 			this.setState({mouseDown: false});
-			this.props.onSelectTiles(this.state.selection);
+			this.props.onSelectTiles(normalizeRect(this.state.selection));
 		}
 	}
 
@@ -61,6 +61,7 @@ export default class TilePicker extends React.Component<Props, State> {
 	}
 
 	public render() {
+		const normalizedSelection = this.state.selection && normalizeRect(this.state.selection);
 		return <SidebarSection
 			name={'Tiles - ' + this.props.tilesetName}
 			startExpanded={true}
@@ -88,14 +89,14 @@ export default class TilePicker extends React.Component<Props, State> {
 						onMove={this.onMove.bind(this)}
 					>
 						<img src={this.props.tilesetImageData.data}/>
-						{this.state.selection && <div
+						{normalizedSelection && <div
 							style={{
 								position: 'absolute',
 								zIndex: 2,
-								left: this.state.selection.l * this.props.project.tileSize + 'px',
-								top: this.state.selection.t * this.props.project.tileSize + 'px',
-								width: this.props.project.tileSize * (this.state.selection.r - this.state.selection.l + 1) + 1 + 'px',
-								height: this.props.project.tileSize * (this.state.selection.b - this.state.selection.t + 1) + 1 + 'px',
+								left: normalizedSelection.l * this.props.project.tileSize + 'px',
+								top: normalizedSelection.t * this.props.project.tileSize + 'px',
+								width: this.props.project.tileSize * (normalizedSelection.r - normalizedSelection.l + 1) + 1 + 'px',
+								height: this.props.project.tileSize * (normalizedSelection.b - normalizedSelection.t + 1) + 1 + 'px',
 								border: '1px solid red',
 								pointerEvents: 'none',
 							}}
