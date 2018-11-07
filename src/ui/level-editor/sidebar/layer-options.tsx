@@ -29,7 +29,7 @@ export default (props: Props) => {
 					onChange={event => props.modifyLevel(level => {
 						level.layers[props.selectedLayerIndex].name = event.target.value;
 						return 'Rename layer to "' + event.target.value + '"';
-					})}
+					}, true)}
 					onBlur={() => props.onBlur()}
 				/>
 			</FormGroup>
