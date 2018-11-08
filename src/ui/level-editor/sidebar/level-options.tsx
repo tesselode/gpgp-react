@@ -60,7 +60,7 @@ export default class LevelOptions extends React.Component<Props, State> {
 									this.props.modifyLevel(level => {
 										level.width = width;
 										return 'Change level width';
-									});
+									}, true);
 							}}
 							onBlur={() => this.props.onBlur()}
 						/>
@@ -79,7 +79,7 @@ export default class LevelOptions extends React.Component<Props, State> {
 									this.props.modifyLevel(level => {
 										level.height = height;
 										return 'Change level height';
-									});
+									}, true);
 							}}
 							onBlur={() => this.props.onBlur()}
 						/>

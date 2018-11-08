@@ -237,7 +237,10 @@ export default class LevelEditor extends AppTab<Props, State> {
 				}});
 				break;
 		}
-		this.setState({cursorState: CursorState.Idle});
+		this.setState({
+			cursorState: CursorState.Idle,
+			continuedAction: false,
+		});
 	}
 
 	private onDoubleClick(button: number) {
