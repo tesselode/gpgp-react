@@ -20,7 +20,6 @@ export interface Props {
 /** A visual representation of an entity layer in a level. */
 export default class EntityLayerDisplay extends React.Component<Props> {
 	private canvasRef = React.createRef<HTMLCanvasElement>();
-	private imageRefs = new Map<string, React.RefObject<HTMLImageElement>>();
 
 	constructor(props) {
 		super(props);
@@ -36,7 +35,7 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 			const y = item.y * this.props.project.tileSize;
 			const entity = getProjectEntity(this.props.project, item.entityName);
 			if (entity.imagePath) {
-				const image = this.imageRefs.get(entity.imagePath).current;
+				const image = this.props.images.get(entity.imagePath).element;
 				if (image) context.drawImage(image, x, y);
 			} else {
 				context.fillStyle = entity.color;
@@ -65,17 +64,6 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 					pointerEvents: 'none',
 				}}
 			/>
-			{this.props.images.forEach((image, imagePath) => {
-				if (!this.imageRefs.get(imagePath))
-					this.imageRefs.set(imagePath, React.createRef<HTMLImageElement>());
-				return <img
-					ref={this.imageRefs.get(imagePath)}
-					src={image.data}
-					alt=''
-					style={{display: 'none'}}
-					onLoad={() => this.renderCanvas()}
-				/>;
-			})}
 		</div>;
 	}
 }

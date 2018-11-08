@@ -392,7 +392,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 									project={this.props.project}
 									level={level}
 									layer={layer}
-									tilesetImageData={this.state.images.get(
+									tilesetImage={this.state.images.get(
 										getProjectTileset(this.props.project, layer.tilesetName).imagePath,
 									)}
 									order={order}

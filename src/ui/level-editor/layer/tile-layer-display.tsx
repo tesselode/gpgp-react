@@ -1,8 +1,8 @@
 import React from 'react';
-import Image from '../../../data/image-data';
 import TileLayer from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';
+import Image from '../../../data/image-data';
 
 export interface Props {
 	/** The project the level is for. */
@@ -11,8 +11,8 @@ export interface Props {
 	level: Level;
 	/** The tile layer to display. */
 	layer: TileLayer;
-	/** The image data for the tileset used by the tile layer. */
-	tilesetImageData?: Image;
+	/** The image element for the tileset used by the tile layer. */
+	tilesetImage?: Image;
 	/** The depth the layer should be displayed at. */
 	order: number;
 }
@@ -20,7 +20,6 @@ export interface Props {
 /** A visual representation of a tile layer in a level. */
 export default class TileLayerDisplay extends React.Component<Props> {
 	private canvasRef = React.createRef<HTMLCanvasElement>();
-	private imageRef = React.createRef<HTMLImageElement>();
 
 	private renderCanvas() {
 		const canvas = this.canvasRef.current;
@@ -32,8 +31,9 @@ export default class TileLayerDisplay extends React.Component<Props> {
 			const sy = item.tileY * this.props.project.tileSize;
 			const x = item.x * this.props.project.tileSize;
 			const y = item.y * this.props.project.tileSize;
-			context.drawImage(this.imageRef.current, sx, sy, this.props.project.tileSize, this.props.project.tileSize,
-				x, y, this.props.project.tileSize, this.props.project.tileSize);
+			if (this.props.tilesetImage && this.props.tilesetImage.element)
+				context.drawImage(this.props.tilesetImage.element, sx, sy, this.props.project.tileSize, this.props.project.tileSize,
+					x, y, this.props.project.tileSize, this.props.project.tileSize);
 		}
 	}
 
@@ -46,24 +46,15 @@ export default class TileLayerDisplay extends React.Component<Props> {
 	}
 
 	public render() {
-		return <div>
-			<canvas
-				ref={this.canvasRef}
-				style={{
-					position: 'absolute',
-					zIndex: this.props.order,
-					left: 0,
-					top: 0,
-					pointerEvents: 'none',
-				}}
-			/>
-			<img
-				ref={this.imageRef}
-				src={this.props.tilesetImageData && this.props.tilesetImageData.data}
-				alt=''
-				style={{display: 'none'}}
-				onLoad={() => this.renderCanvas()}
-			/>
-		</div>;
+		return <canvas
+			ref={this.canvasRef}
+			style={{
+				position: 'absolute',
+				zIndex: this.props.order,
+				left: 0,
+				top: 0,
+				pointerEvents: 'none',
+			}}
+		/>;
 	}
 }

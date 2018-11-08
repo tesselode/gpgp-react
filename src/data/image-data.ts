@@ -2,6 +2,8 @@ import Jimp from 'jimp';
 
 /** Data for an image. */
 export default interface Image {
+	/** The image element. */
+	element?: HTMLImageElement;
 	/** The image data, suitable for use in an <img> tag. */
 	data?: string;
 	/** The width of the image (in pixels). */
@@ -20,11 +22,16 @@ export function loadImage(imagePath: string): Promise<Image> {
 	return Jimp.read(imagePath)
 		.then(image =>
 			image.getBase64Async(image.getMIME())
-				.then(data => ({
-					data,
-					width: image.bitmap.width,
-					height: image.bitmap.height,
-				})),
+				.then(data => {
+					const element = document.createElement('img');
+					element.src = data;
+					return {
+						element,
+						data,
+						width: image.bitmap.width,
+						height: image.bitmap.height,
+					};
+				})
 		)
 		.catch(error => ({
 			error: 'The image could not be loaded.',
