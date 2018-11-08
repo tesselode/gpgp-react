@@ -35,8 +35,8 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 			const y = item.y * this.props.project.tileSize;
 			const entity = getProjectEntity(this.props.project, item.entityName);
 			if (entity.imagePath) {
-				const image = this.props.images.get(entity.imagePath).element;
-				if (image) context.drawImage(image, x, y);
+				const image = this.props.images.get(entity.imagePath);
+				if (image && image.element) context.drawImage(image.element, x, y);
 			} else {
 				context.fillStyle = entity.color;
 				context.fillRect(x, y, this.props.project.tileSize, this.props.project.tileSize);
