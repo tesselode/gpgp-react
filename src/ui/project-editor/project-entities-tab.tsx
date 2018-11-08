@@ -19,7 +19,7 @@ export interface State {
 	selectedEntityIndex: number;
 }
 
-export default class ProjectEntitiesEditor extends React.Component<Props, State> {
+export default class ProjectEntitiesTab extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {

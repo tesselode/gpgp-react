@@ -30,7 +30,7 @@ export interface State {
 	selectedTilesetIndex: number;
 }
 
-export default class extends React.Component<Props, State> {
+export default class ProjectTilesetsTab extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {

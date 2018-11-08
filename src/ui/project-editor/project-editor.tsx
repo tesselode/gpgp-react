@@ -13,15 +13,13 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import { EntityParameterType, newEntity } from '../../data/entity';
 import Image, { loadImage } from '../../data/image-data';
 import Project, { exportProject, newProject } from '../../data/project';
-import { newTileset } from '../../data/tileset';
-import { deepCopyObject, shiftDown, shiftUp } from '../../util';
+import { deepCopyObject } from '../../util';
 import AppTab from '../app-tab';
-import ProjectEntitiesEditor from './project-entities-editor';
-import ProjectSettingsEditor from './project-settings-editor';
-import ProjectTilesetsEditor from './project-tilesets-editor';
+import ProjectEntitiesTab from './project-entities-tab';
+import ProjectSettingsTab from './project-settings-tab';
+import ProjectTilesetsTab from './project-tilesets-tab';
 
 export enum ProjectEditorTab {
 	Settings,
@@ -190,13 +188,13 @@ export default class ProjectEditor extends AppTab<Props, State> {
 				style={{padding: '1em'}}
 			>
 				<TabPane tabId={ProjectEditorTab.Settings}>
-					<ProjectSettingsEditor
+					<ProjectSettingsTab
 						project={this.state.project}
 						modifyProject={this.modifyProject.bind(this)}
 					/>
 				</TabPane>
 				<TabPane tabId={ProjectEditorTab.Tilesets}>
-					<ProjectTilesetsEditor
+					<ProjectTilesetsTab
 						focused={this.state.activeTab === ProjectEditorTab.Tilesets}
 						project={this.state.project}
 						images={this.state.images}
@@ -204,7 +202,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 					/>
 				</TabPane>
 				<TabPane tabId={ProjectEditorTab.Entities}>
-					<ProjectEntitiesEditor
+					<ProjectEntitiesTab
 						project={this.state.project}
 						images={this.state.images}
 						modifyProject={this.modifyProject.bind(this)}
