@@ -2,13 +2,13 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import React from 'react';
-import { Col, Container, Row } from 'reactstrap';
+import { Col, Container, Row, Progress } from 'reactstrap';
 import Image, { loadImage } from '../../data/image-data';
 import { isEntityLayer, placeEntity } from '../../data/layer/entity-layer';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
-import Project, { getProjectTileset } from '../../data/project';
+import Project, { getProjectTileset, getProjectImagePaths } from '../../data/project';
 import { deepCopyObject, normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
 import EntityCursor from '../cursor/entity-cursor';
@@ -50,6 +50,12 @@ interface Props {
 interface State {
 	/** The images for the level's project. */
 	images: Map<string, Image>;
+	/** The total numer of images that need to be loaded. */
+	totalImages: number;
+	/** The number of images that have been loaded so far. */
+	imagesLoaded: number;
+	/** Whether all the images have been loaded. */
+	finishedLoading: boolean;
 	/** The history of the level data. */
 	levelHistory: Level[];
 	/** The description of each state in the level history. */
@@ -88,6 +94,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 		super(props);
 		this.state = {
 			images: new Map<string, Image>(),
+			totalImages: 0,
+			imagesLoaded: 0,
+			finishedLoading: false,
 			levelHistory: [
 				this.props.level ? this.props.level :
 					newLevel(this.props.project, this.props.projectFilePath),
@@ -106,25 +115,23 @@ export default class LevelEditor extends AppTab<Props, State> {
 			cursorRect: {l: 0, t: 0, r: 0, b: 0},
 			cursorState: CursorState.Idle,
 		};
+	}
+	
+	public componentDidMount() {
 		this.loadImages();
 	}
 
 	private loadImages() {
-		for (const tileset of this.props.project.tilesets) {
-			if (tileset.imagePath && !this.state.images.get(tileset.imagePath))
-				loadImage(tileset.imagePath).then(image => {
-					const images = new Map(this.state.images);
-					images.set(tileset.imagePath, image);
-					this.setState({images});
+		for (const imagePath of getProjectImagePaths(this.props.project)) {
+			this.setState({totalImages: this.state.totalImages + 1});
+			loadImage(imagePath).then(image => {
+				const images = new Map(this.state.images);
+				images.set(imagePath, image);
+				this.setState({
+					images,
+					imagesLoaded: this.state.imagesLoaded + 1,
 				});
-		}
-		for (const entity of this.props.project.entities) {
-			if (entity.imagePath && !this.state.images.get(entity.imagePath))
-				loadImage(entity.imagePath).then(image => {
-					const images = new Map(this.state.images);
-					images.set(entity.imagePath, image);
-					this.setState({images});
-				});
+			})
 		}
 	}
 
@@ -317,6 +324,14 @@ export default class LevelEditor extends AppTab<Props, State> {
 	public render() {
 		const level = this.getCurrentLevelState();
 		const selectedLayer = level.layers[this.state.selectedLayerIndex];
+
+		if (this.state.imagesLoaded < this.state.totalImages) {
+			return <Progress
+				style={{transition: '0'}}
+				value={(this.state.imagesLoaded / this.state.totalImages) * 100}
+				animated
+			/>;
+		}
 
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>

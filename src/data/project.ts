@@ -39,6 +39,15 @@ export function newProject(): Project {
 	};
 }
 
+export function getProjectImagePaths(project: Project): string[] {
+	const paths: string[] = [];
+	for (const tileset of project.tilesets)
+		if (tileset.imagePath) paths.push(tileset.imagePath);
+	for (const entity of project.entities)
+		if (entity.imagePath) paths.push(entity.imagePath);
+	return paths;
+}
+
 export function getProjectTileset(project: Project, tilesetName: string): Tileset {
 	return project.tilesets.find(tileset => tileset.name === tilesetName);
 }

@@ -22,16 +22,18 @@ export function loadImage(imagePath: string): Promise<Image> {
 	return Jimp.read(imagePath)
 		.then(image =>
 			image.getBase64Async(image.getMIME())
-				.then(data => {
-					const element = document.createElement('img');
-					element.src = data;
-					return {
-						element,
-						data,
-						width: image.bitmap.width,
-						height: image.bitmap.height,
-					};
-				})
+				.then(data =>
+					new Promise((resolve, reject) => {
+						const element = document.createElement('img');
+						element.onload = () => {resolve({
+							element,
+							data,
+							width: image.bitmap.width,
+							height: image.bitmap.height,
+						})};
+						element.src = data;
+					})
+				)
 		)
 		.catch(error => ({
 			error: 'The image could not be loaded.',
