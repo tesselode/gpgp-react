@@ -43,6 +43,10 @@ export function getProjectTileset(project: Project, tilesetName: string): Tilese
 	return project.tilesets.find(tileset => tileset.name === tilesetName);
 }
 
+export function getProjectEntity(project: Project, entityName: string): Entity {
+	return project.entities.find(entity => entity.name === entityName);
+}
+
 /**
  * Imports a project for use after loading it from the filesystem.
  * @param project The project to import.

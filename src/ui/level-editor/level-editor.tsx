@@ -4,7 +4,7 @@ import path from 'path';
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import Image, { loadImage } from '../../data/image-data';
-import { isEntityLayer } from '../../data/layer/entity-layer';
+import { isEntityLayer, placeEntity } from '../../data/layer/entity-layer';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
@@ -25,6 +25,8 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
+import { LayerType } from '../../data/layer/layer';
+import EntityLayerDisplay from './layer/entity-layer-display';
 
 enum CursorState {
 	Idle,
@@ -231,13 +233,26 @@ export default class LevelEditor extends AppTab<Props, State> {
 		this.setState({cursorState: CursorState.Idle});
 	}
 
+	private onDoubleClick(button: number) {
+		if (button !== 0) return;
+		this.modifyLevel(level => {
+			const layer = level.layers[this.state.selectedLayerIndex];
+			if (!isEntityLayer(layer)) return false;
+			placeEntity(layer, this.props.project.entities[this.state.selectedEntityIndex].name, this.state.cursorX, this.state.cursorY);
+			return 'Place entity';
+		});
+	}
+
 	private onPlace(rect: Rect) {
 		this.modifyLevel(level => {
 			const layer = level.layers[this.state.selectedLayerIndex];
 			if (isGeometryLayer(layer))
 				placeGeometry(layer, rect);
-			else if (isTileLayer(layer) && this.state.tilesetSelection)
+			else if (isTileLayer(layer)) {
+				if (!this.state.tilesetSelection) return false;
 				placeTile(this.state.tool, layer, rect, this.state.tilesetSelection);
+			} else
+				return false;
 			return 'Place tiles';
 		}, true);
 	}
@@ -364,6 +379,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 						onMove={this.onMoveCursor.bind(this)}
 						onClick={this.onClickGrid.bind(this)}
 						onRelease={this.onReleaseGrid.bind(this)}
+						onDoubleClick={this.onDoubleClick.bind(this)}
 					>
 						{level.layers.map((layer, i) => {
 							if (!layer.visible) return '';
@@ -381,6 +397,15 @@ export default class LevelEditor extends AppTab<Props, State> {
 									)}
 									order={order}
 								/>;
+							else if (isEntityLayer(layer))
+								return <EntityLayerDisplay
+									key={i}
+									project={this.props.project}
+									images={this.state.images}
+									level={level}
+									layer={layer}
+									order={order}
+								/>
 							else if (isGeometryLayer(layer))
 								return <GeometryLayerDisplay
 									key={i}

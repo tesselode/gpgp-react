@@ -21,6 +21,8 @@ interface Props {
 	onClick?: (button: number) => void;
 	/** A function that is called when a mouse button is released. */
 	onRelease?: (button: number) => void;
+	/** A function that is called when the grid is double-clicekd. */
+	onDoubleClick?: (button: number) => void;
 }
 
 interface State {
@@ -147,6 +149,7 @@ export default class Grid extends React.Component<Props, State> {
 			onMouseUp={this.onMouseUp.bind(this)}
 			onWheel={this.onWheel.bind(this)}
 			onMouseMove={(event) => {this.onMouseMove(event.clientX, event.clientY); }}
+			onDoubleClick={(event) => {this.props.onDoubleClick(event.button)}}
 		>
 			<div
 				style={{
