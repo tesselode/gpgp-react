@@ -27,6 +27,7 @@ import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
 import { LayerType } from '../../data/layer/layer';
 import EntityLayerDisplay from './layer/entity-layer-display';
+import EntityOptions from './sidebar/entity-options';
 
 enum CursorState {
 	Idle,
@@ -388,6 +389,10 @@ export default class LevelEditor extends AppTab<Props, State> {
 						images={this.state.images}
 						selectedEntityIndex={this.state.selectedEntityIndex}
 						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
+					/>}
+					{this.state.selectedEntityLayerItem && <EntityOptions
+						project={this.props.project}
+						item={this.state.selectedEntityLayerItem}
 					/>}
 					<HistoryBrowser
 						historyDescriptions={this.state.levelHistoryDescriptions}
