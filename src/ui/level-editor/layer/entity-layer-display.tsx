@@ -2,7 +2,7 @@ import React from 'react';
 import Project, { getProjectEntity } from '../../../data/project';
 import Level from '../../../data/level';
 import Image from '../../../data/image-data';
-import EntityLayer from '../../../data/layer/entity-layer';
+import EntityLayer, { EntityLayerItem } from '../../../data/layer/entity-layer';
 
 export interface Props {
 	/** The project the level is for. */
@@ -15,6 +15,8 @@ export interface Props {
 	layer: EntityLayer;
 	/** The depth the layer should be displayed at. */
 	order: number;
+	/** The currently selected entity layer item. */
+	selectedEntityLayerItem?: EntityLayerItem | false;
 }
 
 /** A visual representation of an entity layer in a level. */
@@ -53,6 +55,9 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 	}
 
 	public render() {
+		const selectedItem = this.props.selectedEntityLayerItem;
+		const entity = selectedItem && getProjectEntity(this.props.project, selectedItem.entityName);
+
 		return <div>
 			<canvas
 				ref={this.canvasRef}
@@ -64,6 +69,18 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 					pointerEvents: 'none',
 				}}
 			/>
+			{this.props.selectedEntityLayerItem && <div
+				style={{
+					position: 'absolute',
+					zIndex: 2,
+					left: this.props.selectedEntityLayerItem.x * this.props.project.tileSize + 'px',
+					top: this.props.selectedEntityLayerItem.y * this.props.project.tileSize + 'px',
+					width: this.props.project.tileSize * entity.width + 1 + 'px',
+					height: this.props.project.tileSize * entity.height + 1 + 'px',
+					border: '1px solid red',
+					pointerEvents: 'none',
+				}}
+			/>}
 		</div>;
 	}
 }

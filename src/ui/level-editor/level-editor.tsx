@@ -4,7 +4,7 @@ import path from 'path';
 import React from 'react';
 import { Col, Container, Row, Progress } from 'reactstrap';
 import Image, { loadImage } from '../../data/image-data';
-import { isEntityLayer, placeEntity } from '../../data/layer/entity-layer';
+import { isEntityLayer, placeEntity, EntityLayerItem, getEntityAt } from '../../data/layer/entity-layer';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
@@ -86,6 +86,8 @@ interface State {
 	cursorRect: Rect;
 	/** The current cursor state. */
 	cursorState: CursorState;
+	/** The currently selected entity layer item. */
+	selectedEntityLayerItem: EntityLayerItem | false;
 }
 
 /** The level editor screen, which allows you to create or edit levels. */
@@ -114,6 +116,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			cursorY: 0,
 			cursorRect: {l: 0, t: 0, r: 0, b: 0},
 			cursorState: CursorState.Idle,
+			selectedEntityLayerItem: false,
 		};
 	}
 	
@@ -204,17 +207,23 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	private onClickGrid(button: number): void {
-		switch (button) {
-			case 0:
-				this.setState({cursorState: CursorState.Place});
-				if (this.state.tool === EditTool.Pencil)
-					this.onPlace(normalizeRect(this.state.cursorRect));
-				break;
-			case 2:
-				this.setState({cursorState: CursorState.Remove});
-				if (this.state.tool === EditTool.Pencil)
-					this.onRemove(normalizeRect(this.state.cursorRect));
-				break;
+		const layer = this.getCurrentLevelState().layers[this.state.selectedLayerIndex];
+		if (isEntityLayer(layer)) {
+			const item = getEntityAt(this.props.project, layer, this.state.cursorX, this.state.cursorY);
+			this.setState({selectedEntityLayerItem: item || false});
+		} else {
+			switch (button) {
+				case 0:
+					this.setState({cursorState: CursorState.Place});
+					if (this.state.tool === EditTool.Pencil)
+						this.onPlace(normalizeRect(this.state.cursorRect));
+					break;
+				case 2:
+					this.setState({cursorState: CursorState.Remove});
+					if (this.state.tool === EditTool.Pencil)
+						this.onRemove(normalizeRect(this.state.cursorRect));
+					break;
+			}
 		}
 	}
 
@@ -423,6 +432,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 									level={level}
 									layer={layer}
 									order={order}
+									selectedEntityLayerItem={this.state.selectedEntityLayerItem}
 								/>
 							else if (isGeometryLayer(layer))
 								return <GeometryLayerDisplay

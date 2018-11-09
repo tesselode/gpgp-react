@@ -1,4 +1,5 @@
 import Layer, { LayerType } from "./layer";
+import Project, { getProjectEntity } from "../project";
 
 export interface EntityLayerItem {
 	entityName: string;
@@ -32,4 +33,16 @@ export function removeEntity(layer: EntityLayer, entity: EntityLayerItem) {
 	const entityIndex = layer.items.findIndex(e => e === entity);
 	if (entityIndex !== -1)
 		layer.items.splice(entityIndex, 1);
+}
+
+export function getEntityAt(project: Project, layer: EntityLayer, x: number, y: number): EntityLayerItem {
+	return layer.items.find(item => {
+		const entity = getProjectEntity(project, item.entityName);
+		if (!entity) return false;
+		const l = item.x;
+		const t = item.y;
+		const r = l + entity.width - 1;
+		const b = t + entity.height - 1;
+		return x >= l && x <= r && y >= t && y <= b;
+	});
 }
