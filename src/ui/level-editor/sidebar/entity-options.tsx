@@ -4,6 +4,7 @@ import { EntityLayerItem } from '../../../data/layer/entity-layer';
 import SidebarSection from './sidebar-section';
 import { Form, FormGroup, Label, Input, Col, Button } from 'reactstrap';
 import Octicon, { Trashcan } from '@githubprimer/octicons-react';
+import { isNumberEntityParameter } from '../../../data/entity';
 
 interface Props {
 	project: Project;
@@ -22,6 +23,15 @@ const EntityOptions = (props: Props) => {
 					Entity type: <strong>{entity ? entity.name : 'Undefined'}</strong>
 				</Label>
 			</FormGroup>
+			{entity && entity.parameters.map((parameter, i) => {
+				if (isNumberEntityParameter(parameter))
+					return <FormGroup row>
+						<Label md={4} size='sm'>{parameter.name}</Label>
+						<Col md={8}>
+							<Input bsSize='sm' type='number' />
+						</Col>
+					</FormGroup>;
+			})}
 		</Form>
 		<Button
 			size='sm'
