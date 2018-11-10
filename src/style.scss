@@ -1,7 +1,5 @@
-// general settings //
 $enable-rounded: false;
 
-// default bootstrap colors //
 $white:    #fff !default;
 $gray-100: #f8f9fa !default;
 $gray-200: #e9ecef !default;
@@ -14,38 +12,9 @@ $gray-800: #343a40 !default;
 $gray-900: #212529 !default;
 $black:    #000 !default;
 
-// general overrides //
-$secondary: $gray-700;
-$body-bg: $gray-900;
-$body-color: $gray-200;
-$link-color: $gray-400;
-$link-hover-color: $gray-200;
-
-// input //
-$input-bg: $gray-800;
-$input-disabled-bg: $gray-700;
-$input-color: $gray-300;
-$input-border-color: $gray-700;
-$input-group-addon-bg: $gray-700;
-
-// tabs //
-$nav-tabs-border-color: $gray-700;
-$nav-tabs-link-hover-border-color: $gray-700;
-$nav-tabs-link-active-color: $gray-400;
-$nav-tabs-link-active-border-color: $gray-700;
-
-// jumbotron //
-$jumbotron-bg: $gray-800;
-
-// cards //
-$card-bg: $gray-800;
-$card-cap-bg: $gray-700;
-
-// list group //
-$list-group-bg: $gray-800;
-
-// close //
-$close-color: $white;
-$close-text-shadow: none;
+$body-bg: $gray-100;
+$light: $gray-200;
+$list-group-bg: $gray-100;
+$card-bg: $gray-100;
 
 @import "../node_modules/bootstrap/scss/bootstrap";

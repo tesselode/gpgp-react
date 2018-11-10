@@ -11,11 +11,7 @@ export interface Props {
 
 export default (props: Props) => <div
 	style={{
-		position: 'sticky',
-		top: 0,
-		zIndex: 100,
 		paddingBottom: '1em',
-		background: '#212529',
 	}}
 >
 	<ButtonGroup>
