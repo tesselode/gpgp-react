@@ -20,7 +20,7 @@ export interface Props<T> {
 export default function ItemList<T>(props: Props<T>) {
 	const selectedItem = props.items[props.selectedItemIndex];
 	return <div>
-		<Navbar color='light'>
+		<Navbar color='dark'>
 			<NavbarBrand>{props.title}</NavbarBrand>
 			<ButtonGroup>
 				<Button

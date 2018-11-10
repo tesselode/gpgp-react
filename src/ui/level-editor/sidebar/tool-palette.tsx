@@ -15,7 +15,7 @@ export default (props: Props) => <div
 		top: 0,
 		zIndex: 100,
 		paddingBottom: '1em',
-		background: 'white',
+		background: '#212529',
 	}}
 >
 	<ButtonGroup>

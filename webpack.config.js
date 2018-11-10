@@ -7,7 +7,7 @@ module.exports = {
 	devtool: 'inline-source-map',
 	target: 'electron-renderer',
 	resolve: {
-		extensions: [ '.tsx', '.ts', '.js', '.css' ]
+		extensions: [ '.tsx', '.ts', '.js', '.css', '.sass' ]
 	},
 	module: {
 		rules: [
@@ -19,6 +19,14 @@ module.exports = {
 			{
 				test: /\.css$/,
 				use: [ 'style-loader', 'css-loader' ]
+			},
+			{
+				test: /\.scss$/,
+				use: [
+					"style-loader", // creates style nodes from JS strings
+					"css-loader", // translates CSS into CommonJS
+					"sass-loader" // compiles Sass to CSS, using Node Sass by default
+				]
 			},
 		]
 	},
