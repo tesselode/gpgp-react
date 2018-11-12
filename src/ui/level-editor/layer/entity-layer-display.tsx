@@ -16,7 +16,7 @@ export interface Props {
 	/** The depth the layer should be displayed at. */
 	order: number;
 	/** The currently selected entity layer item. */
-	selectedEntityLayerItem?: EntityLayerItem | false;
+	selectedEntityItemIndex?: number;
 }
 
 /** A visual representation of an entity layer in a level. */
@@ -55,7 +55,7 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 	}
 
 	public render() {
-		const selectedItem = this.props.selectedEntityLayerItem;
+		const selectedItem = this.props.layer.items[this.props.selectedEntityItemIndex];
 		const entity = selectedItem && getProjectEntity(this.props.project, selectedItem.entityName);
 
 		return <div>
@@ -69,12 +69,12 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 					pointerEvents: 'none',
 				}}
 			/>
-			{this.props.selectedEntityLayerItem && <div
+			{selectedItem && <div
 				style={{
 					position: 'absolute',
 					zIndex: 2,
-					left: this.props.selectedEntityLayerItem.x * this.props.project.tileSize + 'px',
-					top: this.props.selectedEntityLayerItem.y * this.props.project.tileSize + 'px',
+					left: selectedItem.x * this.props.project.tileSize + 'px',
+					top: selectedItem.y * this.props.project.tileSize + 'px',
 					width: this.props.project.tileSize * entity.width + 1 + 'px',
 					height: this.props.project.tileSize * entity.height + 1 + 'px',
 					border: '1px solid red',

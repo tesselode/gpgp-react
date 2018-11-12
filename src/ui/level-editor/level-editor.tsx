@@ -4,7 +4,7 @@ import path from 'path';
 import React from 'react';
 import { Col, Container, Progress, Row } from 'reactstrap';
 import Image, { loadImage } from '../../data/image-data';
-import { EntityLayerItem, getEntityAt, isEntityLayer, placeEntity } from '../../data/layer/entity-layer';
+import EntityLayer, { EntityLayerItem, getItemAt, isEntityLayer, placeEntity } from '../../data/layer/entity-layer';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { LayerType } from '../../data/layer/layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
@@ -88,7 +88,9 @@ interface State {
 	/** The current cursor state. */
 	cursorState: CursorState;
 	/** The currently selected entity layer item. */
-	selectedEntityLayerItem: EntityLayerItem | false;
+	selectedEntityItemIndex: number;
+	/** The layer that the currently selected entity item is on. */
+	selectedEntityItemLayer?: EntityLayer;
 }
 
 /** The level editor screen, which allows you to create or edit levels. */
@@ -117,7 +119,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			cursorY: 0,
 			cursorRect: {l: 0, t: 0, r: 0, b: 0},
 			cursorState: CursorState.Idle,
-			selectedEntityLayerItem: false,
+			selectedEntityItemIndex: -1,
 		};
 	}
 
@@ -210,8 +212,11 @@ export default class LevelEditor extends AppTab<Props, State> {
 	private onClickGrid(button: number): void {
 		const layer = this.getCurrentLevelState().layers[this.state.selectedLayerIndex];
 		if (isEntityLayer(layer)) {
-			const item = getEntityAt(this.props.project, layer, this.state.cursorX, this.state.cursorY);
-			this.setState({selectedEntityLayerItem: item || false});
+			const itemIndex = getItemAt(this.props.project, layer, this.state.cursorX, this.state.cursorY);
+			this.setState({
+				selectedEntityItemIndex: itemIndex,
+				selectedEntityItemLayer: itemIndex !== -1 ? layer : null,
+			});
 		} else {
 			switch (button) {
 				case 0:
@@ -391,9 +396,16 @@ export default class LevelEditor extends AppTab<Props, State> {
 						selectedEntityIndex={this.state.selectedEntityIndex}
 						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
 					/>}
-					{this.state.selectedEntityLayerItem && <EntityOptions
+					{this.state.selectedEntityItemIndex !== -1 && <EntityOptions
 						project={this.props.project}
-						item={this.state.selectedEntityLayerItem}
+						layer={this.state.selectedEntityItemLayer}
+						itemIndex={this.state.selectedEntityItemIndex}
+						modifyLayer={(f, continuedAction) => {
+							this.modifyLevel(level => {
+								return f(this.state.selectedEntityItemLayer);
+							}, continuedAction);
+						}}
+						onBlur={() => this.setState({continuedAction: false})}
 					/>}
 					<HistoryBrowser
 						historyDescriptions={this.state.levelHistoryDescriptions}
@@ -438,7 +450,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 									level={level}
 									layer={layer}
 									order={order}
-									selectedEntityLayerItem={this.state.selectedEntityLayerItem}
+									selectedEntityItemIndex={this.state.selectedEntityItemIndex}
 								/>;
 							else if (isGeometryLayer(layer))
 								return <GeometryLayerDisplay
