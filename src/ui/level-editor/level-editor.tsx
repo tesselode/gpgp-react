@@ -2,13 +2,14 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import React from 'react';
-import { Col, Container, Row, Progress } from 'reactstrap';
+import { Col, Container, Progress, Row } from 'reactstrap';
 import Image, { loadImage } from '../../data/image-data';
-import { isEntityLayer, placeEntity, EntityLayerItem, getEntityAt } from '../../data/layer/entity-layer';
+import { EntityLayerItem, getEntityAt, isEntityLayer, placeEntity } from '../../data/layer/entity-layer';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
+import { LayerType } from '../../data/layer/layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
-import Project, { getProjectTileset, getProjectImagePaths } from '../../data/project';
+import Project, { getProjectImagePaths, getProjectTileset } from '../../data/project';
 import { deepCopyObject, normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
 import EntityCursor from '../cursor/entity-cursor';
@@ -16,8 +17,10 @@ import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
 import Grid from '../grid';
 import { EditTool } from './edit-tool';
+import EntityLayerDisplay from './layer/entity-layer-display';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import TileLayerDisplay from './layer/tile-layer-display';
+import EntityOptions from './sidebar/entity-options';
 import EntityPicker from './sidebar/entity-picker';
 import HistoryBrowser from './sidebar/history-browser';
 import LayerList from './sidebar/layer-list';
@@ -25,9 +28,6 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
-import { LayerType } from '../../data/layer/layer';
-import EntityLayerDisplay from './layer/entity-layer-display';
-import EntityOptions from './sidebar/entity-options';
 
 enum CursorState {
 	Idle,
@@ -120,7 +120,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			selectedEntityLayerItem: false,
 		};
 	}
-	
+
 	public componentDidMount() {
 		this.loadImages();
 	}
@@ -135,7 +135,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 					images,
 					imagesLoaded: this.state.imagesLoaded + 1,
 				});
-			})
+			});
 		}
 	}
 
@@ -258,7 +258,8 @@ export default class LevelEditor extends AppTab<Props, State> {
 		this.modifyLevel(level => {
 			const layer = level.layers[this.state.selectedLayerIndex];
 			if (!isEntityLayer(layer)) return false;
-			placeEntity(layer, this.props.project.entities[this.state.selectedEntityIndex].name, this.state.cursorX, this.state.cursorY);
+			placeEntity(layer, this.props.project.entities[this.state.selectedEntityIndex].name,
+				this.state.cursorX, this.state.cursorY);
 			return 'Place entity';
 		});
 	}
@@ -438,7 +439,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 									layer={layer}
 									order={order}
 									selectedEntityLayerItem={this.state.selectedEntityLayerItem}
-								/>
+								/>;
 							else if (isGeometryLayer(layer))
 								return <GeometryLayerDisplay
 									key={i}

@@ -1,8 +1,8 @@
 import React from 'react';
+import Image from '../../../data/image-data';
 import TileLayer from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';
-import Image from '../../../data/image-data';
 
 export interface Props {
 	/** The project the level is for. */

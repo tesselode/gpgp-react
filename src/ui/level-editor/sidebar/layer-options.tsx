@@ -1,9 +1,9 @@
 import React from 'react';
 import { Form, FormGroup, Input, Label } from 'reactstrap';
-import Level from '../../../data/level';
-import SidebarSection from './sidebar-section';
 import { isTileLayer } from '../../../data/layer/tile-layer';
+import Level from '../../../data/level';
 import Project from '../../../data/project';
+import SidebarSection from './sidebar-section';
 
 export interface Props {
 	/** The currently opened level. */

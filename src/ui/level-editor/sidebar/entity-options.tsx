@@ -1,10 +1,10 @@
-import React from 'react';
-import Project, { getProjectEntity } from '../../../data/project';
-import { EntityLayerItem } from '../../../data/layer/entity-layer';
-import SidebarSection from './sidebar-section';
-import { Form, FormGroup, Label, Input, Col, Button } from 'reactstrap';
 import Octicon, { Trashcan } from '@githubprimer/octicons-react';
+import React from 'react';
+import { Button, Col, Form, FormGroup, Input, Label } from 'reactstrap';
 import { isNumberEntityParameter } from '../../../data/entity';
+import { EntityLayerItem } from '../../../data/layer/entity-layer';
+import Project, { getProjectEntity } from '../../../data/project';
+import SidebarSection from './sidebar-section';
 
 interface Props {
 	project: Project;
@@ -40,6 +40,6 @@ const EntityOptions = (props: Props) => {
 			<Octicon icon={Trashcan} />
 		</Button>
 	</SidebarSection>;
-}
+};
 
 export default EntityOptions;

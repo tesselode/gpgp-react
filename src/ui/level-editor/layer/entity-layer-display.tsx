@@ -1,8 +1,8 @@
 import React from 'react';
-import Project, { getProjectEntity } from '../../../data/project';
-import Level from '../../../data/level';
 import Image from '../../../data/image-data';
 import EntityLayer, { EntityLayerItem } from '../../../data/layer/entity-layer';
+import Level from '../../../data/level';
+import Project, { getProjectEntity } from '../../../data/project';
 
 export interface Props {
 	/** The project the level is for. */
