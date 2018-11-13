@@ -1,4 +1,4 @@
-import Tileset from "../data/tileset";
+import Tileset, { ExportedTilesetData } from "../data/tileset";
 
 /** The data used by the Project class. */
 export interface ProjectData {
@@ -15,7 +15,27 @@ export interface ProjectData {
 	/** The maximum height of levels in this project (in tiles). */
 	readonly maxMapHeight: number;
 	/** A list of the tilesets that can be used by levels in this project. */
-	tilesets: Tileset[];
+	readonly tilesets: Tileset[];
+	/** A list of the entities that can be used by levels in this project. */
+	// entities: Entity[];
+}
+
+/** The data used to save project data to a file. */
+export interface ExportedProjectData {
+	/** The name of the project. */
+	name: string;
+	/** The tile size of levels in this project (in pixels). */
+	tileSize: number;
+	/** The default width of levels in this project (in tiles). */
+	defaultMapWidth: number;
+	/** The default height of levels in this project (in tiles). */
+	defaultMapHeight: number;
+	/** The maximum width of levels in this project (in tiles). */
+	maxMapWidth: number;
+	/** The maximum height of levels in this project (in tiles). */
+	maxMapHeight: number;
+	/** A list of the tilesets that can be used by levels in this project. */
+	tilesets: ExportedTilesetData[];
 	/** A list of the entities that can be used by levels in this project. */
 	// entities: Entity[];
 }
@@ -101,5 +121,29 @@ export default class Project {
 		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
 		tilesets[tilesetIndex] = tileset;
 		return new Project({...this.data, tilesets});
+	}
+
+	public static Import(data: ExportedProjectData, projectFilePath: string): Project {
+		return new Project({
+			name: data.name,
+			tileSize: data.tileSize,
+			defaultMapWidth: data.defaultMapWidth,
+			defaultMapHeight: data.defaultMapHeight,
+			maxMapWidth: data.maxMapWidth,
+			maxMapHeight: data.maxMapHeight,
+			tilesets: data.tilesets.map(tilesetData => Tileset.Import(tilesetData, projectFilePath)),
+		});
+	}
+
+	public export(projectFilePath: string): ExportedProjectData {
+		return {
+			name: this.data.name,
+			tileSize: this.data.tileSize,
+			defaultMapWidth: this.data.defaultMapWidth,
+			defaultMapHeight: this.data.defaultMapHeight,
+			maxMapWidth: this.data.maxMapWidth,
+			maxMapHeight: this.data.maxMapHeight,
+			tilesets: this.data.tilesets.map(tileset => tileset.export(projectFilePath)),
+		};
 	}
 }

@@ -16,7 +16,7 @@ import {
 	TabPane,
 } from 'reactstrap';
 import Level, { importLevel } from '../data/Level';
-import Project from '../data/Project';
+import Project, { ExportedProjectData } from '../data/Project';
 import AppTab from './app-tab';
 import './app.css';
 import LevelEditor from './level-editor/level-editor';
@@ -98,8 +98,8 @@ export default class App extends React.Component<{}, State> {
 						remote.dialog.showErrorBox('Error opening project', 'The project could not be opened.');
 						return;
 					}
-					const project: Project = JSON.parse(data.toString());
-					//this.onOpenProjectEditor(importProject(project, path), path);
+					const projectData: ExportedProjectData = JSON.parse(data.toString());
+					this.onOpenProjectEditor(Project.Import(projectData, path), path);
 				});
 			});
 		});
@@ -140,8 +140,8 @@ export default class App extends React.Component<{}, State> {
 							remote.dialog.showErrorBox('Error opening project', "The level's project file could not be opened.");
 							return;
 						}
-						// const project = importProject(JSON.parse(data.toString()), level.projectFilePath);
-						// this.onOpenLevelEditor(project, level.projectFilePath, level, path);
+						const project = Project.Import(JSON.parse(data.toString()), level.projectFilePath);
+						this.onOpenLevelEditor(project, level.projectFilePath, level, path);
 					});
 				});
 			});

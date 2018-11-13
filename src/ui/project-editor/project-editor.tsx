@@ -28,7 +28,7 @@ export enum ProjectEditorTab {
 }
 
 export interface Props {
-	/** The loaded project data, if a project was opened. */
+	/** The loaded project, if a project was opened. */
 	project?: Project;
 	/** The path to the project file, if a project was opened. */
 	projectFilePath?: string;
@@ -39,7 +39,7 @@ export interface Props {
 }
 
 export interface State {
-	/** The current project data. */
+	/** The current project. */
 	project: Project;
 	/** Whether there are unsaved changes to the project. */
 	unsavedChanges: boolean;
@@ -88,16 +88,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 		}*/
 	}
 
-	/*private modifyProject(f: (project: Project) => void): void {
-		const project = deepCopyObject(this.state.project);
-		f(project);
-		this.setState({
-			project,
-			unsavedChanges: true,
-		}, () => {this.updateTabTitle(); });
-		this.loadImages();
-	}*/
-
 	private setProject(project: Project) {
 		this.setState({
 			project,
@@ -111,7 +101,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 	}
 
 	public save(saveAs = false) {
-		/*let projectFilePath = this.state.projectFilePath;
+		let projectFilePath = this.state.projectFilePath;
 		if (!projectFilePath || saveAs) {
 			const chosenSaveLocation = remote.dialog.showSaveDialog({
 				filters: [
@@ -121,8 +111,8 @@ export default class ProjectEditor extends AppTab<Props, State> {
 			if (!chosenSaveLocation) return;
 			projectFilePath = chosenSaveLocation;
 		}
-		const project = exportProject(this.state.project, projectFilePath);
-		fs.writeFile(projectFilePath, JSON.stringify(project), (error) => {
+		const projectData = this.state.project.export(projectFilePath);
+		fs.writeFile(projectFilePath, JSON.stringify(projectData), (error) => {
 			if (error) {
 				remote.dialog.showErrorBox('Error saving project', 'The project could not be saved.');
 				return;
@@ -131,7 +121,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 				projectFilePath,
 				unsavedChanges: false,
 			}, () => {this.updateTabTitle(); });
-		});*/
+		});
 	}
 
 	public render() {
