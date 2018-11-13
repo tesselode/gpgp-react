@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import { Row } from 'reactstrap';
 import Col from 'reactstrap/lib/Col';
 import { newEntity } from '../../data/entity';
@@ -76,3 +76,4 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 		</Row>;
 	}
 }
+*/

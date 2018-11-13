@@ -14,7 +14,6 @@ import {
 } from 'reactstrap';
 import Image from '../../data/image-data';
 import Project from '../../data/project';
-import { newTileset } from '../../data/tileset';
 import { shiftDown, shiftUp } from '../../util';
 import Grid from '../grid';
 import ItemList from './item-list';
@@ -23,7 +22,7 @@ export interface Props {
 	focused: boolean;
 	project: Project;
 	images: Map<string, Image>;
-	modifyProject: (f: (project: Project) => void) => void;
+	setProject: (project: Project) => void;
 }
 
 export interface State {
@@ -44,50 +43,45 @@ export default class ProjectTilesetsTab extends React.Component<Props, State> {
 				{name: 'Images', extensions: ['jpg', 'png']},
 			],
 		}, paths => {
-			if (paths)
-				this.props.modifyProject(project => {
-					project.tilesets[this.state.selectedTilesetIndex].imagePath = paths[0];
-				});
+			if (paths) {
+				const tileset = this.props.project.data.tilesets[this.state.selectedTilesetIndex];
+				this.props.setProject(this.props.project.setTileset(
+					this.state.selectedTilesetIndex,
+					tileset.setImagePath(paths[0]),
+				));
+			}
 		});
 	}
 
 	private renderTilesetPreview() {
 		if (!this.props.focused) return;
-		const selectedTileset = this.props.project.tilesets[this.state.selectedTilesetIndex];
-		const selectedTilesetImage: Image = this.props.images.get(selectedTileset.imagePath);
+		const selectedTileset = this.props.project.data.tilesets[this.state.selectedTilesetIndex];
+		const selectedTilesetImage: Image = this.props.images.get(selectedTileset.data.imagePath);
 		if (!selectedTilesetImage) return;
 		if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>;
 		return <Grid
-			tileSize={this.props.project.tileSize}
-			width={Math.ceil(selectedTilesetImage.width / this.props.project.tileSize)}
-			height={Math.ceil(selectedTilesetImage.height / this.props.project.tileSize)}
+			tileSize={this.props.project.data.tileSize}
+			width={Math.ceil(selectedTilesetImage.width / this.props.project.data.tileSize)}
+			height={Math.ceil(selectedTilesetImage.height / this.props.project.data.tileSize)}
 		>
 			<img src={selectedTilesetImage.data} />
 		</Grid>;
 	}
 
 	public render() {
-		const selectedTileset = this.props.project.tilesets[this.state.selectedTilesetIndex];
+		const selectedTileset = this.props.project.data.tilesets[this.state.selectedTilesetIndex];
 		return <Row>
 			<Col md={4}>
 				<ItemList
 					title='Tilesets'
 					selectedItemIndex={this.state.selectedTilesetIndex}
-					items={this.props.project.tilesets}
+					items={this.props.project.data.tilesets}
 					onSelectItem={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
-					onAddItem={() => this.props.modifyProject(project => {
-						project.tilesets.push(newTileset());
-					})}
-					onRemoveItem={tilesetIndex => this.props.modifyProject(project => {
-						project.tilesets.splice(tilesetIndex, 1);
-					})}
-					onMoveItemUp={tilesetIndex => this.props.modifyProject(project => {
-						shiftUp(project.tilesets, tilesetIndex);
-					})}
-					onMoveItemDown={tilesetIndex => this.props.modifyProject(project => {
-						shiftDown(project.tilesets, tilesetIndex);
-					})}
-					renderItem={tileset => tileset.name}
+					onAddItem={() => this.props.setProject(this.props.project.addTileset())}
+					onRemoveItem={tilesetIndex => this.props.setProject(this.props.project.removeTileset(tilesetIndex))}
+					onMoveItemUp={tilesetIndex => this.props.setProject(this.props.project.moveTilesetUp(tilesetIndex))}
+					onMoveItemDown={tilesetIndex => this.props.setProject(this.props.project.moveTilesetDown(tilesetIndex))}
+					renderItem={tileset => tileset.data.name}
 				/>
 			</Col>
 			{selectedTileset && <Col md={8} key={this.state.selectedTilesetIndex}>
@@ -96,10 +90,11 @@ export default class ProjectTilesetsTab extends React.Component<Props, State> {
 						<Label md={2}>Tileset name</Label>
 						<Col md={10}>
 							<Input
-								value={selectedTileset.name}
-								onChange={event => this.props.modifyProject(project => {
-									project.tilesets[this.state.selectedTilesetIndex].name = event.target.value;
-								})}
+								value={selectedTileset.data.name}
+								onChange={event => this.props.setProject(this.props.project.setTileset(
+									this.state.selectedTilesetIndex,
+									selectedTileset.setName(event.target.value),
+								))}
 							/>
 						</Col>
 					</FormGroup>
@@ -116,7 +111,7 @@ export default class ProjectTilesetsTab extends React.Component<Props, State> {
 								</InputGroupAddon>
 								<Input
 									disabled
-									value={selectedTileset.imagePath}
+									value={selectedTileset.data.imagePath}
 								/>
 							</InputGroup>
 						</Col>

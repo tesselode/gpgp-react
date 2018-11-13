@@ -23,17 +23,17 @@ export default class TileLayerDisplay extends React.Component<Props> {
 
 	private renderCanvas() {
 		const canvas = this.canvasRef.current;
-		canvas.width = this.props.level.width * this.props.project.tileSize;
-		canvas.height = this.props.level.height * this.props.project.tileSize;
+		canvas.width = this.props.level.width * this.props.project.data.tileSize;
+		canvas.height = this.props.level.height * this.props.project.data.tileSize;
 		const context = canvas.getContext('2d');
 		for (const item of this.props.layer.items) {
-			const sx = item.tileX * this.props.project.tileSize;
-			const sy = item.tileY * this.props.project.tileSize;
-			const x = item.x * this.props.project.tileSize;
-			const y = item.y * this.props.project.tileSize;
+			const sx = item.tileX * this.props.project.data.tileSize;
+			const sy = item.tileY * this.props.project.data.tileSize;
+			const x = item.x * this.props.project.data.tileSize;
+			const y = item.y * this.props.project.data.tileSize;
 			if (this.props.tilesetImage && this.props.tilesetImage.element)
-				context.drawImage(this.props.tilesetImage.element, sx, sy, this.props.project.tileSize, this.props.project.tileSize,
-					x, y, this.props.project.tileSize, this.props.project.tileSize);
+				context.drawImage(this.props.tilesetImage.element, sx, sy, this.props.project.data.tileSize,
+					this.props.project.data.tileSize, x, y, this.props.project.data.tileSize, this.props.project.data.tileSize);
 		}
 	}
 

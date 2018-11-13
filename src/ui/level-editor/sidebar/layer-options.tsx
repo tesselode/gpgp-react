@@ -51,10 +51,10 @@ export default (props: Props) => {
 						}
 					})}
 				>
-					{props.project.tilesets.map((tileset, i) => <option
+					{props.project.data.tilesets.map((tileset, i) => <option
 						key={i}
 					>
-						{tileset.name}
+						{tileset.data.name}
 					</option>)}
 				</Input>
 			</FormGroup>}

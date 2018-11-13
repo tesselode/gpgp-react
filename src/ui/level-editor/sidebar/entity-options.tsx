@@ -1,4 +1,4 @@
-import Octicon, { Trashcan } from '@githubprimer/octicons-react';
+/* import Octicon, { Trashcan } from '@githubprimer/octicons-react';
 import React from 'react';
 import { Button, Col, Form, FormGroup, Input, Label } from 'reactstrap';
 import { isNumberEntityParameter, isSwitchEntityParameter, isTextEntityParameter } from '../../../data/entity';
@@ -90,3 +90,4 @@ const EntityOptions = (props: Props) => {
 };
 
 export default EntityOptions;
+*/

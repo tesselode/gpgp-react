@@ -80,9 +80,9 @@ export default class TilePicker extends React.Component<Props, State> {
 					}}
 				>
 					<Grid
-						tileSize={this.props.project.tileSize}
-						width={Math.ceil(this.props.tilesetImageData.width / this.props.project.tileSize)}
-						height={Math.ceil(this.props.tilesetImageData.height / this.props.project.tileSize)}
+						tileSize={this.props.project.data.tileSize}
+						width={Math.ceil(this.props.tilesetImageData.width / this.props.project.data.tileSize)}
+						height={Math.ceil(this.props.tilesetImageData.height / this.props.project.data.tileSize)}
 						startingZoom={1}
 						onClick={this.onClick.bind(this)}
 						onRelease={this.onRelease.bind(this)}
@@ -93,10 +93,10 @@ export default class TilePicker extends React.Component<Props, State> {
 							style={{
 								position: 'absolute',
 								zIndex: 2,
-								left: normalizedSelection.l * this.props.project.tileSize + 'px',
-								top: normalizedSelection.t * this.props.project.tileSize + 'px',
-								width: this.props.project.tileSize * (normalizedSelection.r - normalizedSelection.l + 1) + 1 + 'px',
-								height: this.props.project.tileSize * (normalizedSelection.b - normalizedSelection.t + 1) + 1 + 'px',
+								left: normalizedSelection.l * this.props.project.data.tileSize + 'px',
+								top: normalizedSelection.t * this.props.project.data.tileSize + 'px',
+								width: this.props.project.data.tileSize * (normalizedSelection.r - normalizedSelection.l + 1) + 1 + 'px',
+								height: this.props.project.data.tileSize * (normalizedSelection.b - normalizedSelection.t + 1) + 1 + 'px',
 								border: '1px solid red',
 								pointerEvents: 'none',
 							}}

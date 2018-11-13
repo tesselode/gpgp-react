@@ -1,8 +1,7 @@
 import React from 'react';
 import Image from '../../../data/image-data';
-import EntityLayer, { EntityLayerItem } from '../../../data/layer/entity-layer';
 import Level from '../../../data/level';
-import Project, { getProjectEntity } from '../../../data/project';
+import Project from '../../../data/project';
 
 export interface Props {
 	/** The project the level is for. */
@@ -12,7 +11,7 @@ export interface Props {
 	/** The level the layer belongs to. */
 	level: Level;
 	/** The entity layer to display. */
-	layer: EntityLayer;
+	//layer: EntityLayer;
 	/** The depth the layer should be displayed at. */
 	order: number;
 	/** The currently selected entity layer item. */
@@ -20,7 +19,7 @@ export interface Props {
 }
 
 /** A visual representation of an entity layer in a level. */
-export default class EntityLayerDisplay extends React.Component<Props> {
+/*export default class EntityLayerDisplay extends React.Component<Props> {
 	private canvasRef = React.createRef<HTMLCanvasElement>();
 
 	constructor(props) {
@@ -84,3 +83,4 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 		</div>;
 	}
 }
+*/

@@ -1,33 +1,28 @@
-import path from 'path';
-import { deepCopyObject } from "../util";
-import Entity from './entity';
-import Tileset from "./tileset";
+import Tileset from "../data/tileset";
 
-/** A project containing the settings for a game's levels. */
-export default interface Project {
+/** The data used by the Project class. */
+export interface ProjectData {
 	/** The name of the project. */
-	name: string;
+	readonly name: string;
 	/** The tile size of levels in this project (in pixels). */
-	tileSize: number;
+	readonly tileSize: number;
 	/** The default width of levels in this project (in tiles). */
-	defaultMapWidth: number;
+	readonly defaultMapWidth: number;
 	/** The default height of levels in this project (in tiles). */
-	defaultMapHeight: number;
+	readonly defaultMapHeight: number;
 	/** The maximum width of levels in this project (in tiles). */
-	maxMapWidth: number;
+	readonly maxMapWidth: number;
 	/** The maximum height of levels in this project (in tiles). */
-	maxMapHeight: number;
+	readonly maxMapHeight: number;
 	/** A list of the tilesets that can be used by levels in this project. */
 	tilesets: Tileset[];
 	/** A list of the entities that can be used by levels in this project. */
-	entities: Entity[];
+	// entities: Entity[];
 }
 
-/**
- * Creates a new, empty project.
- */
-export function newProject(): Project {
-	return {
+/** A project containing the settings for a game's levels. */
+export default class Project {
+	public readonly data: ProjectData = {
 		name: 'New project',
 		tileSize: 16,
 		defaultMapWidth: 16,
@@ -35,55 +30,76 @@ export function newProject(): Project {
 		maxMapWidth: 1000,
 		maxMapHeight: 1000,
 		tilesets: [],
-		entities: [],
 	};
-}
 
-export function getProjectImagePaths(project: Project): string[] {
-	const paths: string[] = [];
-	for (const tileset of project.tilesets)
-		if (tileset.imagePath) paths.push(tileset.imagePath);
-	for (const entity of project.entities)
-		if (entity.imagePath) paths.push(entity.imagePath);
-	return paths;
-}
+	constructor(data?: Partial<ProjectData>) {
+		this.data = {...this.data, ...data};
+	}
 
-export function getProjectTileset(project: Project, tilesetName: string): Tileset {
-	return project.tilesets.find(tileset => tileset.name === tilesetName);
-}
+	public getImagePaths(): string[] {
+		const paths: string[] = [];
+		for (const tileset of this.data.tilesets)
+			if (tileset.data.imagePath) paths.push(tileset.data.imagePath);
+		return paths;
+	}
 
-export function getProjectEntity(project: Project, entityName: string): Entity {
-	return project.entities.find(entity => entity.name === entityName);
-}
+	public getTileset(tilesetName: string): Tileset {
+		return this.data.tilesets.find(tileset => tileset.data.name === tilesetName);
+	}
 
-/**
- * Imports a project for use after loading it from the filesystem.
- * @param project The project to import.
- * @param projectFilePath The path to the project file.
- */
-export function importProject(project: Project, projectFilePath: string): Project {
-	const importedProject = deepCopyObject(project);
-	for (const tileset of importedProject.tilesets)
-		if (tileset.imagePath)
-			tileset.imagePath = path.resolve(path.dirname(projectFilePath), tileset.imagePath);
-	for (const entity of importedProject.entities)
-		if (entity.imagePath)
-			entity.imagePath = path.resolve(path.dirname(projectFilePath), entity.imagePath);
-	return importedProject;
-}
+	public setName(name: string): Project {
+		return new Project({...this.data, name});
+	}
 
-/**
- * Exports a project to be saved as a file.
- * @param project The project to export.
- * @param projectFilePath The path the project will be saved to.
- */
-export function exportProject(project: Project, projectFilePath: string): Project {
-	const exportedProject = deepCopyObject(project);
-	for (const tileset of exportedProject.tilesets)
-		if (tileset.imagePath)
-			tileset.imagePath = path.relative(path.dirname(projectFilePath), tileset.imagePath);
-	for (const entity of exportedProject.entities)
-		if (entity.imagePath)
-			entity.imagePath = path.relative(path.dirname(projectFilePath), entity.imagePath);
-	return exportedProject;
+	public setTileSize(tileSize: number): Project {
+		return new Project({...this.data, tileSize});
+	}
+
+	public setDefaultMapWidth(defaultMapWidth: number): Project {
+		return new Project({...this.data, defaultMapWidth});
+	}
+
+	public setDefaultMapHeight(defaultMapHeight: number): Project {
+		return new Project({...this.data, defaultMapHeight});
+	}
+
+	public setMaxMapWidth(maxMapWidth: number): Project {
+		return new Project({...this.data, maxMapWidth});
+	}
+
+	public setMaxMapHeight(maxMapHeight: number): Project {
+		return new Project({...this.data, maxMapHeight});
+	}
+
+	public addTileset(): Project {
+		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
+		tilesets.push(new Tileset());
+		return new Project({...this.data, tilesets});
+	}
+
+	public removeTileset(tilesetIndex: number): Project {
+		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
+		tilesets.splice(tilesetIndex, 1);
+		return new Project({...this.data, tilesets});
+	}
+
+	public moveTilesetUp(tilesetIndex: number): Project {
+		if (!(tilesetIndex > 0 && this.data.tilesets[tilesetIndex])) return this;
+		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
+		tilesets.splice(tilesetIndex - 1, 0, tilesets.splice(tilesetIndex, 1)[0]);
+		return new Project({...this.data, tilesets});
+	}
+
+	public moveTilesetDown(tilesetIndex: number): Project {
+		if (!(tilesetIndex < this.data.tilesets.length - 1 && this.data.tilesets[tilesetIndex])) return this;
+		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
+		tilesets.splice(tilesetIndex + 1, 0, tilesets.splice(tilesetIndex, 1)[0]);
+		return new Project({...this.data, tilesets});
+	}
+
+	public setTileset(tilesetIndex: number, tileset: Tileset): Project {
+		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
+		tilesets[tilesetIndex] = tileset;
+		return new Project({...this.data, tilesets});
+	}
 }

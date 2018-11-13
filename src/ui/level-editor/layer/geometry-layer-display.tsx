@@ -20,15 +20,15 @@ export default class GeometryLayerDisplay extends React.Component<Props> {
 
 	private renderCanvas() {
 		const canvas = this.canvasRef.current;
-		canvas.width = this.props.level.width * this.props.project.tileSize;
-		canvas.height = this.props.level.height * this.props.project.tileSize;
+		canvas.width = this.props.level.width * this.props.project.data.tileSize;
+		canvas.height = this.props.level.height * this.props.project.data.tileSize;
 		const context = canvas.getContext('2d');
 		context.fillStyle = 'rgba(39, 187, 232, .33)';
 		for (const item of this.props.layer.items)
-			context.fillRect(item.x * this.props.project.tileSize,
-				item.y * this.props.project.tileSize,
-				this.props.project.tileSize,
-				this.props.project.tileSize);
+			context.fillRect(item.x * this.props.project.data.tileSize,
+				item.y * this.props.project.data.tileSize,
+				this.props.project.data.tileSize,
+				this.props.project.data.tileSize);
 	}
 
 	public componentDidMount() {

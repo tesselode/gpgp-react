@@ -28,8 +28,8 @@ export default interface Level {
 export function newLevel(project: Project, projectFilePath: string): Level {
 	return {
 		projectFilePath,
-		width: project.defaultMapWidth,
-		height: project.defaultMapHeight,
+		width: project.data.defaultMapWidth,
+		height: project.data.defaultMapHeight,
 		layers: [newGeometryLayer()],
 	};
 }

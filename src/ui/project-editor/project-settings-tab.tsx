@@ -12,7 +12,7 @@ import Project from '../../data/project';
 
 export interface Props {
 	project: Project;
-	modifyProject: (f: (project: Project) => void) => void;
+	setProject: (project: Project) => void;
 }
 
 export default (props: Props) => <Form>
@@ -20,8 +20,8 @@ export default (props: Props) => <Form>
 		<Label md={2}>Project name</Label>
 		<Col md={10}>
 			<Input
-				value={props.project.name}
-				onChange={event => props.modifyProject(project => {project.name = event.target.value; })}
+				value={props.project.data.name}
+				onChange={event => props.setProject(props.project.setName(event.target.value))}
 			/>
 		</Col>
 	</FormGroup>
@@ -31,11 +31,11 @@ export default (props: Props) => <Form>
 			<InputGroup>
 				<Input
 					type='number'
-					value={props.project.tileSize}
+					value={props.project.data.tileSize}
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.modifyProject(project => {project.tileSize = value; });
+							props.setProject(props.project.setTileSize(value));
 						}
 					}}
 				/>
@@ -49,11 +49,11 @@ export default (props: Props) => <Form>
 			<InputGroup>
 				<Input
 					type='number'
-					value={props.project.defaultMapWidth}
+					value={props.project.data.defaultMapWidth}
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.modifyProject(project => {project.defaultMapWidth = value; });
+							props.setProject(props.project.setDefaultMapWidth(value));
 						}
 					}}
 				/>
@@ -67,11 +67,11 @@ export default (props: Props) => <Form>
 			<InputGroup>
 				<Input
 					type='number'
-					value={props.project.defaultMapHeight}
+					value={props.project.data.defaultMapHeight}
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.modifyProject(project => {project.defaultMapHeight = value; });
+							props.setProject(props.project.setDefaultMapHeight(value));
 						}
 					}}
 				/>
@@ -85,11 +85,11 @@ export default (props: Props) => <Form>
 			<InputGroup>
 				<Input
 					type='number'
-					value={props.project.maxMapWidth}
+					value={props.project.data.maxMapWidth}
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.modifyProject(project => {project.maxMapWidth = value; });
+							props.setProject(props.project.setMaxMapWidth(value));
 						}
 					}}
 				/>
@@ -103,11 +103,11 @@ export default (props: Props) => <Form>
 			<InputGroup>
 				<Input
 					type='number'
-					value={props.project.maxMapHeight}
+					value={props.project.data.maxMapHeight}
 					onChange={(event) => {
 						const value = Number(event.target.value);
 						if (!isNaN(value) && value > 0) {
-							props.modifyProject(project => {project.maxMapHeight = value; });
+							props.setProject(props.project.setMaxMapHeight(value));
 						}
 					}}
 				/>

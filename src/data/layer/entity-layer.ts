@@ -1,4 +1,4 @@
-import Project, { getProjectEntity } from "../project";
+/* import Project, { getProjectEntity } from "../project";
 import Layer, { LayerType } from "./layer";
 
 export interface EntityLayerItem {
@@ -46,3 +46,4 @@ export function getItemAt(project: Project, layer: EntityLayer, x: number, y: nu
 		return x >= l && x <= r && y >= t && y <= b;
 	});
 }
+*/

@@ -4,12 +4,11 @@ import path from 'path';
 import React from 'react';
 import { Col, Container, Progress, Row } from 'reactstrap';
 import Image, { loadImage } from '../../data/image-data';
-import EntityLayer, { EntityLayerItem, getItemAt, isEntityLayer, placeEntity } from '../../data/layer/entity-layer';
 import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
 import { LayerType } from '../../data/layer/layer';
 import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
 import Level, { exportLevel, newLevel } from '../../data/level';
-import Project, { getProjectImagePaths, getProjectTileset } from '../../data/project';
+import Project from '../../data/project';
 import { deepCopyObject, normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
 import EntityCursor from '../cursor/entity-cursor';
@@ -17,11 +16,8 @@ import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
 import Grid from '../grid';
 import { EditTool } from './edit-tool';
-import EntityLayerDisplay from './layer/entity-layer-display';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import TileLayerDisplay from './layer/tile-layer-display';
-import EntityOptions from './sidebar/entity-options';
-import EntityPicker from './sidebar/entity-picker';
 import HistoryBrowser from './sidebar/history-browser';
 import LayerList from './sidebar/layer-list';
 import LayerOptions from './sidebar/layer-options';
@@ -90,7 +86,7 @@ interface State {
 	/** The currently selected entity layer item. */
 	selectedEntityItemIndex: number;
 	/** The layer that the currently selected entity item is on. */
-	selectedEntityItemLayer?: EntityLayer;
+	// selectedEntityItemLayer?: EntityLayer;
 }
 
 /** The level editor screen, which allows you to create or edit levels. */
@@ -128,7 +124,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	private loadImages() {
-		for (const imagePath of getProjectImagePaths(this.props.project)) {
+		for (const imagePath of this.props.project.getImagePaths()) {
 			this.setState({totalImages: this.state.totalImages + 1});
 			loadImage(imagePath).then(image => {
 				const images = new Map(this.state.images);
@@ -211,13 +207,13 @@ export default class LevelEditor extends AppTab<Props, State> {
 
 	private onClickGrid(button: number): void {
 		const layer = this.getCurrentLevelState().layers[this.state.selectedLayerIndex];
-		if (isEntityLayer(layer)) {
+		/*if (isEntityLayer(layer)) {
 			const itemIndex = getItemAt(this.props.project, layer, this.state.cursorX, this.state.cursorY);
 			this.setState({
 				selectedEntityItemIndex: itemIndex,
 				selectedEntityItemLayer: itemIndex !== -1 ? layer : null,
 			});
-		} else {
+		} else*/ {
 			switch (button) {
 				case 0:
 					this.setState({cursorState: CursorState.Place});
@@ -262,9 +258,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 		if (button !== 0) return;
 		this.modifyLevel(level => {
 			const layer = level.layers[this.state.selectedLayerIndex];
-			if (!isEntityLayer(layer)) return false;
-			placeEntity(layer, this.props.project.entities[this.state.selectedEntityIndex].name,
-				this.state.cursorX, this.state.cursorY);
+			// if (!isEntityLayer(layer)) return false;
+			/*placeEntity(layer, this.props.project.entities[this.state.selectedEntityIndex].name,
+				this.state.cursorX, this.state.cursorY);*/
 			return 'Place entity';
 		});
 	}
@@ -355,7 +351,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
 				<Col md={3} style={{height: '90vh', overflowY: 'auto'}}>
-					{!isEntityLayer(selectedLayer) && <ToolPalette
+					{/*!isEntityLayer(selectedLayer) && */<ToolPalette
 						tool={this.state.tool}
 						onToolChanged={(tool) => this.setState({tool})}
 					/>}
@@ -386,17 +382,17 @@ export default class LevelEditor extends AppTab<Props, State> {
 						project={this.props.project}
 						tilesetName={selectedLayer.tilesetName}
 						tilesetImageData={this.state.images.get(
-							getProjectTileset(this.props.project, selectedLayer.tilesetName).imagePath,
+							this.props.project.getTileset(selectedLayer.tilesetName).data.imagePath,
 						)}
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
 					/>}
-					{isEntityLayer(selectedLayer) && <EntityPicker
+					{/*isEntityLayer(selectedLayer) && <EntityPicker
 						project={this.props.project}
 						images={this.state.images}
 						selectedEntityIndex={this.state.selectedEntityIndex}
 						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
-					/>}
-					{this.state.selectedEntityItemIndex !== -1 && <EntityOptions
+					/>*/}
+					{/*this.state.selectedEntityItemIndex !== -1 && <EntityOptions
 						project={this.props.project}
 						layer={this.state.selectedEntityItemLayer}
 						itemIndex={this.state.selectedEntityItemIndex}
@@ -406,7 +402,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 							}, continuedAction);
 						}}
 						onBlur={() => this.setState({continuedAction: false})}
-					/>}
+					/>*/}
 					<HistoryBrowser
 						historyDescriptions={this.state.levelHistoryDescriptions}
 						historyPosition={this.state.levelHistoryPosition}
@@ -417,7 +413,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 				</Col>
 				<Col md={9} style={{height: '90vh', overflowY: 'auto'}}>
 					<Grid
-						tileSize={this.props.project.tileSize}
+						tileSize={this.props.project.data.tileSize}
 						width={level.width}
 						height={level.height}
 						background={level.hasBackgroundColor && level.backgroundColor}
@@ -438,11 +434,11 @@ export default class LevelEditor extends AppTab<Props, State> {
 									level={level}
 									layer={layer}
 									tilesetImage={this.state.images.get(
-										getProjectTileset(this.props.project, layer.tilesetName).imagePath,
+										this.props.project.getTileset(layer.tilesetName).data.imagePath,
 									)}
 									order={order}
 								/>;
-							else if (isEntityLayer(layer))
+							/*else if (isEntityLayer(layer))
 								return <EntityLayerDisplay
 									key={i}
 									project={this.props.project}
@@ -451,7 +447,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 									layer={layer}
 									order={order}
 									selectedEntityItemIndex={this.state.selectedEntityItemIndex}
-								/>;
+								/>;*/
 							else if (isGeometryLayer(layer))
 								return <GeometryLayerDisplay
 									key={i}
@@ -464,22 +460,22 @@ export default class LevelEditor extends AppTab<Props, State> {
 						})}
 						{
 							isTileLayer(selectedLayer) ? <TileCursor
-								tileSize={this.props.project.tileSize}
+								tileSize={this.props.project.data.tileSize}
 								cursor={normalizeRect(this.state.cursorRect)}
 								removing={this.state.cursorState === CursorState.Remove}
 								tool={this.state.tool}
 								tilesetImage={this.state.images.get(
-									getProjectTileset(this.props.project, selectedLayer.tilesetName).imagePath,
+									this.props.project.getTileset(selectedLayer.tilesetName).data.imagePath,
 								)}
 								tilesetSelection={this.state.tilesetSelection}
-							/> : isEntityLayer(selectedLayer) ? <EntityCursor
-								tileSize={this.props.project.tileSize}
+							/> /*: isEntityLayer(selectedLayer) ? <EntityCursor
+								tileSize={this.props.project.data.tileSize}
 								x={this.state.cursorX}
 								y={this.state.cursorY}
 								entity={this.props.project.entities[this.state.selectedEntityIndex]}
 								images={this.state.images}
-							/> : <GenericCursor
-								tileSize={this.props.project.tileSize}
+							/>*/ : <GenericCursor
+								tileSize={this.props.project.data.tileSize}
 								cursor={normalizeRect(this.state.cursorRect)}
 								removing={this.state.cursorState === CursorState.Remove}
 							/>

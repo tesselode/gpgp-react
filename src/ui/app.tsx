@@ -16,7 +16,7 @@ import {
 	TabPane,
 } from 'reactstrap';
 import Level, { importLevel } from '../data/Level';
-import Project, { importProject } from '../data/Project';
+import Project from '../data/Project';
 import AppTab from './app-tab';
 import './app.css';
 import LevelEditor from './level-editor/level-editor';
@@ -99,7 +99,7 @@ export default class App extends React.Component<{}, State> {
 						return;
 					}
 					const project: Project = JSON.parse(data.toString());
-					this.onOpenProjectEditor(importProject(project, path), path);
+					//this.onOpenProjectEditor(importProject(project, path), path);
 				});
 			});
 		});
@@ -115,7 +115,7 @@ export default class App extends React.Component<{}, State> {
 		};
 		tabs.push(newTab);
 		const tabTitles = this.state.tabTitles.slice(0, this.state.tabTitles.length);
-		tabTitles.push(project ? project.name : 'New project');
+		tabTitles.push(project ? project.data.name : 'New project');
 		this.setState({tabs, tabTitles}, () => {
 			this.setState({activeTab: this.state.tabs.length - 1});
 		});
@@ -140,8 +140,8 @@ export default class App extends React.Component<{}, State> {
 							remote.dialog.showErrorBox('Error opening project', "The level's project file could not be opened.");
 							return;
 						}
-						const project = importProject(JSON.parse(data.toString()), level.projectFilePath);
-						this.onOpenLevelEditor(project, level.projectFilePath, level, path);
+						// const project = importProject(JSON.parse(data.toString()), level.projectFilePath);
+						// this.onOpenLevelEditor(project, level.projectFilePath, level, path);
 					});
 				});
 			});

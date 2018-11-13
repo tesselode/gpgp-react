@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import Image from '../../../data/image-data';
 import Project from '../../../data/project';
@@ -43,3 +43,4 @@ const EntityPicker = (props: Props) => <SidebarSection
 </SidebarSection>;
 
 export default EntityPicker;
+*/
