@@ -17,14 +17,12 @@ import Image, { loadImage } from '../../data/image-data';
 import Project from '../../data/project';
 import { deepCopyObject } from '../../util';
 import AppTab from '../app-tab';
-//import ProjectEntitiesTab from './project-entities-tab';
 import ProjectSettingsTab from './project-settings-tab';
 import ProjectTilesetsTab from './project-tilesets-tab';
 
 export enum ProjectEditorTab {
 	Settings,
 	Tilesets,
-	Entities,
 }
 
 export interface Props {
@@ -78,14 +76,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 					this.setState({images});
 				});
 		}
-		/*for (const entity of this.state.project.entities) {
-			if (entity.imagePath && !this.state.images.get(entity.imagePath))
-				loadImage(entity.imagePath).then(image => {
-					const images = new Map(this.state.images);
-					images.set(entity.imagePath, image);
-					this.setState({images});
-				});
-		}*/
 	}
 
 	private setProject(project: Project) {
@@ -172,14 +162,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						Tilesets
 					</NavLink>
 				</NavItem>
-				<NavItem>
-					<NavLink
-						active={this.state.activeTab === ProjectEditorTab.Entities}
-						onClick={() => this.setState({activeTab: ProjectEditorTab.Entities})}
-					>
-						Entities
-					</NavLink>
-				</NavItem>
 			</Nav>
 			<TabContent
 				activeTab={this.state.activeTab}
@@ -199,13 +181,6 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						setProject={this.setProject.bind(this)}
 					/>
 				</TabPane>
-				{/*<TabPane tabId={ProjectEditorTab.Entities}>
-					<ProjectEntitiesTab
-						project={this.state.project}
-						images={this.state.images}
-						modifyProject={this.modifyProject.bind(this)}
-					/>
-				</TabPane>*/}
 			</TabContent>
 		</div>;
 	}

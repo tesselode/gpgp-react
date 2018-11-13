@@ -96,15 +96,6 @@ export default class LayerList extends React.Component<Props, State> {
 						>
 							Geometry
 						</DropdownItem>
-						{/*this.props.project.entities.length > 0 && <DropdownItem
-							onClick={() => this.props.modifyLevel(level => {
-								level.layers.splice(this.props.selectedLayerIndex, 0, newEntityLayer());
-								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
-								return 'Add entity layer';
-							})}
-						>
-							Entity
-						</DropdownItem>*/}
 						{this.props.project.data.tilesets.map((tileset, i) =>
 							<DropdownItem
 								key={i}

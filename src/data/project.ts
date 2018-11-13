@@ -16,8 +16,6 @@ export interface ProjectData {
 	readonly maxMapHeight: number;
 	/** A list of the tilesets that can be used by levels in this project. */
 	readonly tilesets: Tileset[];
-	/** A list of the entities that can be used by levels in this project. */
-	// entities: Entity[];
 }
 
 /** The data used to save project data to a file. */
@@ -36,8 +34,6 @@ export interface ExportedProjectData {
 	maxMapHeight: number;
 	/** A list of the tilesets that can be used by levels in this project. */
 	tilesets: ExportedTilesetData[];
-	/** A list of the entities that can be used by levels in this project. */
-	// entities: Entity[];
 }
 
 /** A project containing the settings for a game's levels. */
