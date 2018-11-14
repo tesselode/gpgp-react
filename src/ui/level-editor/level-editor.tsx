@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { Col, Container, Progress, Row } from 'reactstrap';
-import Image, { loadImage } from '../../data/image-data';
+import Image, { loadImage } from '../../data/image';
 import GeometryLayer from '../../data/layer/geometry-layer';
 import TileLayer from '../../data/layer/tile-layer';
 import Level from '../../data/level';

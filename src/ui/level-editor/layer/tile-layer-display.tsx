@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from '../../../data/image-data';
+import Image from '../../../data/image';
 import TileLayer from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';

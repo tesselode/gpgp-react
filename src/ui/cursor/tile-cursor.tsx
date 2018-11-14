@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from '../../data/image-data';
+import Image from '../../data/image';
 import { Rect } from '../../util';
 import { EditTool } from '../level-editor/edit-tool';
 import GenericCursor from './generic-cursor';

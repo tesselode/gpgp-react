@@ -13,7 +13,7 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import Image, { loadImage } from '../../data/image-data';
+import Image, { loadImage } from '../../data/image';
 import Project from '../../data/project';
 import AppTab from '../app-tab';
 import ProjectSettingsTab from './project-settings-tab';

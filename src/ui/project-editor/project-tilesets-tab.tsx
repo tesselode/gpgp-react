@@ -12,7 +12,7 @@ import {
 	Label,
 	Row,
 } from 'reactstrap';
-import Image from '../../data/image-data';
+import Image from '../../data/image';
 import Project from '../../data/project';
 import { shiftDown, shiftUp } from '../../util';
 import Grid from '../grid';
