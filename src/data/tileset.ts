@@ -22,7 +22,19 @@ export default class Tileset {
 		name: 'New tileset',
 	};
 
-	constructor(data?: Partial<TilesetData>) {
+	public static New(): Tileset {
+		return new Tileset();
+	}
+
+	public static Import(data: ExportedTilesetData, projectFilePath: string): Tileset {
+		return new Tileset({
+			name: data.name,
+			imagePath: data.imagePath &&
+				path.resolve(path.dirname(projectFilePath), data.imagePath),
+		});
+	}
+
+	private constructor(data?: Partial<TilesetData>) {
 		this.data = {...this.data, ...data};
 	}
 
@@ -32,14 +44,6 @@ export default class Tileset {
 
 	public setImagePath(imagePath: string): Tileset {
 		return new Tileset({...this.data, imagePath});
-	}
-
-	public static Import(data: ExportedTilesetData, projectFilePath: string): Tileset {
-		return new Tileset({
-			name: data.name,
-			imagePath: data.imagePath &&
-				path.resolve(path.dirname(projectFilePath), data.imagePath),
-		});
 	}
 
 	public export(projectFilePath: string): ExportedTilesetData {

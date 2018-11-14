@@ -15,7 +15,6 @@ import {
 } from 'reactstrap';
 import Image, { loadImage } from '../../data/image-data';
 import Project from '../../data/project';
-import { deepCopyObject } from '../../util';
 import AppTab from '../app-tab';
 import ProjectSettingsTab from './project-settings-tab';
 import ProjectTilesetsTab from './project-tilesets-tab';
@@ -54,7 +53,7 @@ export default class ProjectEditor extends AppTab<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			project: this.props.project ? this.props.project : new Project(),
+			project: this.props.project ? this.props.project : Project.New(),
 			unsavedChanges: false,
 			images: new Map<string, Image>(),
 			projectFilePath: this.props.projectFilePath,

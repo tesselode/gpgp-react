@@ -48,7 +48,23 @@ export default class Project {
 		tilesets: [],
 	};
 
-	constructor(data?: Partial<ProjectData>) {
+	public static New(): Project {
+		return new Project();
+	}
+
+	public static Import(data: ExportedProjectData, projectFilePath: string): Project {
+		return new Project({
+			name: data.name,
+			tileSize: data.tileSize,
+			defaultMapWidth: data.defaultMapWidth,
+			defaultMapHeight: data.defaultMapHeight,
+			maxMapWidth: data.maxMapWidth,
+			maxMapHeight: data.maxMapHeight,
+			tilesets: data.tilesets.map(tilesetData => Tileset.Import(tilesetData, projectFilePath)),
+		});
+	}
+
+	private constructor(data?: Partial<ProjectData>) {
 		this.data = {...this.data, ...data};
 	}
 
@@ -89,7 +105,7 @@ export default class Project {
 
 	public addTileset(): Project {
 		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
-		tilesets.push(new Tileset());
+		tilesets.push(Tileset.New());
 		return new Project({...this.data, tilesets});
 	}
 
@@ -117,18 +133,6 @@ export default class Project {
 		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
 		tilesets[tilesetIndex] = tileset;
 		return new Project({...this.data, tilesets});
-	}
-
-	public static Import(data: ExportedProjectData, projectFilePath: string): Project {
-		return new Project({
-			name: data.name,
-			tileSize: data.tileSize,
-			defaultMapWidth: data.defaultMapWidth,
-			defaultMapHeight: data.defaultMapHeight,
-			maxMapWidth: data.maxMapWidth,
-			maxMapHeight: data.maxMapHeight,
-			tilesets: data.tilesets.map(tilesetData => Tileset.Import(tilesetData, projectFilePath)),
-		});
 	}
 
 	public export(projectFilePath: string): ExportedProjectData {

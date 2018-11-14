@@ -25,11 +25,15 @@ export default class GeometryLayer {
 		items: [],
 	};
 
-	public static Import(data: ExportedGeometryLayerData) {
+	public static New(): GeometryLayer {
+		return new GeometryLayer();
+	}
+
+	public static Import(data: ExportedGeometryLayerData): GeometryLayer {
 		return new GeometryLayer(data);
 	}
 
-	constructor(data?: Partial<GeometryLayerData>) {
+	private constructor(data?: Partial<GeometryLayerData>) {
 		this.data = {...this.data, ...data};
 	}
 

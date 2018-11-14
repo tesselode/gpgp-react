@@ -45,7 +45,7 @@ export default class Level {
 			projectFilePath,
 			width: project.data.defaultMapWidth,
 			height: project.data.defaultMapHeight,
-			layers: [new GeometryLayer()],
+			layers: [GeometryLayer.New()],
 		});
 	}
 
@@ -97,7 +97,7 @@ export default class Level {
 
 	public addGeometryLayer(): Level {
 		const layers = this.data.layers.slice(0, this.data.layers.length);
-		layers.push(new GeometryLayer());
+		layers.push(GeometryLayer.New());
 		return new Level(this.project, {...this.data, layers});
 	}
 
