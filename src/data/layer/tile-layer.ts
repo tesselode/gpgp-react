@@ -15,6 +15,14 @@ export interface TileLayerData {
 	readonly items: TileLayerItem[];
 }
 
+export interface ExportedTileLayerData {
+	name: string;
+	type: 'Tile';
+	tilesetName: string;
+	visible: boolean;
+	items: TileLayerItem[];
+}
+
 export default class TileLayer {
 	public readonly data;
 
@@ -25,6 +33,10 @@ export default class TileLayer {
 			visible: true,
 			items: [],
 		});
+	}
+
+	public static Import(data: ExportedTileLayerData) {
+		return new TileLayer(data);
 	}
 
 	private constructor(data: TileLayerData) {
@@ -81,5 +93,9 @@ export default class TileLayer {
 				break;
 		}
 		return new TileLayer({...this.data, items});
+	}
+
+	public export(): ExportedTileLayerData {
+		return {...this.data, type: 'Tile'};
 	}
 }

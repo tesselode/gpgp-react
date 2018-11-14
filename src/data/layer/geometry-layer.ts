@@ -11,12 +11,23 @@ export interface GeometryLayerData {
 	readonly items: GeometryLayerItem[];
 }
 
+export interface ExportedGeometryLayerData {
+	name: string;
+	type: 'Geometry';
+	visible: boolean;
+	items: GeometryLayerItem[];
+}
+
 export default class GeometryLayer {
 	public readonly data: GeometryLayerData = {
 		name: 'New geometry layer',
 		visible: true,
 		items: [],
 	};
+
+	public static Import(data: ExportedGeometryLayerData) {
+		return new GeometryLayer(data);
+	}
 
 	constructor(data?: Partial<GeometryLayerData>) {
 		this.data = {...this.data, ...data};
@@ -46,5 +57,9 @@ export default class GeometryLayer {
 			}
 		}
 		return new GeometryLayer({...this.data, items});
+	}
+
+	public export(): ExportedGeometryLayerData {
+		return {...this.data, type: 'Geometry'};
 	}
 }

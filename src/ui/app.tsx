@@ -15,7 +15,7 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import Level from '../data/Level';
+import Level, { ExportedLevelData } from '../data/Level';
 import Project, { ExportedProjectData } from '../data/Project';
 import AppTab from './app-tab';
 import './app.css';
@@ -122,30 +122,32 @@ export default class App extends React.Component<{}, State> {
 	}
 
 	private onOpenLevel() {
-		/*remote.dialog.showOpenDialog({
+		remote.dialog.showOpenDialog({
 			filters: [
 				{name: 'GPGP levels', extensions: ['gpgp']},
 			],
-		}, paths => {
-			if (!paths) return;
-			paths.forEach(path => {
-				fs.readFile(path, (error, data) => {
+		}, levelFilePaths => {
+			if (!levelFilePaths) return;
+			levelFilePaths.forEach(levelFilePath => {
+				fs.readFile(levelFilePath, (error, data) => {
 					if (error) {
 						remote.dialog.showErrorBox('Error opening level', 'The level could not be opened.');
 						return;
 					}
-					const level = importLevel(JSON.parse(data.toString()), path);
-					fs.readFile(level.projectFilePath, (error, data) => {
+					const levelData: ExportedLevelData = JSON.parse(data.toString());
+					const projectFilePath = path.resolve(path.dirname(levelFilePath), levelData.projectFilePath);
+					fs.readFile(projectFilePath, (error, data) => {
 						if (error) {
 							remote.dialog.showErrorBox('Error opening project', "The level's project file could not be opened.");
 							return;
 						}
-						const project = Project.Import(JSON.parse(data.toString()), level.projectFilePath);
-						this.onOpenLevelEditor(project, level.projectFilePath, level, path);
+						const project = Project.Import(JSON.parse(data.toString()), projectFilePath);
+						const level = Level.Import(project, levelFilePath, levelData);
+						this.onOpenLevelEditor(project, projectFilePath, level, levelFilePath);
 					});
 				});
 			});
-		});*/
+		});
 	}
 
 	private onOpenLevelEditor(project: Project, projectFilePath: string, level?: Level, levelFilePath?: string) {

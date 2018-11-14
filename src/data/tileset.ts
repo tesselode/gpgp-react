@@ -4,7 +4,7 @@ import path from 'path';
 export interface TilesetData {
 	/** The name of the tileset. */
 	name: string;
-	/** The relative path to the tileset image. */
+	/** The absolute path to the tileset image. */
 	imagePath?: string;
 }
 
@@ -12,7 +12,7 @@ export interface TilesetData {
 export interface ExportedTilesetData {
 	/** The name of the tileset. */
 	name: string;
-	/** The absolute path to the tileset image. */
+	/** The relative path to the tileset image. */
 	imagePath?: string;
 }
 

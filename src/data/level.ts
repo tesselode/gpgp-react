@@ -1,11 +1,13 @@
-import GeometryLayer from "./layer/geometry-layer";
-import TileLayer from "./layer/tile-layer";
+import path from 'path';
+import GeometryLayer, { ExportedGeometryLayerData } from "./layer/geometry-layer";
+import TileLayer, { ExportedTileLayerData } from "./layer/tile-layer";
 import Project from "./project";
 
 export type Layer = GeometryLayer | TileLayer;
+export type ExportedLayerData = ExportedGeometryLayerData | ExportedTileLayerData;
 
 export interface LevelData {
-	/** The path to the associated project file. */
+	/** The absolute path to the associated project file. */
 	projectFilePath: string;
 	/** The width of the level (in tiles). */
 	width: number;
@@ -19,6 +21,21 @@ export interface LevelData {
 	layers: Layer[];
 }
 
+export interface ExportedLevelData {
+	/** The relative path to the associated project file. */
+	projectFilePath: string;
+	/** The width of the level (in tiles). */
+	width: number;
+	/** The height of the level (in tiles). */
+	height: number;
+	/** Whether the level has a background color. */
+	hasBackgroundColor?: boolean;
+	/** The background color of the level. */
+	backgroundColor?: string;
+	/** The layers the level is made up of. */
+	layers: ExportedLayerData[];
+}
+
 export default class Level {
 	public readonly project: Project;
 	public readonly data: LevelData;
@@ -29,6 +46,28 @@ export default class Level {
 			width: project.data.defaultMapWidth,
 			height: project.data.defaultMapHeight,
 			layers: [new GeometryLayer()],
+		});
+	}
+
+	public static Import(project: Project, levelFilePath: string, data: ExportedLevelData) {
+		const layers: Layer[] = [];
+		for (const layerData of data.layers) {
+			switch (layerData.type) {
+				case 'Geometry':
+					layers.push(GeometryLayer.Import(layerData));
+					break;
+				case 'Tile':
+					layers.push(TileLayer.Import(layerData));
+					break;
+			}
+		}
+		return new Level(project, {
+			projectFilePath: path.resolve(path.dirname(levelFilePath), data.projectFilePath),
+			width: data.width,
+			height: data.height,
+			hasBackgroundColor: data.hasBackgroundColor,
+			backgroundColor: data.backgroundColor,
+			layers,
 		});
 	}
 
@@ -93,5 +132,16 @@ export default class Level {
 		const layers = this.data.layers.slice(0, this.data.layers.length);
 		layers[layerIndex] = layer;
 		return new Level(this.project, {...this.data, layers});
+	}
+
+	public export(levelFilePath: string): ExportedLevelData {
+		return {
+			projectFilePath: path.relative(path.dirname(levelFilePath), this.data.projectFilePath),
+			width: this.data.width,
+			height: this.data.height,
+			hasBackgroundColor: this.data.hasBackgroundColor,
+			backgroundColor: this.data.backgroundColor,
+			layers: this.data.layers.map(layer => layer.export()),
+		};
 	}
 }

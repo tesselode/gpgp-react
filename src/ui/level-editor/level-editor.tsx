@@ -1,4 +1,5 @@
 import { remote } from 'electron';
+import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { Col, Container, Progress, Row } from 'reactstrap';
@@ -268,7 +269,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	public save(saveAs = false, onSave?: () => void) {
-		/*let levelFilePath = this.state.levelFilePath;
+		let levelFilePath = this.state.levelFilePath;
 		if (!levelFilePath || saveAs) {
 			const chosenSaveLocation = remote.dialog.showSaveDialog({
 				filters: [
@@ -278,8 +279,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 			if (!chosenSaveLocation) return;
 			levelFilePath = chosenSaveLocation;
 		}
-		const level = exportLevel(this.getCurrentLevelState(), levelFilePath);
-		fs.writeFile(levelFilePath, JSON.stringify(level), (error) => {
+		const level = this.getCurrentLevelState();
+		const levelData = JSON.stringify(level.export(levelFilePath));
+		fs.writeFile(levelFilePath, levelData, (error) => {
 			if (error) {
 				remote.dialog.showErrorBox('Error saving level', 'The level could not be saved.');
 				return;
@@ -289,7 +291,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 				levelFilePath,
 			}, () => {this.updateTabTitle(); });
 			if (onSave) onSave();
-		});*/
+		});
 	}
 
 	public exit(onExit: () => void) {
