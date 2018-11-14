@@ -20,8 +20,8 @@ import SidebarSection from './sidebar-section';
 export interface Props {
 	/** The currently opened level. */
 	level: Level;
-	/** A function that is called when the level is modified. Returns the description of the action taken. */
-	modifyLevel: (f: (level: Level) => string | false, continuedAction?: boolean) => void;
+	/** A function that adds a new level state to the history. */
+	modifyLevel: (level: Level, description: string, continuedAction?: boolean) => void;
 	/** A function that is called when an input is blurred. */
 	onBlur: () => void;
 }
@@ -53,14 +53,15 @@ export default class LevelOptions extends React.Component<Props, State> {
 					<InputGroup size='sm'>
 						<Input
 							type='number'
-							value={this.props.level.width}
+							value={this.props.level.data.width}
 							onChange={event => {
 								const width = Number(event.target.value);
 								if (!isNaN(width) && width > 0)
-									this.props.modifyLevel(level => {
-										level.width = width;
-										return 'Change level width';
-									}, true);
+									this.props.modifyLevel(
+										this.props.level.setWidth(width),
+										'Change level width',
+										true,
+									);
 							}}
 							onBlur={() => this.props.onBlur()}
 						/>
@@ -72,14 +73,15 @@ export default class LevelOptions extends React.Component<Props, State> {
 					<InputGroup size='sm'>
 						<Input
 							type='number'
-							value={this.props.level.height}
+							value={this.props.level.data.height}
 							onChange={event => {
 								const height = Number(event.target.value);
 								if (!isNaN(height) && height > 0)
-									this.props.modifyLevel(level => {
-										level.height = height;
-										return 'Change level height';
-									}, true);
+									this.props.modifyLevel(
+										this.props.level.setHeight(height),
+										'Change level height',
+										true,
+									);
 							}}
 							onBlur={() => this.props.onBlur()}
 						/>
@@ -94,12 +96,14 @@ export default class LevelOptions extends React.Component<Props, State> {
 								<Input
 									addon
 									type='checkbox'
-									checked={this.props.level.hasBackgroundColor}
-									onChange={() => this.props.modifyLevel(level => {
-										level.hasBackgroundColor = !level.hasBackgroundColor;
-										return level.hasBackgroundColor ? 'Enable background color' :
-											'Disable background color';
-									})}
+									checked={this.props.level.data.hasBackgroundColor}
+									onChange={() => {
+										this.props.modifyLevel(
+											this.props.level.toggleHasBackgroundColor(),
+											this.props.level.data.hasBackgroundColor ? 'Disable background color' :
+												'Enable background color',
+										);
+									}}
 								/>
 							</InputGroupText>
 							<Button
@@ -108,10 +112,10 @@ export default class LevelOptions extends React.Component<Props, State> {
 							>
 								<Octicon icon={Paintcan} />
 							</Button>
-							<InputGroupText>{ColorDisplay(this.props.level.backgroundColor)}</InputGroupText>
+							<InputGroupText>{ColorDisplay(this.props.level.data.backgroundColor)}</InputGroupText>
 						</InputGroupAddon>
 						<Input
-							value={this.props.level.backgroundColor}
+							value={this.props.level.data.backgroundColor}
 							disabled
 						/>
 					</InputGroup>
@@ -122,11 +126,13 @@ export default class LevelOptions extends React.Component<Props, State> {
 						toggle={() => this.setState({showColorPicker: !this.state.showColorPicker})}
 					>
 						<SketchPicker
-							color={this.props.level.backgroundColor}
-							onChangeComplete={color => this.props.modifyLevel(level => {
-								level.backgroundColor = color.hex;
-								return 'Change background color to ' + color.hex;
-							})}
+							color={this.props.level.data.backgroundColor}
+							onChangeComplete={color => {
+								this.props.modifyLevel(
+									this.props.level.setBackgroundColor(color.hex),
+									'Change background color to ' + color.hex,
+								);
+							}}
 							disableAlpha
 						/>
 					</Popover>

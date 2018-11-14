@@ -30,10 +30,10 @@ export function loadImage(imagePath: string): Promise<Image> {
 							data,
 							width: image.bitmap.width,
 							height: image.bitmap.height,
-						})};
+						}); };
 						element.src = data;
-					})
-				)
+					}),
+				),
 		)
 		.catch(error => ({
 			error: 'The image could not be loaded.',

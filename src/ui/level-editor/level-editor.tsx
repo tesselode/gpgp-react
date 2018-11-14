@@ -1,15 +1,13 @@
 import { remote } from 'electron';
-import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { Col, Container, Progress, Row } from 'reactstrap';
 import Image, { loadImage } from '../../data/image-data';
-import { isGeometryLayer, placeGeometry, removeGeometry } from '../../data/layer/geometry-layer';
-import { LayerType } from '../../data/layer/layer';
-import { isTileLayer, placeTile, removeTile } from '../../data/layer/tile-layer';
-import Level, { exportLevel, newLevel } from '../../data/level';
+import GeometryLayer from '../../data/layer/geometry-layer';
+import TileLayer from '../../data/layer/tile-layer';
+import Level from '../../data/level';
 import Project from '../../data/project';
-import { deepCopyObject, normalizeRect, Rect } from '../../util';
+import { normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
 import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
@@ -93,7 +91,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			finishedLoading: false,
 			levelHistory: [
 				this.props.level ? this.props.level :
-					newLevel(this.props.project, this.props.projectFilePath),
+					Level.New(this.props.project, this.props.projectFilePath),
 			],
 			levelHistoryDescriptions: [this.props.level ? 'Open level' : 'New level'],
 			levelHistoryPosition: 0,
@@ -136,19 +134,16 @@ export default class LevelEditor extends AppTab<Props, State> {
 		this.props.onChangeTabTitle(tabTitle);
 	}
 
-	private modifyLevel(f: (level: Level) => string | false, continuedAction?: boolean): void {
+	private modifyLevel(level: Level, description: string, continuedAction?: boolean): void {
 		let levelHistoryPosition = this.state.levelHistoryPosition;
 		const levelHistory = this.state.levelHistory.slice(0, levelHistoryPosition + 1);
 		const levelHistoryDescriptions = this.state.levelHistoryDescriptions.slice(
 			0, this.state.levelHistoryPosition + 1);
-		const newState = deepCopyObject(levelHistory[levelHistory.length - 1]);
-		const description = f(newState);
-		if (!description) return;
 		if (this.state.continuedAction) {
-			levelHistory[levelHistory.length - 1] = newState;
+			levelHistory[levelHistory.length - 1] = level;
 			levelHistoryDescriptions[levelHistoryDescriptions.length - 1] = description;
 		} else {
-			levelHistory.push(newState);
+			levelHistory.push(level);
 			levelHistoryDescriptions.push(description);
 			levelHistoryPosition++;
 		}
@@ -237,32 +232,43 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	private onPlace(rect: Rect) {
-		this.modifyLevel(level => {
-			const layer = level.layers[this.state.selectedLayerIndex];
-			if (isGeometryLayer(layer))
-				placeGeometry(layer, rect);
-			else if (isTileLayer(layer)) {
-				if (!this.state.tilesetSelection) return false;
-				placeTile(this.state.tool, layer, rect, this.state.tilesetSelection);
-			} else
-				return false;
-			return 'Place tiles';
-		}, true);
+		const level = this.getCurrentLevelState();
+		const layer = level.data.layers[this.state.selectedLayerIndex];
+		if (layer instanceof GeometryLayer)
+			this.modifyLevel(
+				level.setLayer(
+					this.state.selectedLayerIndex,
+					layer.place(rect),
+				),
+				'Place tiles',
+				true,
+			);
+		else if (layer instanceof TileLayer && this.state.tilesetSelection)
+			this.modifyLevel(
+				level.setLayer(
+					this.state.selectedLayerIndex,
+					layer.place(this.state.tool, rect, this.state.tilesetSelection),
+				),
+				'Place tiles',
+				true,
+			);
 	}
 
 	private onRemove(rect: Rect) {
-		this.modifyLevel(level => {
-			const layer = level.layers[this.state.selectedLayerIndex];
-			if (isGeometryLayer(layer))
-				removeGeometry(layer, rect);
-			else if (isTileLayer(layer))
-				removeTile(layer, rect);
-			return 'Remove tiles';
-		}, true);
+		const level = this.getCurrentLevelState();
+		const layer = level.data.layers[this.state.selectedLayerIndex];
+		this.modifyLevel(
+			level.setLayer(
+				this.state.selectedLayerIndex,
+				layer.remove(rect),
+			),
+			'Remove tiles',
+			true,
+		);
 	}
 
 	public save(saveAs = false, onSave?: () => void) {
-		let levelFilePath = this.state.levelFilePath;
+		/*let levelFilePath = this.state.levelFilePath;
 		if (!levelFilePath || saveAs) {
 			const chosenSaveLocation = remote.dialog.showSaveDialog({
 				filters: [
@@ -283,7 +289,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 				levelFilePath,
 			}, () => {this.updateTabTitle(); });
 			if (onSave) onSave();
-		});
+		});*/
 	}
 
 	public exit(onExit: () => void) {
@@ -309,7 +315,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 
 	public render() {
 		const level = this.getCurrentLevelState();
-		const selectedLayer = level.layers[this.state.selectedLayerIndex];
+		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
 
 		if (this.state.imagesLoaded < this.state.totalImages) {
 			return <Progress
@@ -349,11 +355,11 @@ export default class LevelEditor extends AppTab<Props, State> {
 						modifyLevel={this.modifyLevel.bind(this)}
 						onBlur={() => this.setState({continuedAction: false})}
 					/>
-					{isTileLayer(selectedLayer) && <TilePicker
+					{selectedLayer instanceof TileLayer && <TilePicker
 						project={this.props.project}
-						tilesetName={selectedLayer.tilesetName}
+						tilesetName={selectedLayer.data.tilesetName}
 						tilesetImageData={this.state.images.get(
-							this.props.project.getTileset(selectedLayer.tilesetName).data.imagePath,
+							this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
 						)}
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
 					/>}
@@ -368,30 +374,30 @@ export default class LevelEditor extends AppTab<Props, State> {
 				<Col md={9} style={{height: '90vh', overflowY: 'auto'}}>
 					<Grid
 						tileSize={this.props.project.data.tileSize}
-						width={level.width}
-						height={level.height}
-						background={level.hasBackgroundColor && level.backgroundColor}
+						width={level.data.width}
+						height={level.data.height}
+						background={level.data.hasBackgroundColor && level.data.backgroundColor}
 						onMove={this.onMoveCursor.bind(this)}
 						onClick={this.onClickGrid.bind(this)}
 						onRelease={this.onReleaseGrid.bind(this)}
 					>
-						{level.layers.map((layer, i) => {
-							if (!layer.visible) return '';
+						{level.data.layers.map((layer, i) => {
+							if (!layer.data.visible) return '';
 							let order = -(i + 2);
 							if (this.state.showSelectedLayerOnTop && i === this.state.selectedLayerIndex)
 								order = -1;
-							if (isTileLayer(layer))
+							if (layer instanceof TileLayer)
 								return <TileLayerDisplay
 									key={i}
 									project={this.props.project}
 									level={level}
 									layer={layer}
 									tilesetImage={this.state.images.get(
-										this.props.project.getTileset(layer.tilesetName).data.imagePath,
+										this.props.project.getTileset(layer.data.tilesetName).data.imagePath,
 									)}
 									order={order}
 								/>;
-							else if (isGeometryLayer(layer))
+							else if (layer instanceof GeometryLayer)
 								return <GeometryLayerDisplay
 									key={i}
 									project={this.props.project}
@@ -402,13 +408,13 @@ export default class LevelEditor extends AppTab<Props, State> {
 							return '';
 						})}
 						{
-							isTileLayer(selectedLayer) ? <TileCursor
+							selectedLayer instanceof TileLayer ? <TileCursor
 								tileSize={this.props.project.data.tileSize}
 								cursor={normalizeRect(this.state.cursorRect)}
 								removing={this.state.cursorState === CursorState.Remove}
 								tool={this.state.tool}
 								tilesetImage={this.state.images.get(
-									this.props.project.getTileset(selectedLayer.tilesetName).data.imagePath,
+									this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
 								)}
 								tilesetSelection={this.state.tilesetSelection}
 							/> : <GenericCursor

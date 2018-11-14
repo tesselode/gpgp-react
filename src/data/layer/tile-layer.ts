@@ -18,10 +18,6 @@ export interface TileLayerData {
 export default class TileLayer {
 	public readonly data;
 
-	constructor(data: TileLayerData) {
-		this.data = data;
-	}
-
 	public static New(tilesetName: string) {
 		return new TileLayer({
 			name: 'New tile layer',
@@ -31,8 +27,16 @@ export default class TileLayer {
 		});
 	}
 
+	private constructor(data: TileLayerData) {
+		this.data = data;
+	}
+
 	public setName(name: string): TileLayer {
 		return new TileLayer({...this.data, name});
+	}
+
+	public setTilesetName(tilesetName: string): TileLayer {
+		return new TileLayer({...this.data, tilesetName});
 	}
 
 	public toggleVisibility(): TileLayer {

@@ -11,11 +11,9 @@ import {
 	ListGroupItem,
 	Navbar,
 } from 'reactstrap';
-import { newGeometryLayer } from '../../../data/layer/geometry-layer';
-import { isTileLayer, newTileLayer } from '../../../data/layer/tile-layer';
+import TileLayer from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';
-import { shiftDown, shiftUp } from '../../../util';
 import SidebarSection from './sidebar-section';
 
 export interface Props {
@@ -31,8 +29,8 @@ export interface Props {
 	onToggleShowSelectedLayerOnTop: () => void;
 	/** A function that is called when a layer is clicked. */
 	onSelectLayer: (layerIndex: number) => void;
-	/** A function that is called when the level is modified. Returns the description of the action taken. */
-	modifyLevel: (f: (level: Level) => string | false, continuedAction?: boolean) => void;
+	/** A function that adds a new level state to the history. */
+	modifyLevel: (level: Level, description: string, continuedAction?: boolean) => void;
 }
 
 export interface State {
@@ -66,13 +64,15 @@ export default class LayerList extends React.Component<Props, State> {
 				<Button
 					id='removeLayerButton'
 					size='sm'
-					disabled={this.props.level.layers.length < 2}
-					onClick={() => this.props.modifyLevel(level => {
-						const layer = level.layers[this.props.selectedLayerIndex];
-						level.layers.splice(this.props.selectedLayerIndex, 1);
-						this.props.onSelectLayer(Math.min(this.props.selectedLayerIndex, level.layers.length - 1));
-						return 'Remove layer "' + layer.name + '"';
-					})}
+					disabled={this.props.level.data.layers.length < 2}
+					onClick={() => {
+						const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
+						this.props.onSelectLayer(Math.min(this.props.selectedLayerIndex, this.props.level.data.layers.length - 2));
+						this.props.modifyLevel(
+							this.props.level.removeLayer(this.props.selectedLayerIndex),
+							'Remove layer "' + layer.data.name + '"',
+						);
+					}}
 				>
 					<Octicon icon={Trashcan} />
 				</Button>
@@ -88,22 +88,26 @@ export default class LayerList extends React.Component<Props, State> {
 					</DropdownToggle>
 					<DropdownMenu>
 						<DropdownItem
-							onClick={() => this.props.modifyLevel(level => {
-								level.layers.splice(this.props.selectedLayerIndex, 0, newGeometryLayer());
+							onClick={() => {
 								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
-								return 'Add geometry layer';
-							})}
+								this.props.modifyLevel(
+									this.props.level.addGeometryLayer(),
+									'Add geometry layer',
+								);
+							}}
 						>
 							Geometry
 						</DropdownItem>
 						{this.props.project.data.tilesets.map((tileset, i) =>
 							<DropdownItem
 								key={i}
-								onClick={() => this.props.modifyLevel(level => {
-									level.layers.splice(this.props.selectedLayerIndex, 0, newTileLayer(tileset.data.name));
+								onClick={() => {
 									this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
-									return 'Add tile layer';
-								})}
+									this.props.modifyLevel(
+										this.props.level.addTileLayer(tileset.data.name),
+										'Add tile layer',
+									);
+								}}
 							>
 								Tile - {tileset.data.name}
 							</DropdownItem>,
@@ -114,32 +118,36 @@ export default class LayerList extends React.Component<Props, State> {
 					id='moveLayerUpButton'
 					size='sm'
 					disabled={this.props.selectedLayerIndex === 0}
-					onClick={() => this.props.modifyLevel(level => {
-						const layer = level.layers[this.props.selectedLayerIndex];
-						shiftUp(level.layers, this.props.selectedLayerIndex);
+					onClick={() => {
+						const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
 						this.props.onSelectLayer(this.props.selectedLayerIndex - 1);
-						return 'Move layer "' + layer.name + '" up';
-					})}
+						this.props.modifyLevel(
+							this.props.level.moveLayerUp(this.props.selectedLayerIndex),
+							'Move layer "' + layer.data.name + '" up',
+						);
+					}}
 				>
 					<Octicon icon={ArrowUp} />
 				</Button>
 				<Button
 					id='moveLayerDownButton'
 					size='sm'
-					disabled={this.props.selectedLayerIndex === this.props.level.layers.length - 1}
-					onClick={() => this.props.modifyLevel(level => {
-						const layer = level.layers[this.props.selectedLayerIndex];
-						shiftDown(level.layers, this.props.selectedLayerIndex);
+					disabled={this.props.selectedLayerIndex === this.props.level.data.layers.length - 1}
+					onClick={() => {
+						const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
 						this.props.onSelectLayer(this.props.selectedLayerIndex + 1);
-						return 'Move layer "' + layer.name + '" down';
-					})}
+						this.props.modifyLevel(
+							this.props.level.moveLayerDown(this.props.selectedLayerIndex),
+							'Move layer "' + layer.data.name + '" down',
+						);
+					}}
 				>
 					<Octicon icon={ArrowDown} />
 				</Button>
 			</ButtonGroup>}
 		>
 			<ListGroup flush>
-				{this.props.level.layers.map((layer, i) =>
+				{this.props.level.data.layers.map((layer, i) =>
 					<ListGroupItem
 						key={i}
 						active={this.props.selectedLayerIndex === i}
@@ -148,20 +156,23 @@ export default class LayerList extends React.Component<Props, State> {
 					>
 						<Navbar style={{padding: 0}}>
 							{
-								isTileLayer(layer) ? layer.name + ' (' + layer.type + ' - ' + layer.tilesetName + ')'
-								: layer.name + ' (' + layer.type + ')'
+								layer instanceof TileLayer ?
+									layer.data.name + ' (Tile - ' + layer.data.tilesetName + ')' :
+									layer.data.name + ' (Geometry)'
 							}
 							<Button
 								id={'toggleLayerVisibilityButton' + i}
-								outline={!layer.visible}
+								outline={!layer.data.visible}
 								color={this.props.selectedLayerIndex === i ? 'light' : 'dark'}
 								size='sm'
-								onClick={() => this.props.modifyLevel(level => {
-									const layer = level.layers[i];
-									layer.visible = !layer.visible;
-									return layer.visible ? 'Show layer "' + layer.name + '"'
-										: 'Hide layer "' + layer.name + '"';
-								})}
+								onClick={() => {
+									const layer = this.props.level.data.layers[i];
+									this.props.modifyLevel(
+										this.props.level.setLayer(i, layer.toggleVisibility()),
+										layer.data.visible ? 'Hide layer "' + layer.data.name + '"'
+											: 'Show layer "' + layer.data.name + '"',
+									);
+								}}
 							>
 								<Octicon icon={Eye} />
 							</Button>

@@ -1,11 +1,10 @@
-import path from 'path';
-import { deepCopyObject } from "../util";
-import { newGeometryLayer } from './layer/geometry-layer';
-import Layer from "./layer/layer";
+import GeometryLayer from "./layer/geometry-layer";
+import TileLayer from "./layer/tile-layer";
 import Project from "./project";
 
-/** A level for a game. */
-export default interface Level {
+export type Layer = GeometryLayer | TileLayer;
+
+export interface LevelData {
 	/** The path to the associated project file. */
 	projectFilePath: string;
 	/** The width of the level (in tiles). */
@@ -20,38 +19,79 @@ export default interface Level {
 	layers: Layer[];
 }
 
-/**
- * Creates a new, empty level.
- * @param project The project the level is for.
- * @param projectFilePath The path to the project file.
- */
-export function newLevel(project: Project, projectFilePath: string): Level {
-	return {
-		projectFilePath,
-		width: project.data.defaultMapWidth,
-		height: project.data.defaultMapHeight,
-		layers: [newGeometryLayer()],
-	};
-}
+export default class Level {
+	public readonly project: Project;
+	public readonly data: LevelData;
 
-/**
- * Imports a level for use after loading it from the filesystem.
- * @param level The level to import.
- * @param levelFilePath The path to the level file.
- */
-export function importLevel(level: Level, levelFilePath: string): Level {
-	const importedLevel = deepCopyObject(level);
-	importedLevel.projectFilePath = path.resolve(path.dirname(levelFilePath), level.projectFilePath);
-	return importedLevel;
-}
+	public static New(project: Project, projectFilePath: string) {
+		return new Level(project, {
+			projectFilePath,
+			width: project.data.defaultMapWidth,
+			height: project.data.defaultMapHeight,
+			layers: [new GeometryLayer()],
+		});
+	}
 
-/**
- * Exports a level to be saved as a file.
- * @param level The level to export.
- * @param levelFilePath The path the level will be saved to.
- */
-export function exportLevel(level: Level, levelFilePath: string): Level {
-	const exportedLevel = deepCopyObject(level);
-	exportedLevel.projectFilePath = path.relative(path.dirname(levelFilePath), level.projectFilePath);
-	return exportedLevel;
+	private constructor(project: Project, data: LevelData) {
+		this.project = project;
+		this.data = data;
+	}
+
+	public setWidth(width: number): Level {
+		return new Level(this.project, {...this.data, width});
+	}
+
+	public setHeight(height: number): Level {
+		return new Level(this.project, {...this.data, height});
+	}
+
+	public toggleHasBackgroundColor(): Level {
+		return new Level(this.project, {
+			...this.data,
+			hasBackgroundColor: !this.data.hasBackgroundColor,
+		});
+	}
+
+	public setBackgroundColor(backgroundColor: string): Level {
+		return new Level(this.project, {...this.data, backgroundColor});
+	}
+
+	public addGeometryLayer(): Level {
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.push(new GeometryLayer());
+		return new Level(this.project, {...this.data, layers});
+	}
+
+	public addTileLayer(tilesetName: string): Level {
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.push(TileLayer.New(tilesetName));
+		return new Level(this.project, {...this.data, layers});
+	}
+
+	public removeLayer(layerIndex: number): Level {
+		if (this.data.layers.length === 0) return this;
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.splice(layerIndex, 1);
+		return new Level(this.project, {...this.data, layers});
+	}
+
+	public moveLayerUp(layerIndex: number): Level {
+		if (!(layerIndex > 0 && this.data.layers[layerIndex])) return this;
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.splice(layerIndex - 1, 0, layers.splice(layerIndex, 1)[0]);
+		return new Level(this.project, {...this.data, layers});
+	}
+
+	public moveLayerDown(layerIndex: number): Level {
+		if (!(layerIndex < this.data.layers.length - 1 && this.data.layers[layerIndex])) return this;
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.splice(layerIndex + 1, 0, layers.splice(layerIndex, 1)[0]);
+		return new Level(this.project, {...this.data, layers});
+	}
+
+	public setLayer(layerIndex: number, layer: Layer): Level {
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers[layerIndex] = layer;
+		return new Level(this.project, {...this.data, layers});
+	}
 }

@@ -23,10 +23,10 @@ export default class TileLayerDisplay extends React.Component<Props> {
 
 	private renderCanvas() {
 		const canvas = this.canvasRef.current;
-		canvas.width = this.props.level.width * this.props.project.data.tileSize;
-		canvas.height = this.props.level.height * this.props.project.data.tileSize;
+		canvas.width = this.props.level.data.width * this.props.project.data.tileSize;
+		canvas.height = this.props.level.data.height * this.props.project.data.tileSize;
 		const context = canvas.getContext('2d');
-		for (const item of this.props.layer.items) {
+		for (const item of this.props.layer.data.items) {
 			const sx = item.tileX * this.props.project.data.tileSize;
 			const sy = item.tileY * this.props.project.data.tileSize;
 			const x = item.x * this.props.project.data.tileSize;

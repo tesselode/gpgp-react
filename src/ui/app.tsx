@@ -15,7 +15,7 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import Level, { importLevel } from '../data/Level';
+import Level from '../data/Level';
 import Project, { ExportedProjectData } from '../data/Project';
 import AppTab from './app-tab';
 import './app.css';
@@ -122,7 +122,7 @@ export default class App extends React.Component<{}, State> {
 	}
 
 	private onOpenLevel() {
-		remote.dialog.showOpenDialog({
+		/*remote.dialog.showOpenDialog({
 			filters: [
 				{name: 'GPGP levels', extensions: ['gpgp']},
 			],
@@ -145,7 +145,7 @@ export default class App extends React.Component<{}, State> {
 					});
 				});
 			});
-		});
+		});*/
 	}
 
 	private onOpenLevelEditor(project: Project, projectFilePath: string, level?: Level, levelFilePath?: string) {
