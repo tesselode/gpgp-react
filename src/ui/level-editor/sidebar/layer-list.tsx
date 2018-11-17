@@ -15,6 +15,8 @@ import TileLayer from '../../../data/layer/tile-layer';
 import Level from '../../../data/level';
 import Project from '../../../data/project';
 import SidebarSection from './sidebar-section';
+import EntityLayer from '../../../data/layer/entity-layer';
+import GeometryLayer from '../../../data/layer/geometry-layer';
 
 export interface Props {
 	/** The project the level belongs to. */
@@ -98,6 +100,17 @@ export default class LayerList extends React.Component<Props, State> {
 						>
 							Geometry
 						</DropdownItem>
+						{this.props.project.data.entities.length > 0 && <DropdownItem
+							onClick={() => {
+								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
+								this.props.modifyLevel(
+									this.props.level.addEntityLayer(),
+									'Add entity layer',
+								);
+							}}
+						>
+							Entity
+						</DropdownItem>}
 						{this.props.project.data.tilesets.map((tileset, i) =>
 							<DropdownItem
 								key={i}
@@ -157,8 +170,13 @@ export default class LayerList extends React.Component<Props, State> {
 						<Navbar style={{padding: 0}}>
 							{
 								layer instanceof TileLayer ?
-									layer.data.name + ' (Tile - ' + layer.data.tilesetName + ')' :
+									layer.data.name + ' (Tile - ' + layer.data.tilesetName + ')'
+								: layer instanceof EntityLayer ?
+									layer.data.name + ' (Entity)'
+								: layer instanceof GeometryLayer ?
 									layer.data.name + ' (Geometry)'
+								:
+									''
 							}
 							<Button
 								id={'toggleLayerVisibilityButton' + i}

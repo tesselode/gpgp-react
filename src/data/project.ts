@@ -79,6 +79,8 @@ export default class Project {
 		const paths: string[] = [];
 		for (const tileset of this.data.tilesets)
 			if (tileset.data.imagePath) paths.push(tileset.data.imagePath);
+		for (const entity of this.data.entities)
+			if (entity.data.imagePath) paths.push(entity.data.imagePath);
 		return paths;
 	}
 

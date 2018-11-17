@@ -3,7 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { Col, Container, Progress, Row } from 'reactstrap';
+import HistoryList from '../../data/history-list';
 import Image, { loadImage } from '../../data/image';
+import EntityLayer from '../../data/layer/entity-layer';
 import GeometryLayer from '../../data/layer/geometry-layer';
 import TileLayer from '../../data/layer/tile-layer';
 import Level from '../../data/level';
@@ -22,8 +24,7 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
-import HistoryList from '../../data/history-list';
-import EntityLayer from '../../data/layer/entity-layer';
+import EntityPicker from './sidebar/entity-picker';
 
 enum CursorState {
 	Idle,
@@ -65,6 +66,8 @@ interface State {
 	showSelectedLayerOnTop: boolean;
 	/** The number of the currently selected layer. */
 	selectedLayerIndex: number;
+	/** The number of the currently selected entity. */
+	selectedEntityIndex: number;
 	/** The currently selected region of the tileset. */
 	tilesetSelection?: Rect;
 	/** Whether an action is currently taking place. */
@@ -98,6 +101,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			tool: EditTool.Pencil,
 			showSelectedLayerOnTop: true,
 			selectedLayerIndex: 0,
+			selectedEntityIndex: 0,
 			continuedAction: false,
 			cursorX: 0,
 			cursorY: 0,
@@ -343,6 +347,12 @@ export default class LevelEditor extends AppTab<Props, State> {
 							this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
 						)}
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
+					/>}
+					{selectedLayer instanceof EntityLayer && <EntityPicker
+						project={this.props.project}
+						images={this.state.images}
+						selectedEntityIndex={this.state.selectedEntityIndex}
+						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
 					/>}
 					<HistoryBrowser
 						history={this.state.levelHistory}
