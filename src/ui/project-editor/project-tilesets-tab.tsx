@@ -14,7 +14,6 @@ import {
 } from 'reactstrap';
 import Image from '../../data/image';
 import Project from '../../data/project';
-import { shiftDown, shiftUp } from '../../util';
 import Grid from '../grid';
 import ItemList from './item-list';
 

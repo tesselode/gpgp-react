@@ -1,4 +1,5 @@
 import Tileset, { ExportedTilesetData } from "../data/tileset";
+import Entity, { ExportedEntityData } from "./entity";
 
 /** The data used by the Project class. */
 export interface ProjectData {
@@ -16,6 +17,8 @@ export interface ProjectData {
 	readonly maxMapHeight: number;
 	/** A list of the tilesets that can be used by levels in this project. */
 	readonly tilesets: Tileset[];
+	/** A list of the entities that can be used by levels in this project. */
+	readonly entities: Entity[];
 }
 
 /** The data used to save project data to a file. */
@@ -34,6 +37,8 @@ export interface ExportedProjectData {
 	maxMapHeight: number;
 	/** A list of the tilesets that can be used by levels in this project. */
 	tilesets: ExportedTilesetData[];
+	/** A list of the entities that can be used by levels in this project. */
+	readonly entities: ExportedEntityData[];
 }
 
 /** A project containing the settings for a game's levels. */
@@ -46,6 +51,7 @@ export default class Project {
 		maxMapWidth: 1000,
 		maxMapHeight: 1000,
 		tilesets: [],
+		entities: [],
 	};
 
 	public static New(): Project {
@@ -61,6 +67,7 @@ export default class Project {
 			maxMapWidth: data.maxMapWidth,
 			maxMapHeight: data.maxMapHeight,
 			tilesets: data.tilesets.map(tilesetData => Tileset.Import(tilesetData, projectFilePath)),
+			entities: data.entities.map(entityData => Entity.Import(entityData, projectFilePath)),
 		});
 	}
 
@@ -135,6 +142,38 @@ export default class Project {
 		return new Project({...this.data, tilesets});
 	}
 
+	public addEntity(): Project {
+		const entities = this.data.entities.slice(0, this.data.entities.length);
+		entities.push(Entity.New());
+		return new Project({...this.data, entities});
+	}
+
+	public removeEntity(entityIndex: number): Project {
+		const entities = this.data.entities.slice(0, this.data.entities.length);
+		entities.splice(entityIndex, 1);
+		return new Project({...this.data, entities});
+	}
+
+	public moveEntityUp(entityIndex: number): Project {
+		if (!(entityIndex > 0 && this.data.entities[entityIndex])) return this;
+		const entities = this.data.entities.slice(0, this.data.entities.length);
+		entities.splice(entityIndex - 1, 0, entities.splice(entityIndex, 1)[0]);
+		return new Project({...this.data, entities});
+	}
+
+	public moveEntityDown(entityIndex: number): Project {
+		if (!(entityIndex < this.data.entities.length - 1 && this.data.entities[entityIndex])) return this;
+		const entities = this.data.entities.slice(0, this.data.entities.length);
+		entities.splice(entityIndex + 1, 0, entities.splice(entityIndex, 1)[0]);
+		return new Project({...this.data, entities});
+	}
+
+	public setEntity(entityIndex: number, entity: Entity): Project {
+		const entities = this.data.entities.slice(0, this.data.entities.length);
+		entities[entityIndex] = entity;
+		return new Project({...this.data, entities});
+	}
+
 	public export(projectFilePath: string): ExportedProjectData {
 		return {
 			name: this.data.name,
@@ -144,6 +183,7 @@ export default class Project {
 			maxMapWidth: this.data.maxMapWidth,
 			maxMapHeight: this.data.maxMapHeight,
 			tilesets: this.data.tilesets.map(tileset => tileset.export(projectFilePath)),
+			entities: this.data.entities.map(entity => entity.export(projectFilePath)),
 		};
 	}
 }

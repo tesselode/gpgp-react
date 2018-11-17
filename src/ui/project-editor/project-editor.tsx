@@ -18,10 +18,12 @@ import Project from '../../data/project';
 import AppTab from '../app-tab';
 import ProjectSettingsTab from './project-settings-tab';
 import ProjectTilesetsTab from './project-tilesets-tab';
+import ProjectEntitiesTab from './project-entities-tab';
 
 export enum ProjectEditorTab {
 	Settings,
 	Tilesets,
+	Entities,
 }
 
 export interface Props {
@@ -72,6 +74,14 @@ export default class ProjectEditor extends AppTab<Props, State> {
 				loadImage(tileset.data.imagePath).then(image => {
 					const images = new Map(this.state.images);
 					images.set(tileset.data.imagePath, image);
+					this.setState({images});
+				});
+		}
+		for (const entity of this.state.project.data.entities) {
+			if (entity.data.imagePath && !this.state.images.get(entity.data.imagePath))
+				loadImage(entity.data.imagePath).then(image => {
+					const images = new Map(this.state.images);
+					images.set(entity.data.imagePath, image);
 					this.setState({images});
 				});
 		}
@@ -161,6 +171,14 @@ export default class ProjectEditor extends AppTab<Props, State> {
 						Tilesets
 					</NavLink>
 				</NavItem>
+				<NavItem>
+					<NavLink
+						active={this.state.activeTab === ProjectEditorTab.Entities}
+						onClick={() => this.setState({activeTab: ProjectEditorTab.Entities})}
+					>
+						Entities
+					</NavLink>
+				</NavItem>
 			</Nav>
 			<TabContent
 				activeTab={this.state.activeTab}
@@ -175,6 +193,13 @@ export default class ProjectEditor extends AppTab<Props, State> {
 				<TabPane tabId={ProjectEditorTab.Tilesets}>
 					<ProjectTilesetsTab
 						focused={this.state.activeTab === ProjectEditorTab.Tilesets}
+						project={this.state.project}
+						images={this.state.images}
+						setProject={this.setProject.bind(this)}
+					/>
+				</TabPane>
+				<TabPane tabId={ProjectEditorTab.Entities}>
+					<ProjectEntitiesTab
 						project={this.state.project}
 						images={this.state.images}
 						setProject={this.setProject.bind(this)}
