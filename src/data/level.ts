@@ -2,9 +2,11 @@ import path from 'path';
 import GeometryLayer, { ExportedGeometryLayerData } from "./layer/geometry-layer";
 import TileLayer, { ExportedTileLayerData } from "./layer/tile-layer";
 import Project from "./project";
+import EntityLayer, { ExportedEntityLayerData } from './layer/entity-layer';
 
-export type Layer = GeometryLayer | TileLayer;
-export type ExportedLayerData = ExportedGeometryLayerData | ExportedTileLayerData;
+export type Layer = GeometryLayer | TileLayer | EntityLayer;
+export type ExportedLayerData = ExportedGeometryLayerData |
+	ExportedTileLayerData | ExportedEntityLayerData;
 
 export interface LevelData {
 	/** The absolute path to the associated project file. */
@@ -59,6 +61,9 @@ export default class Level {
 				case 'Tile':
 					layers.push(TileLayer.Import(layerData));
 					break;
+				case 'Entity':
+					layers.push(EntityLayer.Import(layerData));
+					break;
 			}
 		}
 		return new Level(project, {
@@ -104,6 +109,12 @@ export default class Level {
 	public addTileLayer(tilesetName: string): Level {
 		const layers = this.data.layers.slice(0, this.data.layers.length);
 		layers.push(TileLayer.New(tilesetName));
+		return new Level(this.project, {...this.data, layers});
+	}
+
+	public addEntityLayer(): Level {
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.push(EntityLayer.New());
 		return new Level(this.project, {...this.data, layers});
 	}
 

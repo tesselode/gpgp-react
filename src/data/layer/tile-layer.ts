@@ -2,10 +2,10 @@ import { EditTool } from "../../ui/level-editor/edit-tool";
 import { Rect } from "../../util";
 
 export interface TileLayerItem {
-	x: number;
-	y: number;
-	tileX: number;
-	tileY: number;
+	readonly x: number;
+	readonly y: number;
+	readonly tileX: number;
+	readonly tileY: number;
 }
 
 export interface TileLayerData {

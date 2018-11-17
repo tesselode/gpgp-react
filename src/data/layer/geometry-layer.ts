@@ -1,8 +1,8 @@
 import { Rect } from "../../util";
 
 export interface GeometryLayerItem {
-	x: number;
-	y: number;
+	readonly x: number;
+	readonly y: number;
 }
 
 export interface GeometryLayerData {

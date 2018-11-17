@@ -86,6 +86,10 @@ export default class Project {
 		return this.data.tilesets.find(tileset => tileset.data.name === tilesetName);
 	}
 
+	public getEntity(entityName: string): Entity {
+		return this.data.entities.find(entity => entity.data.name === entityName);
+	}
+
 	public setName(name: string): Project {
 		return new Project({...this.data, name});
 	}

@@ -23,6 +23,7 @@ import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
 import HistoryList from '../../data/history-list';
+import EntityLayer from '../../data/layer/entity-layer';
 
 enum CursorState {
 	Idle,
@@ -235,6 +236,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	private onRemove(rect: Rect) {
 		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
+		if (layer instanceof EntityLayer) return;
 		this.modifyLevel(
 			level.setLayer(
 				this.state.selectedLayerIndex,
