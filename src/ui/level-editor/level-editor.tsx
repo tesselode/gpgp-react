@@ -22,6 +22,7 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
+import HistoryList from '../../data/history-list';
 
 enum CursorState {
 	Idle,
@@ -52,11 +53,7 @@ interface State {
 	/** Whether all the images have been loaded. */
 	finishedLoading: boolean;
 	/** The history of the level data. */
-	levelHistory: Level[];
-	/** The description of each state in the level history. */
-	levelHistoryDescriptions: string[];
-	/** The currently viewed position in the level history. */
-	levelHistoryPosition: number;
+	levelHistory: HistoryList<Level>;
 	/** Whether there are unsaved changes to the level. */
 	unsavedChanges: boolean;
 	/** The path to the level file, if it has been saved or opened. */
@@ -90,12 +87,11 @@ export default class LevelEditor extends AppTab<Props, State> {
 			totalImages: 0,
 			imagesLoaded: 0,
 			finishedLoading: false,
-			levelHistory: [
+			levelHistory: HistoryList.New(
 				this.props.level ? this.props.level :
 					Level.New(this.props.project, this.props.projectFilePath),
-			],
-			levelHistoryDescriptions: [this.props.level ? 'Open level' : 'New level'],
-			levelHistoryPosition: 0,
+				this.props.level ? 'Open level' : 'Create level',
+			),
 			unsavedChanges: false,
 			levelFilePath: this.props.levelFilePath,
 			tool: EditTool.Pencil,
@@ -136,29 +132,10 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	private modifyLevel(level: Level, description: string, continuedAction?: boolean): void {
-		let levelHistoryPosition = this.state.levelHistoryPosition;
-		const levelHistory = this.state.levelHistory.slice(0, levelHistoryPosition + 1);
-		const levelHistoryDescriptions = this.state.levelHistoryDescriptions.slice(
-			0, this.state.levelHistoryPosition + 1);
-		if (this.state.continuedAction) {
-			levelHistory[levelHistory.length - 1] = level;
-			levelHistoryDescriptions[levelHistoryDescriptions.length - 1] = description;
-		} else {
-			levelHistory.push(level);
-			levelHistoryDescriptions.push(description);
-			levelHistoryPosition++;
-		}
 		this.setState({
-			levelHistory,
-			levelHistoryDescriptions,
-			levelHistoryPosition,
+			levelHistory: this.state.levelHistory.addState(level, description, this.state.continuedAction),
 			continuedAction,
-			unsavedChanges: true,
 		}, () => {this.updateTabTitle(); });
-	}
-
-	private getCurrentLevelState(): Level {
-		return this.state.levelHistory[this.state.levelHistoryPosition];
 	}
 
 	private onMoveCursor(x: number, y: number): void {
@@ -233,7 +210,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	private onPlace(rect: Rect) {
-		const level = this.getCurrentLevelState();
+		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
 		if (layer instanceof GeometryLayer)
 			this.modifyLevel(
@@ -256,7 +233,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	private onRemove(rect: Rect) {
-		const level = this.getCurrentLevelState();
+		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
 		this.modifyLevel(
 			level.setLayer(
@@ -279,7 +256,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			if (!chosenSaveLocation) return;
 			levelFilePath = chosenSaveLocation;
 		}
-		const level = this.getCurrentLevelState();
+		const level = this.state.levelHistory.getCurrentState();
 		const levelData = JSON.stringify(level.export(levelFilePath));
 		fs.writeFile(levelFilePath, levelData, (error) => {
 			if (error) {
@@ -316,7 +293,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	public render() {
-		const level = this.getCurrentLevelState();
+		const level = this.state.levelHistory.getCurrentState();
 		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
 
 		if (this.state.imagesLoaded < this.state.totalImages) {
@@ -366,10 +343,9 @@ export default class LevelEditor extends AppTab<Props, State> {
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
 					/>}
 					<HistoryBrowser
-						historyDescriptions={this.state.levelHistoryDescriptions}
-						historyPosition={this.state.levelHistoryPosition}
-						onHistoryPositionChanged={(position: number) => {
-							this.setState({levelHistoryPosition: position});
+						history={this.state.levelHistory}
+						onJump={(position: number) => {
+							this.setState({levelHistory: this.state.levelHistory.jump(position)});
 						}}
 					/>
 				</Col>
