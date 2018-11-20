@@ -12,19 +12,21 @@ import Level from '../../data/level';
 import Project from '../../data/project';
 import { normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
+import EntityCursor from '../cursor/entity-cursor';
 import GenericCursor from '../cursor/generic-cursor';
 import TileCursor from '../cursor/tile-cursor';
 import Grid from '../grid';
 import { EditTool } from './edit-tool';
+import EntityLayerDisplay from './layer/entity-layer-display';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import TileLayerDisplay from './layer/tile-layer-display';
+import EntityPicker from './sidebar/entity-picker';
 import HistoryBrowser from './sidebar/history-browser';
 import LayerList from './sidebar/layer-list';
 import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
-import EntityPicker from './sidebar/entity-picker';
 
 enum CursorState {
 	Idle,
@@ -68,6 +70,8 @@ interface State {
 	selectedLayerIndex: number;
 	/** The number of the currently selected entity. */
 	selectedEntityIndex: number;
+	/** The number of the currently selected entity layer item. */
+	selectedEntityItemIndex?: number;
 	/** The currently selected region of the tileset. */
 	tilesetSelection?: Rect;
 	/** Whether an action is currently taking place. */
@@ -175,17 +179,28 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	private onClickGrid(button: number): void {
-		switch (button) {
-			case 0:
-				this.setState({cursorState: CursorState.Place});
-				if (this.state.tool === EditTool.Pencil)
-					this.onPlace(normalizeRect(this.state.cursorRect));
-				break;
-			case 2:
-				this.setState({cursorState: CursorState.Remove});
-				if (this.state.tool === EditTool.Pencil)
-					this.onRemove(normalizeRect(this.state.cursorRect));
-				break;
+		const level = this.state.levelHistory.getCurrentState();
+		const layer = level.data.layers[this.state.selectedLayerIndex];
+		if (layer instanceof EntityLayer) {
+			switch (button) {
+				case 0:
+					const itemIndex = layer.getItemAt(this.props.project, this.state.cursorX, this.state.cursorY);
+					this.setState({selectedEntityItemIndex: itemIndex === -1 ? null : itemIndex});
+					break;
+			}
+		} else {
+			switch (button) {
+				case 0:
+					this.setState({cursorState: CursorState.Place});
+					if (this.state.tool === EditTool.Pencil)
+						this.onPlace(normalizeRect(this.state.cursorRect));
+					break;
+				case 2:
+					this.setState({cursorState: CursorState.Remove});
+					if (this.state.tool === EditTool.Pencil)
+						this.onRemove(normalizeRect(this.state.cursorRect));
+					break;
+			}
 		}
 	}
 
@@ -212,6 +227,20 @@ export default class LevelEditor extends AppTab<Props, State> {
 			cursorState: CursorState.Idle,
 			continuedAction: false,
 		});
+	}
+
+	private onDoubleClickGrid(button: number) {
+		const level = this.state.levelHistory.getCurrentState();
+		const layer = level.data.layers[this.state.selectedLayerIndex];
+		if (!(layer instanceof EntityLayer && button === 0)) return;
+		const entity = this.props.project.data.entities[this.state.selectedEntityIndex];
+		this.modifyLevel(
+			level.setLayer(
+				this.state.selectedLayerIndex,
+				layer.place(this.state.cursorX, this.state.cursorY, entity.data.name),
+			),
+			'Place entity',
+		);
 	}
 
 	private onPlace(rect: Rect) {
@@ -370,6 +399,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 						onMove={this.onMoveCursor.bind(this)}
 						onClick={this.onClickGrid.bind(this)}
 						onRelease={this.onReleaseGrid.bind(this)}
+						onDoubleClick={this.onDoubleClickGrid.bind(this)}
 					>
 						{level.data.layers.map((layer, i) => {
 							if (!layer.data.visible) return '';
@@ -386,6 +416,16 @@ export default class LevelEditor extends AppTab<Props, State> {
 										this.props.project.getTileset(layer.data.tilesetName).data.imagePath,
 									)}
 									order={order}
+								/>;
+							else if (layer instanceof EntityLayer)
+								return <EntityLayerDisplay
+									key={i}
+									project={this.props.project}
+									images={this.state.images}
+									level={level}
+									layer={layer}
+									order={order}
+									selectedEntityItemIndex={this.state.selectedEntityItemIndex}
 								/>;
 							else if (layer instanceof GeometryLayer)
 								return <GeometryLayerDisplay
@@ -407,6 +447,12 @@ export default class LevelEditor extends AppTab<Props, State> {
 									this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
 								)}
 								tilesetSelection={this.state.tilesetSelection}
+							/> : selectedLayer instanceof EntityLayer ? <EntityCursor
+								tileSize={this.props.project.data.tileSize}
+								x={this.state.cursorX}
+								y={this.state.cursorY}
+								entity={this.props.project.data.entities[this.state.selectedEntityIndex]}
+								images={this.state.images}
 							/> : <GenericCursor
 								tileSize={this.props.project.data.tileSize}
 								cursor={normalizeRect(this.state.cursorRect)}
