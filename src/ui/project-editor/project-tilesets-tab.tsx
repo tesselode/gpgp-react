@@ -83,7 +83,14 @@ export default class ProjectTilesetsTab extends React.Component<Props, State> {
 					renderItem={tileset => tileset.data.name}
 				/>
 			</Col>
-			{selectedTileset && <Col md={8} key={this.state.selectedTilesetIndex}>
+			{selectedTileset && <Col
+				md={8}
+				key={this.state.selectedTilesetIndex}
+				style={{
+					height: 'calc(100vh - 194px)',
+					overflowY: 'auto',
+				}}
+			>
 				<Form>
 					<FormGroup row>
 						<Label md={2}>Tileset name</Label>

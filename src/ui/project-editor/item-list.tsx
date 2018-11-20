@@ -9,6 +9,8 @@ export interface Props<T> {
 	title: string;
 	selectedItemIndex: number;
 	items: T[];
+	// for now the item list is only used in the project editor, so i'm going to assume a default of 250px
+	heightOffset?: number;
 	onSelectItem: (itemIndex: number) => void;
 	onAddItem: () => void;
 	onRemoveItem: (itemIndex: number) => void;
@@ -60,7 +62,13 @@ export default function ItemList<T>(props: Props<T>) {
 				</Button>
 			</ButtonGroup>
 		</Navbar>
-		<ListGroup flush>
+		<ListGroup
+			flush
+			style={{
+				maxHeight: 'calc(100vh - ' + (props.heightOffset || 250) + 'px)',
+				overflowY: 'auto',
+			}}
+		>
 			{props.items.map((item, i) =>
 				<ListGroupItem
 					key={i}

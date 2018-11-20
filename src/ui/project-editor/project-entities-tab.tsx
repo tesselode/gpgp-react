@@ -89,7 +89,14 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 					</div>}
 				/>
 			</Col>
-			{selectedEntity && <Col md={8} key={this.state.selectedEntityIndex}>
+			{selectedEntity && <Col
+				md={8}
+				key={this.state.selectedEntityIndex}
+				style={{
+					height: 'calc(100vh - 194px)',
+					overflowY: 'auto',
+				}}
+			>
 				<Form>
 					<FormGroup row>
 						<Label md={2}>Entity name</Label>

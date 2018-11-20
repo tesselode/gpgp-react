@@ -312,7 +312,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 
 		return <Container fluid style={{paddingTop: '1em'}}>
 			<Row>
-				<Col md={3} style={{height: '90vh', overflowY: 'auto'}}>
+				<Col md={3} style={{height: 'calc(100vh - 70px)', overflowY: 'auto'}}>
 					<ToolPalette
 						tool={this.state.tool}
 						onToolChanged={(tool) => this.setState({tool})}
@@ -361,7 +361,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 						}}
 					/>
 				</Col>
-				<Col md={9} style={{height: '90vh', overflowY: 'auto'}}>
+				<Col md={9} style={{height: 'calc(100vh - 70px)', overflowY: 'auto'}}>
 					<Grid
 						tileSize={this.props.project.data.tileSize}
 						width={level.data.width}
