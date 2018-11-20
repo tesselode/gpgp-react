@@ -1,5 +1,4 @@
 import React from 'react';
-import { Rect } from '../util';
 
 /** The resolution multiplier for rendering the grid lines. */
 const gridRenderingScale = 2;
@@ -100,7 +99,8 @@ export default class Grid extends React.Component<Props, State> {
 		}
 	}
 
-	private onWheel(event) {
+	private onWheel(event: React.WheelEvent<HTMLDivElement>) {
+		if (!event.ctrlKey) return;
 		event.preventDefault();
 		if (event.deltaY > 0) {
 			this.setState({zoom: this.state.zoom / 1.1});
