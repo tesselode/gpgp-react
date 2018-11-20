@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from '../../../data/image';
 import Project from '../../../data/project/project';
-import { normalizeRect, Rect } from '../../../util';
+import Rect from '../../../data/rect';
 import Grid from '../../grid';
 import SidebarSection from './sidebar-section';
 
@@ -32,36 +32,31 @@ export default class TilePicker extends React.Component<Props, State> {
 	private onClick() {
 		this.setState({
 			mouseDown: true,
-			selection: {
-				l: this.state.cursorX,
-				t: this.state.cursorY,
-				r: this.state.cursorX,
-				b: this.state.cursorY,
-			},
+			selection: new Rect(this.state.cursorX, this.state.cursorY),
 		});
 	}
 
 	private onRelease() {
 		if (this.state.selection) {
 			this.setState({mouseDown: false});
-			this.props.onSelectTiles(normalizeRect(this.state.selection));
+			this.props.onSelectTiles(this.state.selection.normalized());
 		}
 	}
 
 	private onMove(x: number, y: number) {
 		this.setState({cursorX: x, cursorY: y});
 		if (this.state.mouseDown) {
-			this.setState({selection: {
-				l: this.state.selection.l,
-				t: this.state.selection.t,
-				r: x,
-				b: y,
-			}});
+			this.setState({selection: new Rect(
+				this.state.selection.l,
+				this.state.selection.t,
+				x,
+				y,
+			)});
 		}
 	}
 
 	public render() {
-		const normalizedSelection = this.state.selection && normalizeRect(this.state.selection);
+		const normalizedSelection = this.state.selection && this.state.selection.normalized();
 		return <SidebarSection
 			name={'Tiles - ' + this.props.tilesetName}
 			startExpanded={true}

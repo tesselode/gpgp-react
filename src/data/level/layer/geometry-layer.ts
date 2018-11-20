@@ -1,4 +1,4 @@
-import { Rect } from "../../../util";
+import Rect from "../../rect";
 
 export interface GeometryLayerItem {
 	readonly x: number;

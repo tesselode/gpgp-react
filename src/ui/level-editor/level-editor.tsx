@@ -11,7 +11,6 @@ import GeometryLayer from '../../data/level/layer/geometry-layer';
 import TileLayer from '../../data/level/layer/tile-layer';
 import Level from '../../data/level/level';
 import Project from '../../data/project/project';
-import { normalizeRect, Rect } from '../../util';
 import AppTab from '../app-tab';
 import Grid from '../grid';
 import EntityCursor from './cursor/entity-cursor';
@@ -28,6 +27,7 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
+import Rect from '../../data/rect';
 
 enum CursorState {
 	Idle,
@@ -111,7 +111,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			continuedAction: false,
 			cursorX: 0,
 			cursorY: 0,
-			cursorRect: {l: 0, t: 0, r: 0, b: 0},
+			cursorRect: new Rect(0, 0),
 			cursorState: CursorState.Idle,
 		};
 		this.onKeyDown = this.onKeyDown.bind(this);
@@ -184,29 +184,29 @@ export default class LevelEditor extends AppTab<Props, State> {
 		} else {
 			switch (this.state.cursorState) {
 				case CursorState.Idle:
-					this.setState({cursorRect: {l: x, t: y, r: x, b: y}});
+					this.setState({cursorRect: new Rect(x, y)});
 					break;
 				case CursorState.Place:
 				case CursorState.Remove:
 					switch (this.state.tool) {
 						case EditTool.Pencil:
-							this.setState({cursorRect: {l: x, t: y, r: x, b: y}});
+							this.setState({cursorRect: new Rect(x, y)});
 							switch (this.state.cursorState) {
 								case CursorState.Place:
-									this.onPlace({l: x, t: y, r: x, b: y});
+									this.onPlace(new Rect(x, y));
 									break;
 								case CursorState.Remove:
-									this.onRemove({l: x, t: y, r: x, b: y});
+									this.onRemove(new Rect(x, y));
 									break;
 							}
 							break;
 						case EditTool.Rectangle:
-							this.setState({cursorRect: {
-								l: this.state.cursorRect.l,
-								t: this.state.cursorRect.t,
-								r: x,
-								b: y,
-							}});
+							this.setState({cursorRect: new Rect(
+								this.state.cursorRect.l,
+								this.state.cursorRect.t,
+								x,
+								y,
+							)});
 					}
 			}
 		}
@@ -223,12 +223,12 @@ export default class LevelEditor extends AppTab<Props, State> {
 					const itemIndex = layer.getItemAt(this.props.project, this.state.cursorX, this.state.cursorY);
 					this.setState({selectedEntityItemIndex: itemIndex === -1 ? null : itemIndex});
 				} else if (this.state.tool === EditTool.Pencil)
-					this.onPlace(normalizeRect(this.state.cursorRect));
+					this.onPlace(this.state.cursorRect.normalized());
 				break;
 			case 2:
 				this.setState({cursorState: CursorState.Remove});
 				if (this.state.tool === EditTool.Pencil)
-					this.onRemove(normalizeRect(this.state.cursorRect));
+					this.onRemove(this.state.cursorRect.normalized());
 				break;
 		}
 	}
@@ -238,18 +238,13 @@ export default class LevelEditor extends AppTab<Props, State> {
 			case EditTool.Rectangle:
 				switch (this.state.cursorState) {
 					case CursorState.Place:
-						this.onPlace(normalizeRect(this.state.cursorRect));
+						this.onPlace(this.state.cursorRect.normalized());
 						break;
 					case CursorState.Remove:
-						this.onRemove(normalizeRect(this.state.cursorRect));
+						this.onRemove(this.state.cursorRect.normalized());
 						break;
 				}
-				this.setState({cursorRect: {
-					l: this.state.cursorX,
-					t: this.state.cursorY,
-					r: this.state.cursorX,
-					b: this.state.cursorY,
-				}});
+				this.setState({cursorRect: new Rect(this.state.cursorX, this.state.cursorY)});
 				break;
 		}
 		this.setState({
@@ -490,7 +485,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 						{
 							selectedLayer instanceof TileLayer ? <TileCursor
 								tileSize={this.props.project.data.tileSize}
-								cursor={normalizeRect(this.state.cursorRect)}
+								cursor={this.state.cursorRect.normalized()}
 								removing={this.state.cursorState === CursorState.Remove}
 								tool={this.state.tool}
 								tilesetImage={this.state.images.get(
@@ -505,7 +500,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 								images={this.state.images}
 							/> : <GenericCursor
 								tileSize={this.props.project.data.tileSize}
-								cursor={normalizeRect(this.state.cursorRect)}
+								cursor={this.state.cursorRect.normalized()}
 								removing={this.state.cursorState === CursorState.Remove}
 							/>
 						}
