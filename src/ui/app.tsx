@@ -262,6 +262,7 @@ export default class App extends React.Component<{}, State> {
 							projectFilePath={tab.projectFilePath}
 							level={tab.level}
 							levelFilePath={tab.levelFilePath}
+							focused={this.state.activeTab === i}
 							onChangeTabTitle={title => {
 								this.onChangeTabTitle(i, title);
 							}}

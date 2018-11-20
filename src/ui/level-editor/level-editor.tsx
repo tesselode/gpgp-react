@@ -44,6 +44,8 @@ interface Props {
 	level?: Level;
 	/** The path to the level file, if an existing level was opened. */
 	levelFilePath?: string;
+	/** Whether this tab currently has focus. */
+	focused: boolean;
 	/** A function that is executed when the tab title should be updated. */
 	onChangeTabTitle: (title: string) => void;
 }
@@ -55,8 +57,6 @@ interface State {
 	totalImages: number;
 	/** The number of images that have been loaded so far. */
 	imagesLoaded: number;
-	/** Whether all the images have been loaded. */
-	finishedLoading: boolean;
 	/** The history of the level data. */
 	levelHistory: HistoryList<Level>;
 	/** Whether there are unsaved changes to the level. */
@@ -75,7 +75,9 @@ interface State {
 	selectedEntityItemIndex?: number;
 	/** The currently selected region of the tileset. */
 	tilesetSelection?: Rect;
-	/** Whether an action is currently taking place. */
+	/** Whether a level editing action is currently taking place
+	 * (i.e., the user is currently placing tiles by dragging with the pencil tool).
+	 */
 	continuedAction: boolean;
 	/** The last x position of the cursor. */
 	cursorX: number;
@@ -95,7 +97,6 @@ export default class LevelEditor extends AppTab<Props, State> {
 			images: new Map<string, Image>(),
 			totalImages: 0,
 			imagesLoaded: 0,
-			finishedLoading: false,
 			levelHistory: HistoryList.New(
 				this.props.level ? this.props.level :
 					Level.New(this.props.project, this.props.projectFilePath),
@@ -126,7 +127,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	public onKeyDown(event: KeyboardEvent) {
-		if (event.key === 'Delete') this.onDelete();
+		if (this.props.focused && event.key === 'Delete') this.onDelete();
 	}
 
 	private loadImages() {
@@ -323,6 +324,7 @@ export default class LevelEditor extends AppTab<Props, State> {
 			),
 			'Remove entity',
 		);
+		this.setState({selectedEntityItemIndex: null});
 	}
 
 	public save(saveAs = false, onSave?: () => void) {
@@ -404,7 +406,10 @@ export default class LevelEditor extends AppTab<Props, State> {
 						onToggleShowSelectedLayerOnTop={() => this.setState({
 							showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop,
 						})}
-						onSelectLayer={(layerIndex: number) => this.setState({selectedLayerIndex: layerIndex})}
+						onSelectLayer={(layerIndex: number) => this.setState({
+							selectedLayerIndex: layerIndex,
+							selectedEntityItemIndex: null,
+						})}
 						modifyLevel={this.modifyLevel.bind(this)}
 					/>
 					<LayerOptions
