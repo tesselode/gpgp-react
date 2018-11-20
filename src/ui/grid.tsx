@@ -85,7 +85,8 @@ export default class Grid extends React.Component<Props, State> {
 		this.setState({previousMouseX: x, previousMouseY: y});
 	}
 
-	private onMouseDown(event) {
+	private onMouseDown(event: React.MouseEvent<HTMLDivElement>) {
+		event.preventDefault();
 		if (this.state.button === false) {
 			this.setState({button: event.button});
 			if (this.props.onClick) this.props.onClick(event.button);
