@@ -13,7 +13,7 @@ import {
 	Row,
 } from 'reactstrap';
 import Image from '../../data/image';
-import Project from '../../data/project';
+import Project from '../../data/project/project';
 import Grid from '../grid';
 import ItemList from './item-list';
 

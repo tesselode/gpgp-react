@@ -1,8 +1,8 @@
 import path from 'path';
+import EntityLayer, { ExportedEntityLayerData } from './layer/entity-layer';
 import GeometryLayer, { ExportedGeometryLayerData } from "./layer/geometry-layer";
 import TileLayer, { ExportedTileLayerData } from "./layer/tile-layer";
-import Project from "./project";
-import EntityLayer, { ExportedEntityLayerData } from './layer/entity-layer';
+import Project from "../project/project";
 
 export type Layer = GeometryLayer | TileLayer | EntityLayer;
 export type ExportedLayerData = ExportedGeometryLayerData |

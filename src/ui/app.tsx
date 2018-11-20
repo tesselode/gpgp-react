@@ -15,8 +15,8 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import Level, { ExportedLevelData } from '../data/Level';
-import Project, { ExportedProjectData } from '../data/Project';
+import Level, { ExportedLevelData } from '../data/level/level';
+import Project, { ExportedProjectData } from '../data/project/project';
 import AppTab from './app-tab';
 import './app.css';
 import LevelEditor from './level-editor/level-editor';

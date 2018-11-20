@@ -1,5 +1,5 @@
-import { EditTool } from "../../ui/level-editor/edit-tool";
-import { Rect } from "../../util";
+import { EditTool } from "../../../ui/level-editor/edit-tool";
+import { Rect } from "../../../util";
 
 export interface TileLayerItem {
 	readonly x: number;

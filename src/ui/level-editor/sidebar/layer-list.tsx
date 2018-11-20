@@ -11,12 +11,12 @@ import {
 	ListGroupItem,
 	Navbar,
 } from 'reactstrap';
-import TileLayer from '../../../data/layer/tile-layer';
-import Level from '../../../data/level';
-import Project from '../../../data/project';
+import EntityLayer from '../../../data/level/layer/entity-layer';
+import GeometryLayer from '../../../data/level/layer/geometry-layer';
+import TileLayer from '../../../data/level/layer/tile-layer';
+import Level from '../../../data/level/level';
+import Project from '../../../data/project/project';
 import SidebarSection from './sidebar-section';
-import EntityLayer from '../../../data/layer/entity-layer';
-import GeometryLayer from '../../../data/layer/geometry-layer';
 
 export interface Props {
 	/** The project the level belongs to. */

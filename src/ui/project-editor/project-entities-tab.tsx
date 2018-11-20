@@ -16,7 +16,7 @@ import {
 	Row,
 } from 'reactstrap';
 import Image from '../../data/image';
-import Project from '../../data/project';
+import Project from '../../data/project/project';
 import { getUniqueId } from '../../util';
 import ColorDisplay from '../common/color-display';
 import ItemList from './item-list';

@@ -8,7 +8,7 @@ import {
 	InputGroupAddon,
 	Label,
 } from 'reactstrap';
-import Project from '../../data/project';
+import Project from '../../data/project/project';
 
 export interface Props {
 	project: Project;

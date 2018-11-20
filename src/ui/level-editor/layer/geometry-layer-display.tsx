@@ -1,7 +1,7 @@
 import React from 'react';
-import GeometryLayer from '../../../data/layer/geometry-layer';
-import Level from '../../../data/level';
-import Project from '../../../data/project';
+import GeometryLayer from '../../../data/level/layer/geometry-layer';
+import Level from '../../../data/level/level';
+import Project from '../../../data/project/project';
 
 export interface Props {
 	/** The project the level is for. */

@@ -1,6 +1,6 @@
 import React from 'react';
-import Entity from '../../../data/entity';
 import Image from '../../../data/image';
+import Entity from '../../../data/project/entity';
 
 interface Props {
 	/** The tile size of the grid. */

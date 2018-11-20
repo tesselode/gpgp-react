@@ -1,4 +1,4 @@
-import Tileset, { ExportedTilesetData } from "../data/tileset";
+import Tileset, { ExportedTilesetData } from "./tileset";
 import Entity, { ExportedEntityData } from "./entity";
 
 /** The data used by the Project class. */

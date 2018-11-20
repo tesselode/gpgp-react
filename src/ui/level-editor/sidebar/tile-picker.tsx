@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from '../../../data/image';
-import Project from '../../../data/project';
+import Project from '../../../data/project/project';
 import { normalizeRect, Rect } from '../../../util';
 import Grid from '../../grid';
 import SidebarSection from './sidebar-section';

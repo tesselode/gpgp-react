@@ -14,11 +14,11 @@ import {
 	TabPane,
 } from 'reactstrap';
 import Image, { loadImage } from '../../data/image';
-import Project from '../../data/project';
+import Project from '../../data/project/project';
 import AppTab from '../app-tab';
+import ProjectEntitiesTab from './project-entities-tab';
 import ProjectSettingsTab from './project-settings-tab';
 import ProjectTilesetsTab from './project-tilesets-tab';
-import ProjectEntitiesTab from './project-entities-tab';
 
 export enum ProjectEditorTab {
 	Settings,

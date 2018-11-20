@@ -1,8 +1,8 @@
 import React from 'react';
 import { Form, FormGroup, Input, Label } from 'reactstrap';
-import TileLayer from '../../../data/layer/tile-layer';
-import Level from '../../../data/level';
-import Project from '../../../data/project';
+import TileLayer from '../../../data/level/layer/tile-layer';
+import Level from '../../../data/level/level';
+import Project from '../../../data/project/project';
 import SidebarSection from './sidebar-section';
 
 export interface Props {

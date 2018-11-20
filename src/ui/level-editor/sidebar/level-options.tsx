@@ -12,7 +12,7 @@ import {
 	Label,
 	Popover,
 } from 'reactstrap';
-import Level from '../../../data/level';
+import Level from '../../../data/level/level';
 import { getUniqueId } from '../../../util';
 import ColorDisplay from '../../common/color-display';
 import SidebarSection from './sidebar-section';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import Image from '../../../data/image';
-import Project from '../../../data/project';
+import Project from '../../../data/project/project';
 import ColorDisplay from '../../common/color-display';
 import SidebarSection from './sidebar-section';
 
