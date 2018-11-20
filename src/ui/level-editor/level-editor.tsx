@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { Col, Container, Progress, Row } from 'reactstrap';
+import { isNullOrUndefined } from 'util';
 import HistoryList from '../../data/history-list';
 import Image, { loadImage } from '../../data/image';
 import EntityLayer from '../../data/layer/entity-layer';
@@ -112,10 +113,20 @@ export default class LevelEditor extends AppTab<Props, State> {
 			cursorRect: {l: 0, t: 0, r: 0, b: 0},
 			cursorState: CursorState.Idle,
 		};
+		this.onKeyDown = this.onKeyDown.bind(this);
 	}
 
 	public componentDidMount() {
+		window.addEventListener('keydown', this.onKeyDown);
 		this.loadImages();
+	}
+
+	public componentWillUnmount() {
+		window.removeEventListener('keydown', this.onKeyDown);
+	}
+
+	public onKeyDown(event: KeyboardEvent) {
+		if (event.key === 'Delete') this.onDelete();
 	}
 
 	private loadImages() {
@@ -148,59 +159,76 @@ export default class LevelEditor extends AppTab<Props, State> {
 	}
 
 	private onMoveCursor(x: number, y: number): void {
-		this.setState({cursorX: x, cursorY: y});
-		switch (this.state.cursorState) {
-			case CursorState.Idle:
-				this.setState({cursorRect: {l: x, t: y, r: x, b: y}});
-				break;
-			case CursorState.Place:
-			case CursorState.Remove:
-				switch (this.state.tool) {
-					case EditTool.Pencil:
-						this.setState({cursorRect: {l: x, t: y, r: x, b: y}});
-						switch (this.state.cursorState) {
-							case CursorState.Place:
-								this.onPlace({l: x, t: y, r: x, b: y});
-								break;
-							case CursorState.Remove:
-								this.onRemove({l: x, t: y, r: x, b: y});
-								break;
-						}
-						break;
-					case EditTool.Rectangle:
-						this.setState({cursorRect: {
-							l: this.state.cursorRect.l,
-							t: this.state.cursorRect.t,
-							r: x,
-							b: y,
-						}});
-				}
+		const level = this.state.levelHistory.getCurrentState();
+		const layer = level.data.layers[this.state.selectedLayerIndex];
+		if (layer instanceof EntityLayer) {
+			switch (this.state.cursorState) {
+				case CursorState.Place:
+					if (!isNullOrUndefined(this.state.selectedEntityItemIndex)) {
+						this.modifyLevel(
+							level.setLayer(
+								this.state.selectedLayerIndex,
+								layer.move(
+									this.state.selectedEntityItemIndex,
+									x - this.state.cursorX,
+									y - this.state.cursorY,
+								),
+							),
+							'Move entity',
+							true,
+						);
+					}
+					break;
+			}
+		} else {
+			switch (this.state.cursorState) {
+				case CursorState.Idle:
+					this.setState({cursorRect: {l: x, t: y, r: x, b: y}});
+					break;
+				case CursorState.Place:
+				case CursorState.Remove:
+					switch (this.state.tool) {
+						case EditTool.Pencil:
+							this.setState({cursorRect: {l: x, t: y, r: x, b: y}});
+							switch (this.state.cursorState) {
+								case CursorState.Place:
+									this.onPlace({l: x, t: y, r: x, b: y});
+									break;
+								case CursorState.Remove:
+									this.onRemove({l: x, t: y, r: x, b: y});
+									break;
+							}
+							break;
+						case EditTool.Rectangle:
+							this.setState({cursorRect: {
+								l: this.state.cursorRect.l,
+								t: this.state.cursorRect.t,
+								r: x,
+								b: y,
+							}});
+					}
+			}
 		}
+		this.setState({cursorX: x, cursorY: y});
 	}
 
 	private onClickGrid(button: number): void {
 		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
-		if (layer instanceof EntityLayer) {
-			switch (button) {
-				case 0:
+		switch (button) {
+			case 0:
+				this.setState({cursorState: CursorState.Place});
+				if (layer instanceof EntityLayer) {
 					const itemIndex = layer.getItemAt(this.props.project, this.state.cursorX, this.state.cursorY);
 					this.setState({selectedEntityItemIndex: itemIndex === -1 ? null : itemIndex});
-					break;
-			}
-		} else {
-			switch (button) {
-				case 0:
-					this.setState({cursorState: CursorState.Place});
-					if (this.state.tool === EditTool.Pencil)
-						this.onPlace(normalizeRect(this.state.cursorRect));
-					break;
-				case 2:
-					this.setState({cursorState: CursorState.Remove});
-					if (this.state.tool === EditTool.Pencil)
-						this.onRemove(normalizeRect(this.state.cursorRect));
-					break;
-			}
+				} else if (this.state.tool === EditTool.Pencil)
+					this.onPlace(normalizeRect(this.state.cursorRect));
+				break;
+			case 2:
+				this.setState({cursorState: CursorState.Remove});
+				if (this.state.tool === EditTool.Pencil)
+					this.onRemove(normalizeRect(this.state.cursorRect));
+				break;
 		}
 	}
 
@@ -232,15 +260,19 @@ export default class LevelEditor extends AppTab<Props, State> {
 	private onDoubleClickGrid(button: number) {
 		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
-		if (!(layer instanceof EntityLayer && button === 0)) return;
+		if (!(layer instanceof EntityLayer)) return;
 		const entity = this.props.project.data.entities[this.state.selectedEntityIndex];
-		this.modifyLevel(
-			level.setLayer(
-				this.state.selectedLayerIndex,
-				layer.place(this.state.cursorX, this.state.cursorY, entity.data.name),
-			),
-			'Place entity',
-		);
+		switch (button) {
+			case 0:
+				this.modifyLevel(
+					level.setLayer(
+						this.state.selectedLayerIndex,
+						layer.place(this.state.cursorX, this.state.cursorY, entity.data.name),
+					),
+					'Place entity',
+				);
+				break;
+		}
 	}
 
 	private onPlace(rect: Rect) {
@@ -277,6 +309,19 @@ export default class LevelEditor extends AppTab<Props, State> {
 			),
 			'Remove tiles',
 			true,
+		);
+	}
+
+	private onDelete() {
+		const level = this.state.levelHistory.getCurrentState();
+		const layer = level.data.layers[this.state.selectedLayerIndex];
+		if (!(layer instanceof EntityLayer && !isNullOrUndefined(this.state.selectedEntityItemIndex))) return;
+		this.modifyLevel(
+			level.setLayer(
+				this.state.selectedLayerIndex,
+				layer.remove(this.state.selectedEntityItemIndex),
+			),
+			'Remove entity',
 		);
 	}
 

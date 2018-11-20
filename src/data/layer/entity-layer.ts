@@ -70,6 +70,15 @@ export default class EntityLayer {
 		return new EntityLayer({...this.data, items});
 	}
 
+	public move(itemIndex: number, deltaX: number, deltaY: number): EntityLayer {
+		const items = this.data.items.slice(0, this.data.items.length);
+		const item = {...items[itemIndex]};
+		item.x += deltaX;
+		item.y += deltaY;
+		items[itemIndex] = item;
+		return new EntityLayer({...this.data, items});
+	}
+
 	public export(): ExportedEntityLayerData {
 		return {...this.data, type: 'Entity'};
 	}
