@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rect } from '../../util';
+import { Rect } from '../../../util';
 
 interface Props {
 	/** The tile size of the grid. */
