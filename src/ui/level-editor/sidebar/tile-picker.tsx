@@ -78,44 +78,33 @@ export default class TilePicker extends React.Component<Props, State> {
 		const normalizedSelection = this.state.selection && this.state.selection.normalized();
 		return <SidebarSection
 			name={'Tiles - ' + this.props.layer.data.tilesetName}
+			height='15em'
 			startExpanded
 			flush
 		>
-			<div
-				style={{
-					width: '100%',
-					height: '15em',
-					overflow: 'auto',
-					transformOrigin: '0% 0%',
-					transform: 'scale(' + 1 + ')',
-					imageRendering: 'pixelated',
-					transition: '.15s',
-				}}
+			<Grid
+				tileSize={this.props.project.data.tileSize}
+				width={Math.ceil(imageData.width / this.props.project.data.tileSize)}
+				height={Math.ceil(imageData.height / this.props.project.data.tileSize)}
+				startingZoom={1}
+				onClick={this.onClick.bind(this)}
+				onRelease={this.onRelease.bind(this)}
+				onMove={this.onMove.bind(this)}
 			>
-				<Grid
-					tileSize={this.props.project.data.tileSize}
-					width={Math.ceil(imageData.width / this.props.project.data.tileSize)}
-					height={Math.ceil(imageData.height / this.props.project.data.tileSize)}
-					startingZoom={1}
-					onClick={this.onClick.bind(this)}
-					onRelease={this.onRelease.bind(this)}
-					onMove={this.onMove.bind(this)}
-				>
-					<img src={imageData.data}/>
-					{normalizedSelection && <div
-						style={{
-							position: 'absolute',
-							zIndex: 2,
-							left: normalizedSelection.l * this.props.project.data.tileSize + 'px',
-							top: normalizedSelection.t * this.props.project.data.tileSize + 'px',
-							width: this.props.project.data.tileSize * (normalizedSelection.r - normalizedSelection.l + 1) + 1 + 'px',
-							height: this.props.project.data.tileSize * (normalizedSelection.b - normalizedSelection.t + 1) + 1 + 'px',
-							border: '1px solid red',
-							pointerEvents: 'none',
-						}}
-					/>}
-				</Grid>
-			</div>
+				<img src={imageData.data}/>
+				{normalizedSelection && <div
+					style={{
+						position: 'absolute',
+						zIndex: 2,
+						left: normalizedSelection.l * this.props.project.data.tileSize + 'px',
+						top: normalizedSelection.t * this.props.project.data.tileSize + 'px',
+						width: this.props.project.data.tileSize * (normalizedSelection.r - normalizedSelection.l + 1) + 1 + 'px',
+						height: this.props.project.data.tileSize * (normalizedSelection.b - normalizedSelection.t + 1) + 1 + 'px',
+						border: '1px solid red',
+						pointerEvents: 'none',
+					}}
+				/>}
+			</Grid>
 		</SidebarSection>;
 	}
 }

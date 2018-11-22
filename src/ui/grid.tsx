@@ -150,7 +150,7 @@ export default class Grid extends React.Component<Props, State> {
 			onMouseUp={this.onMouseUp.bind(this)}
 			onWheel={this.onWheel.bind(this)}
 			onMouseMove={(event) => {this.onMouseMove(event.clientX, event.clientY); }}
-			onDoubleClick={(event) => {this.props.onDoubleClick(event.button)}}
+			onDoubleClick={(event) => {this.props.onDoubleClick(event.button); }}
 		>
 			<div
 				style={{

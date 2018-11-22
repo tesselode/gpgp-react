@@ -50,6 +50,7 @@ export default class SidebarSection extends React.Component<Props, State> {
 						padding: this.props.flush && 0,
 						height: this.props.height,
 						overflowY: 'auto',
+						resize: 'vertical',
 					}}
 				>
 					{this.props.children}
