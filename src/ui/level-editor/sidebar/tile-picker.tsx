@@ -1,12 +1,12 @@
 import React from 'react';
+import { Label } from 'reactstrap';
 import Image from '../../../data/image';
+import TileLayer from '../../../data/level/layer/tile-layer';
+import { Layer } from '../../../data/level/level';
 import Project from '../../../data/project/project';
 import Rect from '../../../data/rect';
 import Grid from '../../grid';
 import SidebarSection from './sidebar-section';
-import { Layer } from '../../../data/level/level';
-import TileLayer from '../../../data/level/layer/tile-layer';
-import { Label } from 'reactstrap';
 
 interface Props {
 	project: Project;
@@ -61,6 +61,7 @@ export default class TilePicker extends React.Component<Props, State> {
 	public render() {
 		if (!(this.props.layer instanceof TileLayer)) return <SidebarSection
 			name='Tiles'
+			height='15em'
 		>
 			<Label size='sm' className='text-muted'>No tile layer selected</Label>
 		</SidebarSection>;
@@ -69,6 +70,7 @@ export default class TilePicker extends React.Component<Props, State> {
 		const imageData = this.props.images.get(tileset.data.imagePath);
 		if (!imageData || imageData.error) return <SidebarSection
 			name={'Tiles - ' + this.props.layer.data.tilesetName}
+			height='15em'
 		>
 			<Label size='sm'>Error loading tileset image data</Label>
 		</SidebarSection>;

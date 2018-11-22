@@ -6,6 +6,8 @@ export interface Props {
 	name: string;
 	/** Whether the section should be expanded by default. */
 	startExpanded?: boolean;
+	/** An optional fixed height for the sidebar section. */
+	height?: string;
 	/** Whether the contents of the section should have zero padding. */
 	flush?: boolean;
 	/** Additional elements to add to the section header. */
@@ -44,7 +46,11 @@ export default class SidebarSection extends React.Component<Props, State> {
 			</CardHeader>
 			<Collapse isOpen={this.state.expanded} style={{transition: '.2s'}} >
 				<CardBody
-					style={this.props.flush && {padding: 0}}
+					style={{
+						padding: this.props.flush && 0,
+						height: this.props.height,
+						overflowY: 'auto',
+					}}
 				>
 					{this.props.children}
 				</CardBody>
