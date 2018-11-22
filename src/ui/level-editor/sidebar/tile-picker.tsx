@@ -4,11 +4,14 @@ import Project from '../../../data/project/project';
 import Rect from '../../../data/rect';
 import Grid from '../../grid';
 import SidebarSection from './sidebar-section';
+import { Layer } from '../../../data/level/level';
+import TileLayer from '../../../data/level/layer/tile-layer';
+import { Label } from 'reactstrap';
 
 interface Props {
 	project: Project;
-	tilesetName: string;
-	tilesetImageData?: Image;
+	images: Map<string, Image>;
+	layer: Layer;
 	onSelectTiles: (rect: Rect) => void;
 }
 
@@ -56,49 +59,61 @@ export default class TilePicker extends React.Component<Props, State> {
 	}
 
 	public render() {
+		if (!(this.props.layer instanceof TileLayer)) return <SidebarSection
+			name='Tiles'
+		>
+			<Label size='sm' className='text-muted'>No tile layer selected</Label>
+		</SidebarSection>;
+
+		const tileset = this.props.project.getTileset(this.props.layer.data.tilesetName);
+		const imageData = this.props.images.get(tileset.data.imagePath);
+		if (!imageData || imageData.error) return <SidebarSection
+			name={'Tiles - ' + this.props.layer.data.tilesetName}
+		>
+			<Label size='sm'>Error loading tileset image data</Label>
+		</SidebarSection>;
+
 		const normalizedSelection = this.state.selection && this.state.selection.normalized();
 		return <SidebarSection
-			name={'Tiles - ' + this.props.tilesetName}
-			startExpanded={true}
+			name={'Tiles - ' + this.props.layer.data.tilesetName}
+			startExpanded
 			flush
 		>
-			{this.props.tilesetImageData && (this.props.tilesetImageData.error ? this.props.tilesetImageData.error :
-				<div
-					style={{
-						width: '100%',
-						height: '15em',
-						overflow: 'auto',
-						transformOrigin: '0% 0%',
-						transform: 'scale(' + 1 + ')',
-						imageRendering: 'pixelated',
-						transition: '.15s',
-					}}
+			<div
+				style={{
+					width: '100%',
+					height: '15em',
+					overflow: 'auto',
+					transformOrigin: '0% 0%',
+					transform: 'scale(' + 1 + ')',
+					imageRendering: 'pixelated',
+					transition: '.15s',
+				}}
+			>
+				<Grid
+					tileSize={this.props.project.data.tileSize}
+					width={Math.ceil(imageData.width / this.props.project.data.tileSize)}
+					height={Math.ceil(imageData.height / this.props.project.data.tileSize)}
+					startingZoom={1}
+					onClick={this.onClick.bind(this)}
+					onRelease={this.onRelease.bind(this)}
+					onMove={this.onMove.bind(this)}
 				>
-					<Grid
-						tileSize={this.props.project.data.tileSize}
-						width={Math.ceil(this.props.tilesetImageData.width / this.props.project.data.tileSize)}
-						height={Math.ceil(this.props.tilesetImageData.height / this.props.project.data.tileSize)}
-						startingZoom={1}
-						onClick={this.onClick.bind(this)}
-						onRelease={this.onRelease.bind(this)}
-						onMove={this.onMove.bind(this)}
-					>
-						<img src={this.props.tilesetImageData.data}/>
-						{normalizedSelection && <div
-							style={{
-								position: 'absolute',
-								zIndex: 2,
-								left: normalizedSelection.l * this.props.project.data.tileSize + 'px',
-								top: normalizedSelection.t * this.props.project.data.tileSize + 'px',
-								width: this.props.project.data.tileSize * (normalizedSelection.r - normalizedSelection.l + 1) + 1 + 'px',
-								height: this.props.project.data.tileSize * (normalizedSelection.b - normalizedSelection.t + 1) + 1 + 'px',
-								border: '1px solid red',
-								pointerEvents: 'none',
-							}}
-						/>}
-					</Grid>
-				</div>
-			)}
+					<img src={imageData.data}/>
+					{normalizedSelection && <div
+						style={{
+							position: 'absolute',
+							zIndex: 2,
+							left: normalizedSelection.l * this.props.project.data.tileSize + 'px',
+							top: normalizedSelection.t * this.props.project.data.tileSize + 'px',
+							width: this.props.project.data.tileSize * (normalizedSelection.r - normalizedSelection.l + 1) + 1 + 'px',
+							height: this.props.project.data.tileSize * (normalizedSelection.b - normalizedSelection.t + 1) + 1 + 'px',
+							border: '1px solid red',
+							pointerEvents: 'none',
+						}}
+					/>}
+				</Grid>
+			</div>
 		</SidebarSection>;
 	}
 }

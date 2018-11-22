@@ -11,6 +11,7 @@ import GeometryLayer from '../../data/level/layer/geometry-layer';
 import TileLayer from '../../data/level/layer/tile-layer';
 import Level from '../../data/level/level';
 import Project from '../../data/project/project';
+import Rect from '../../data/rect';
 import AppTab from '../app-tab';
 import Grid from '../grid';
 import EntityCursor from './cursor/entity-cursor';
@@ -27,7 +28,6 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
-import Rect from '../../data/rect';
 
 enum CursorState {
 	Idle,
@@ -414,20 +414,18 @@ export default class LevelEditor extends AppTab<Props, State> {
 						modifyLevel={this.modifyLevel.bind(this)}
 						onBlur={() => this.setState({continuedAction: false})}
 					/>
-					{selectedLayer instanceof TileLayer && <TilePicker
+					<TilePicker
 						project={this.props.project}
-						tilesetName={selectedLayer.data.tilesetName}
-						tilesetImageData={this.state.images.get(
-							this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
-						)}
+						images={this.state.images}
+						layer={selectedLayer}
 						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
-					/>}
-					{selectedLayer instanceof EntityLayer && <EntityPicker
+					/>
+					<EntityPicker
 						project={this.props.project}
 						images={this.state.images}
 						selectedEntityIndex={this.state.selectedEntityIndex}
 						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
-					/>}
+					/>
 					<HistoryBrowser
 						history={this.state.levelHistory}
 						onJump={(position: number) => {

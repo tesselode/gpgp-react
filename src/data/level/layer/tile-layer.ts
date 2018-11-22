@@ -24,7 +24,7 @@ export interface ExportedTileLayerData {
 }
 
 export default class TileLayer {
-	public readonly data;
+	public readonly data: TileLayerData;
 
 	public static New(tilesetName: string) {
 		return new TileLayer({
