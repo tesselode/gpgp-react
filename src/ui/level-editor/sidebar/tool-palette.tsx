@@ -14,6 +14,7 @@ export default (props: Props) => <div
 		position: 'sticky',
 		top: 0,
 		zIndex: 100,
+		paddingTop: '.5em',
 		paddingBottom: '1em',
 		background: 'white',
 	}}

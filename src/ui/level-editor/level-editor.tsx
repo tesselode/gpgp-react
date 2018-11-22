@@ -381,130 +381,145 @@ export default class LevelEditor extends AppTab<Props, State> {
 			/>;
 		}
 
-		return <Container fluid style={{paddingTop: '1em'}}>
-			<Row>
-				<Col md={3} style={{height: 'calc(100vh - 70px)', overflowY: 'auto'}}>
-					<ToolPalette
-						tool={this.state.tool}
-						onToolChanged={(tool) => this.setState({tool})}
-					/>
-					<LevelOptions
-						level={level}
-						modifyLevel={this.modifyLevel.bind(this)}
-						onBlur={() => this.setState({continuedAction: false})}
-					/>
-					<LayerList
-						project={this.props.project}
-						level={level}
-						selectedLayerIndex={this.state.selectedLayerIndex}
-						showSelectedLayerOnTop={this.state.showSelectedLayerOnTop}
-						onToggleShowSelectedLayerOnTop={() => this.setState({
-							showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop,
-						})}
-						onSelectLayer={(layerIndex: number) => this.setState({
-							selectedLayerIndex: layerIndex,
-							selectedEntityItemIndex: null,
-						})}
-						modifyLevel={this.modifyLevel.bind(this)}
-					/>
-					<LayerOptions
-						level={level}
-						project={this.props.project}
-						selectedLayerIndex={this.state.selectedLayerIndex}
-						modifyLevel={this.modifyLevel.bind(this)}
-						onBlur={() => this.setState({continuedAction: false})}
-					/>
-					<TilePicker
-						project={this.props.project}
-						images={this.state.images}
-						layer={selectedLayer}
-						onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
-					/>
-					<EntityPicker
-						project={this.props.project}
-						images={this.state.images}
-						selectedEntityIndex={this.state.selectedEntityIndex}
-						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
-					/>
-					<HistoryBrowser
-						history={this.state.levelHistory}
-						onJump={(position: number) => {
-							this.setState({levelHistory: this.state.levelHistory.jump(position)});
-						}}
-					/>
-				</Col>
-				<Col md={9} style={{height: 'calc(100vh - 70px)', overflowY: 'auto'}}>
-					<Grid
-						tileSize={this.props.project.data.tileSize}
-						width={level.data.width}
-						height={level.data.height}
-						background={level.data.hasBackgroundColor && level.data.backgroundColor}
-						onMove={this.onMoveCursor.bind(this)}
-						onClick={this.onClickGrid.bind(this)}
-						onRelease={this.onReleaseGrid.bind(this)}
-						onDoubleClick={this.onDoubleClickGrid.bind(this)}
-					>
-						{level.data.layers.map((layer, i) => {
-							if (!layer.data.visible) return '';
-							let order = -(i + 2);
-							if (this.state.showSelectedLayerOnTop && i === this.state.selectedLayerIndex)
-								order = -1;
-							if (layer instanceof TileLayer)
-								return <TileLayerDisplay
-									key={i}
-									project={this.props.project}
-									level={level}
-									layer={layer}
-									tilesetImage={this.state.images.get(
-										this.props.project.getTileset(layer.data.tilesetName).data.imagePath,
-									)}
-									order={order}
-								/>;
-							else if (layer instanceof EntityLayer)
-								return <EntityLayerDisplay
-									key={i}
-									project={this.props.project}
-									images={this.state.images}
-									level={level}
-									layer={layer}
-									order={order}
-									selectedEntityItemIndex={this.state.selectedEntityItemIndex}
-								/>;
-							else if (layer instanceof GeometryLayer)
-								return <GeometryLayerDisplay
-									key={i}
-									project={this.props.project}
-									level={level}
-									layer={layer}
-									order={order}
-								/>;
-							return '';
-						})}
-						{
-							selectedLayer instanceof TileLayer ? <TileCursor
-								tileSize={this.props.project.data.tileSize}
-								cursor={this.state.cursorRect.normalized()}
-								removing={this.state.cursorState === CursorState.Remove}
-								tool={this.state.tool}
+		return <div>
+			<div
+				style={{
+					width: '28%',
+					maxWidth: '75%',
+					float: 'left',
+					height: 'calc(100vh - 42px)',
+					overflowY: 'auto',
+					resize: 'horizontal',
+					padding: '.5em',
+					paddingTop: 0,
+				}}
+			>
+				<ToolPalette
+					tool={this.state.tool}
+					onToolChanged={(tool) => this.setState({tool})}
+				/>
+				<LevelOptions
+					level={level}
+					modifyLevel={this.modifyLevel.bind(this)}
+					onBlur={() => this.setState({continuedAction: false})}
+				/>
+				<LayerList
+					project={this.props.project}
+					level={level}
+					selectedLayerIndex={this.state.selectedLayerIndex}
+					showSelectedLayerOnTop={this.state.showSelectedLayerOnTop}
+					onToggleShowSelectedLayerOnTop={() => this.setState({
+						showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop,
+					})}
+					onSelectLayer={(layerIndex: number) => this.setState({
+						selectedLayerIndex: layerIndex,
+						selectedEntityItemIndex: null,
+					})}
+					modifyLevel={this.modifyLevel.bind(this)}
+				/>
+				<LayerOptions
+					level={level}
+					project={this.props.project}
+					selectedLayerIndex={this.state.selectedLayerIndex}
+					modifyLevel={this.modifyLevel.bind(this)}
+					onBlur={() => this.setState({continuedAction: false})}
+				/>
+				<TilePicker
+					project={this.props.project}
+					images={this.state.images}
+					layer={selectedLayer}
+					onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
+				/>
+				<EntityPicker
+					project={this.props.project}
+					images={this.state.images}
+					selectedEntityIndex={this.state.selectedEntityIndex}
+					onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
+				/>
+				<HistoryBrowser
+					history={this.state.levelHistory}
+					onJump={(position: number) => {
+						this.setState({levelHistory: this.state.levelHistory.jump(position)});
+					}}
+				/>
+			</div>
+			<div
+				style={{
+					height: 'calc(100vh - 42px)',
+					overflowY: 'auto',
+					padding: '.5em',
+				}}
+			>
+				<Grid
+					tileSize={this.props.project.data.tileSize}
+					width={level.data.width}
+					height={level.data.height}
+					background={level.data.hasBackgroundColor && level.data.backgroundColor}
+					onMove={this.onMoveCursor.bind(this)}
+					onClick={this.onClickGrid.bind(this)}
+					onRelease={this.onReleaseGrid.bind(this)}
+					onDoubleClick={this.onDoubleClickGrid.bind(this)}
+				>
+					{level.data.layers.map((layer, i) => {
+						if (!layer.data.visible) return '';
+						let order = -(i + 2);
+						if (this.state.showSelectedLayerOnTop && i === this.state.selectedLayerIndex)
+							order = -1;
+						if (layer instanceof TileLayer)
+							return <TileLayerDisplay
+								key={i}
+								project={this.props.project}
+								level={level}
+								layer={layer}
 								tilesetImage={this.state.images.get(
-									this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
+									this.props.project.getTileset(layer.data.tilesetName).data.imagePath,
 								)}
-								tilesetSelection={this.state.tilesetSelection}
-							/> : selectedLayer instanceof EntityLayer ? <EntityCursor
-								tileSize={this.props.project.data.tileSize}
-								x={this.state.cursorX}
-								y={this.state.cursorY}
-								entity={this.props.project.data.entities[this.state.selectedEntityIndex]}
+								order={order}
+							/>;
+						else if (layer instanceof EntityLayer)
+							return <EntityLayerDisplay
+								key={i}
+								project={this.props.project}
 								images={this.state.images}
-							/> : <GenericCursor
-								tileSize={this.props.project.data.tileSize}
-								cursor={this.state.cursorRect.normalized()}
-								removing={this.state.cursorState === CursorState.Remove}
-							/>
-						}
-					</Grid>
-				</Col>
-			</Row>
-		</Container>;
+								level={level}
+								layer={layer}
+								order={order}
+								selectedEntityItemIndex={this.state.selectedEntityItemIndex}
+							/>;
+						else if (layer instanceof GeometryLayer)
+							return <GeometryLayerDisplay
+								key={i}
+								project={this.props.project}
+								level={level}
+								layer={layer}
+								order={order}
+							/>;
+						return '';
+					})}
+					{
+						selectedLayer instanceof TileLayer ? <TileCursor
+							tileSize={this.props.project.data.tileSize}
+							cursor={this.state.cursorRect.normalized()}
+							removing={this.state.cursorState === CursorState.Remove}
+							tool={this.state.tool}
+							tilesetImage={this.state.images.get(
+								this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
+							)}
+							tilesetSelection={this.state.tilesetSelection}
+						/> : selectedLayer instanceof EntityLayer ? <EntityCursor
+							tileSize={this.props.project.data.tileSize}
+							x={this.state.cursorX}
+							y={this.state.cursorY}
+							entity={this.props.project.data.entities[this.state.selectedEntityIndex]}
+							images={this.state.images}
+						/> : <GenericCursor
+							tileSize={this.props.project.data.tileSize}
+							cursor={this.state.cursorRect.normalized()}
+							removing={this.state.cursorState === CursorState.Remove}
+						/>
+					}
+				</Grid>
+			</div>
+		</div>;
 	}
 }
