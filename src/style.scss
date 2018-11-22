@@ -1,3 +1,16 @@
+// bootstrap customization
+
 $enable-rounded: false;
 
 @import "../node_modules/bootstrap/scss/bootstrap";
+
+// components
+
+#app {
+	user-select: none;
+}
+
+.compact-list-group-item {
+	padding: .5em !important;
+	font-size: .875em;
+}

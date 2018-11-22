@@ -18,7 +18,6 @@ import {
 import Level, { ExportedLevelData } from '../data/level/level';
 import Project, { ExportedProjectData } from '../data/project/project';
 import AppTab from './app-tab';
-import './app.css';
 import LevelEditor from './level-editor/level-editor';
 import ProjectEditor from './project-editor/project-editor';
 import Welcome from './welcome';
