@@ -76,6 +76,10 @@ export default class Entity {
 		return new Entity({...this.data, imagePath});
 	}
 
+	public clearImagePath(): Entity {
+		return new Entity({...this.data, imagePath: null});
+	}
+
 	public export(projectFilePath: string): ExportedEntityData {
 		return {
 			name: this.data.name,

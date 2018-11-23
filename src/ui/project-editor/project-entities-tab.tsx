@@ -1,4 +1,4 @@
-import Octicon, { FileDirectory } from '@githubprimer/octicons-react';
+import Octicon, { FileDirectory, X } from '@githubprimer/octicons-react';
 import { remote } from 'electron';
 import React from 'react';
 import {
@@ -163,9 +163,19 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 										<Octicon icon={FileDirectory} />
 									</Button>
 								</InputGroupAddon>
+								<InputGroupAddon addonType='prepend'>
+									<Button
+										onClick={() => this.props.setProject(this.props.project.setEntity(
+											this.state.selectedEntityIndex,
+											selectedEntity.clearImagePath(),
+										))}
+									>
+										<Octicon icon={X} />
+									</Button>
+								</InputGroupAddon>
 								<Input
 									disabled
-									value={selectedEntity.data.imagePath}
+									value={selectedEntity.data.imagePath || ''}
 								/>
 							</InputGroup>
 						</Col>
