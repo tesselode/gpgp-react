@@ -12,7 +12,6 @@ import TileLayer from '../../data/level/layer/tile-layer';
 import Level from '../../data/level/level';
 import Project from '../../data/project/project';
 import Rect from '../../data/rect';
-import AppTab from '../app-tab';
 import Grid from '../grid';
 import EntityCursor from './cursor/entity-cursor';
 import GenericCursor from './cursor/generic-cursor';
@@ -90,7 +89,7 @@ interface State {
 }
 
 /** The level editor screen, which allows you to create or edit levels. */
-export default class LevelEditor extends AppTab<Props, State> {
+export default class LevelEditor extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {

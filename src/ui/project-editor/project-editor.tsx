@@ -15,7 +15,6 @@ import {
 } from 'reactstrap';
 import Image, { loadImage } from '../../data/image';
 import Project from '../../data/project/project';
-import AppTab from '../app-tab';
 import ProjectEntitiesTab from './project-entities-tab';
 import ProjectSettingsTab from './project-settings-tab';
 import ProjectTilesetsTab from './project-tilesets-tab';
@@ -51,7 +50,7 @@ export interface State {
 }
 
 /** The project editor screen, which allows you to create new projects or edit existing ones. */
-export default class ProjectEditor extends AppTab<Props, State> {
+export default class ProjectEditor extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {

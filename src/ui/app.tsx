@@ -17,32 +17,24 @@ import {
 } from 'reactstrap';
 import Level, { ExportedLevelData } from '../data/level/level';
 import Project, { ExportedProjectData } from '../data/project/project';
-import AppTab from './app-tab';
 import LevelEditor from './level-editor/level-editor';
 import ProjectEditor from './project-editor/project-editor';
 import Welcome from './welcome';
 
-export enum TabType {
-	ProjectEditor = 'ProjectEditor',
-	LevelEditor = 'LevelEditor',
+enum TabType {
+	ProjectEditor,
+	LevelEditor,
 }
 
-export interface Tab {
-	type: TabType;
-	ref: React.RefObject<AppTab>;
-}
-
-export interface ProjectEditorTab extends Tab {
+interface ProjectEditorTab {
+	type: TabType.ProjectEditor;
 	ref: React.RefObject<ProjectEditor>;
 	project?: Project;
 	projectFilePath?: string;
 }
 
-export function isProjectEditorTab(tab: Tab): tab is ProjectEditorTab {
-	return tab.type === TabType.ProjectEditor;
-}
-
-export interface LevelEditorTab extends Tab {
+interface LevelEditorTab {
+	type: TabType.LevelEditor;
 	ref: React.RefObject<LevelEditor>;
 	project?: Project;
 	projectFilePath?: string;
@@ -50,11 +42,9 @@ export interface LevelEditorTab extends Tab {
 	levelFilePath?: string;
 }
 
-export function isLevelEditorTab(tab: Tab): tab is LevelEditorTab {
-	return tab.type === TabType.LevelEditor;
-}
+type Tab = ProjectEditorTab | LevelEditorTab;
 
-export interface State {
+interface State {
 	activeTab: number;
 	tabs: Tab[];
 	tabTitles: string[];
@@ -106,7 +96,7 @@ export default class App extends React.Component<{}, State> {
 
 	private onOpenProjectEditor(project?: Project, projectFilePath?: string) {
 		const tabs = this.state.tabs.slice(0, this.state.tabs.length);
-		const newTab = {
+		const newTab: ProjectEditorTab = {
 			type: TabType.ProjectEditor,
 			ref: React.createRef<ProjectEditor>(),
 			project,
@@ -151,7 +141,7 @@ export default class App extends React.Component<{}, State> {
 
 	private onOpenLevelEditor(project: Project, projectFilePath: string, level?: Level, levelFilePath?: string) {
 		const tabs = this.state.tabs.slice(0, this.state.tabs.length);
-		const newTab = {
+		const newTab: LevelEditorTab = {
 			type: TabType.LevelEditor,
 			ref: React.createRef<LevelEditor>(),
 			project,
@@ -242,10 +232,12 @@ export default class App extends React.Component<{}, State> {
 				</NavItem>
 			</Nav>
 			<TabContent activeTab={this.state.activeTab}>
-				{this.state.tabs.map((tab, i) => {
-					let tabContent: JSX.Element | string = '';
-					if (isProjectEditorTab(tab))
-						tabContent = <ProjectEditor
+				{this.state.tabs.map((tab, i) => <TabPane
+					key={i}
+					tabId={i}
+				>
+					{
+						tab.type === TabType.ProjectEditor ? <ProjectEditor
 							ref={tab.ref}
 							project={tab.project}
 							projectFilePath={tab.projectFilePath}
@@ -253,9 +245,7 @@ export default class App extends React.Component<{}, State> {
 								this.onChangeTabTitle(i, title);
 							}}
 							onCreateNewLevel={(project, projectFilePath) => this.onOpenLevelEditor(project, projectFilePath)}
-						/>;
-					else if (isLevelEditorTab(tab))
-						tabContent = <LevelEditor
+						/> : tab.type === TabType.LevelEditor ? <LevelEditor
 							ref={tab.ref}
 							project={tab.project}
 							projectFilePath={tab.projectFilePath}
@@ -265,14 +255,9 @@ export default class App extends React.Component<{}, State> {
 							onChangeTabTitle={title => {
 								this.onChangeTabTitle(i, title);
 							}}
-						/>;
-					return <TabPane
-						key={i}
-						tabId={i}
-					>
-						{tabContent}
-					</TabPane>;
-				})}
+						/> : ''
+					}
+				</TabPane>)}
 			</TabContent>
 		</div>;
 	}
