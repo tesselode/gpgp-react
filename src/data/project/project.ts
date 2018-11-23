@@ -1,5 +1,5 @@
 import Tileset, { ExportedTilesetData } from "./tileset";
-import Entity, { ExportedEntityData } from "./entity";
+import Entity, { ExportedEntityData } from "./entity/entity";
 
 /** The data used by the Project class. */
 export interface ProjectData {

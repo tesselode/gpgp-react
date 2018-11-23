@@ -1,4 +1,8 @@
 import path from 'path';
+import BooleanParameter, { ExportedBooleanParameterData } from './parameter/boolean-parameter';
+
+export type EntityParameter = BooleanParameter;
+export type ExportedEntityParameterData = ExportedBooleanParameterData;
 
 /** The data used by the Entity class. */
 export interface EntityData {
@@ -12,9 +16,11 @@ export interface EntityData {
 	color: string;
 	/** The absolute path to the image representing the entity, if there is one. */
 	imagePath?: string;
+	/** The parameters instances of this entity can set. */
+	parameters: EntityParameter[];
 }
 
-/** The data used to define entities in a project file.. */
+/** The data used to define entities in a project file. */
 export interface ExportedEntityData {
 	/** The name of the entity. */
 	name: string;
@@ -26,6 +32,8 @@ export interface ExportedEntityData {
 	color: string;
 	/** The relative path to the image representing the entity, if there is one. */
 	imagePath?: string;
+	/** The parameters instances of this entity can set. */
+	parameters: ExportedEntityParameterData[];
 }
 
 /** The settings for an entity. */
@@ -35,6 +43,7 @@ export default class Entity {
 		width: 1,
 		height: 1,
 		color: '#ff0000',
+		parameters: [],
 	};
 
 	public static New(): Entity {
@@ -49,6 +58,12 @@ export default class Entity {
 			color: data.color,
 			imagePath: data.imagePath &&
 				path.resolve(path.dirname(projectFilePath), data.imagePath),
+			parameters: data.parameters.map(parameterData => {
+				switch (parameterData.type) {
+					case 'boolean':
+						return BooleanParameter.Import(parameterData);
+				}
+			}),
 		});
 	}
 
@@ -80,6 +95,38 @@ export default class Entity {
 		return new Entity({...this.data, imagePath: null});
 	}
 
+	public addBooleanParameter(): Entity {
+		const parameters = this.data.parameters.slice(0, this.data.parameters.length);
+		parameters.push(BooleanParameter.New());
+		return new Entity({...this.data, parameters});
+	}
+
+	public removeParameter(parameterIndex: number): Entity {
+		const parameters = this.data.parameters.slice(0, this.data.parameters.length);
+		parameters.splice(parameterIndex, 1);
+		return new Entity({...this.data, parameters});
+	}
+
+	public moveParameterUp(parameterIndex: number): Entity {
+		if (!(parameterIndex > 0 && this.data.parameters[parameterIndex])) return this;
+		const parameters = this.data.parameters.slice(0, this.data.parameters.length);
+		parameters.splice(parameterIndex - 1, 0, parameters.splice(parameterIndex, 1)[0]);
+		return new Entity({...this.data, parameters});
+	}
+
+	public moveParameterDown(parameterIndex: number): Entity {
+		if (!(parameterIndex < this.data.parameters.length - 1 && this.data.parameters[parameterIndex])) return this;
+		const parameters = this.data.parameters.slice(0, this.data.parameters.length);
+		parameters.splice(parameterIndex + 1, 0, parameters.splice(parameterIndex, 1)[0]);
+		return new Entity({...this.data, parameters});
+	}
+
+	public setParameter(parameterIndex: number, parameter: EntityParameter): Entity {
+		const parameters = this.data.parameters.slice(0, this.data.parameters.length);
+		parameters[parameterIndex] = parameter;
+		return new Entity({...this.data, parameters});
+	}
+
 	public export(projectFilePath: string): ExportedEntityData {
 		return {
 			name: this.data.name,
@@ -88,6 +135,7 @@ export default class Entity {
 			color: this.data.color,
 			imagePath: this.data.imagePath &&
 				path.relative(path.dirname(projectFilePath), this.data.imagePath),
+			parameters: this.data.parameters.map(parameter => parameter.export()),
 		};
 	}
 }
