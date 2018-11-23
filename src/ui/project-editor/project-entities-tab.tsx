@@ -1,7 +1,6 @@
-import Octicon, { FileDirectory, Paintcan } from '@githubprimer/octicons-react';
+import Octicon, { FileDirectory } from '@githubprimer/octicons-react';
 import { remote } from 'electron';
 import React from 'react';
-import { SketchPicker } from 'react-color';
 import {
 	Button,
 	Col,
@@ -10,9 +9,7 @@ import {
 	Input,
 	InputGroup,
 	InputGroupAddon,
-	InputGroupText,
 	Label,
-	Popover,
 	Row,
 } from 'reactstrap';
 import Image from '../../data/image';
@@ -145,36 +142,14 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 					<FormGroup row>
 						<Label md={2}>Color</Label>
 						<Col md={10}>
-							<InputGroup>
-								<InputGroupAddon addonType='prepend'>
-									<Button
-										id={'showColorPicker' + this.state.uniqueId.toString()}
-										onClick={() => {this.setState({showColorPicker: !this.state.showColorPicker}); }}
-									>
-										<Octicon icon={Paintcan} />
-									</Button>
-									<InputGroupText>{ColorDisplay(selectedEntity.data.color)}</InputGroupText>
-								</InputGroupAddon>
-								<Input
-									value={selectedEntity.data.color}
-									disabled
-								/>
-							</InputGroup>
-							<Popover
-								placement='bottom'
-								target={'showColorPicker' + this.state.uniqueId.toString()}
-								isOpen={this.state.showColorPicker}
-								toggle={() => this.setState({showColorPicker: !this.state.showColorPicker})}
-							>
-								<SketchPicker
-									color={selectedEntity.data.color}
-									onChangeComplete={color => this.props.setProject(this.props.project.setEntity(
-										this.state.selectedEntityIndex,
-										selectedEntity.setColor(color.hex),
-									))}
-									disableAlpha
-								/>
-							</Popover>
+							<Input
+								type='color'
+								value={selectedEntity.data.color}
+								onChange={event => this.props.setProject(this.props.project.setEntity(
+									this.state.selectedEntityIndex,
+									selectedEntity.setColor(event.target.value),
+								))}
+							/>
 						</Col>
 					</FormGroup>
 					<FormGroup row>

@@ -24,7 +24,6 @@
     "jimp": "^0.5.4",
     "node-sass": "^4.10.0",
     "react": "^16.5.2",
-    "react-color": "^2.14.1",
     "react-dom": "^16.5.2",
     "reactstrap": "^6.5.0",
     "sass-loader": "^7.1.0",

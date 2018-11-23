@@ -1,8 +1,5 @@
-import Octicon, { Paintcan } from '@githubprimer/octicons-react';
 import React from 'react';
-import { SketchPicker } from 'react-color';
 import {
-	Button,
 	Form,
 	FormGroup,
 	Input,
@@ -10,11 +7,9 @@ import {
 	InputGroupAddon,
 	InputGroupText,
 	Label,
-	Popover,
 } from 'reactstrap';
 import Level from '../../../data/level/level';
 import { getUniqueId } from '../../../util';
-import ColorDisplay from '../../common/color-display';
 import SidebarSection from './sidebar-section';
 
 export interface Props {
@@ -106,36 +101,18 @@ export default class LevelOptions extends React.Component<Props, State> {
 									}}
 								/>
 							</InputGroupText>
-							<Button
-								id={'showColorPicker' + this.state.uniqueId.toString()}
-								onClick={() => {this.setState({showColorPicker: !this.state.showColorPicker}); }}
-							>
-								<Octicon icon={Paintcan} />
-							</Button>
-							<InputGroupText>{ColorDisplay(this.props.level.data.backgroundColor)}</InputGroupText>
 						</InputGroupAddon>
 						<Input
+							type='color'
 							value={this.props.level.data.backgroundColor}
-							disabled
-						/>
-					</InputGroup>
-					<Popover
-						placement='bottom'
-						target={'showColorPicker' + this.state.uniqueId.toString()}
-						isOpen={this.state.showColorPicker}
-						toggle={() => this.setState({showColorPicker: !this.state.showColorPicker})}
-					>
-						<SketchPicker
-							color={this.props.level.data.backgroundColor}
-							onChangeComplete={color => {
+							onChange={event => {
 								this.props.modifyLevel(
-									this.props.level.setBackgroundColor(color.hex),
-									'Change background color to ' + color.hex,
+									this.props.level.setBackgroundColor(event.target.value),
+									'Change background color to ' + event.target.value,
 								);
 							}}
-							disableAlpha
 						/>
-					</Popover>
+					</InputGroup>
 				</FormGroup>
 			</Form>
 		</SidebarSection>;
