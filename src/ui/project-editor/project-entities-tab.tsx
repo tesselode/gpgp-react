@@ -118,6 +118,34 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 							</div>}
 						/>
 					</TabPane>
+					<TabPane tabId={EntityEditorTab.Parameters}>
+						<ItemList
+							title='Parameters'
+							addMenuItems={['Boolean']}
+							selectedItemIndex={this.state.selectedEntityIndex}
+							items={this.props.project.data.entities}
+							onSelectItem={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
+							onAddItem={() => this.props.setProject(this.props.project.addEntity())}
+							onRemoveItem={entityIndex => this.props.setProject(this.props.project.removeEntity(entityIndex))}
+							onMoveItemUp={entityIndex => this.props.setProject(this.props.project.moveEntityUp(entityIndex))}
+							onMoveItemDown={entityIndex => this.props.setProject(this.props.project.moveEntityDown(entityIndex))}
+							renderItem={entity => <div>
+								{
+									entity.data.imagePath && this.props.images.get(entity.data.imagePath) ?
+										<img
+											src={this.props.images.get(entity.data.imagePath).data}
+											style={{
+												width: 'auto',
+												height: '1em',
+											}}
+										/>
+										: ColorDisplay(entity.data.color)
+								}
+								&nbsp;&nbsp;
+								{entity.data.name}
+							</div>}
+						/>
+					</TabPane>
 				</TabContent>
 			</Col>
 			{selectedEntity && <Col
