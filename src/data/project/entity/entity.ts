@@ -58,12 +58,12 @@ export default class Entity {
 			color: data.color,
 			imagePath: data.imagePath &&
 				path.resolve(path.dirname(projectFilePath), data.imagePath),
-			parameters: data.parameters && data.parameters.map(parameterData => {
+			parameters: data.parameters ? data.parameters.map(parameterData => {
 				switch (parameterData.type) {
 					case 'boolean':
 						return BooleanParameter.Import(parameterData);
 				}
-			}),
+			}) : [],
 		});
 	}
 

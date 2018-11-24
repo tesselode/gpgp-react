@@ -37,6 +37,7 @@ interface Props {
 interface State {
 	activeTab: EntityEditorTab;
 	selectedEntityIndex: number;
+	selectedParameterIndex: number;
 	showColorPicker: boolean;
 	uniqueId: number;
 }
@@ -47,6 +48,7 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 		this.state = {
 			activeTab: EntityEditorTab.Entities,
 			selectedEntityIndex: 0,
+			selectedParameterIndex: 0,
 			showColorPicker: false,
 			uniqueId: getUniqueId(),
 		};
@@ -118,34 +120,46 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 							</div>}
 						/>
 					</TabPane>
-					<TabPane tabId={EntityEditorTab.Parameters}>
+					{selectedEntity && <TabPane tabId={EntityEditorTab.Parameters}>
 						<ItemList
 							title='Parameters'
 							addMenuItems={['Boolean']}
-							selectedItemIndex={this.state.selectedEntityIndex}
-							items={this.props.project.data.entities}
-							onSelectItem={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
-							onAddItem={() => this.props.setProject(this.props.project.addEntity())}
-							onRemoveItem={entityIndex => this.props.setProject(this.props.project.removeEntity(entityIndex))}
-							onMoveItemUp={entityIndex => this.props.setProject(this.props.project.moveEntityUp(entityIndex))}
-							onMoveItemDown={entityIndex => this.props.setProject(this.props.project.moveEntityDown(entityIndex))}
-							renderItem={entity => <div>
-								{
-									entity.data.imagePath && this.props.images.get(entity.data.imagePath) ?
-										<img
-											src={this.props.images.get(entity.data.imagePath).data}
-											style={{
-												width: 'auto',
-												height: '1em',
-											}}
-										/>
-										: ColorDisplay(entity.data.color)
+							selectedItemIndex={this.state.selectedParameterIndex}
+							items={selectedEntity.data.parameters}
+							onSelectItem={parameterIndex => this.setState({selectedParameterIndex: parameterIndex})}
+							onAddItem={parameterType => {
+								switch (parameterType) {
+									case 0:
+										this.props.setProject(
+											this.props.project.setEntity(
+												this.state.selectedEntityIndex,
+												selectedEntity.addBooleanParameter(),
+											),
+										);
+										break;
 								}
-								&nbsp;&nbsp;
-								{entity.data.name}
-							</div>}
+							}}
+							onRemoveItem={parameterIndex => this.props.setProject(
+								this.props.project.setEntity(
+									this.state.selectedEntityIndex,
+									selectedEntity.removeParameter(parameterIndex),
+								),
+							)}
+							onMoveItemUp={parameterIndex => this.props.setProject(
+								this.props.project.setEntity(
+									this.state.selectedEntityIndex,
+									selectedEntity.moveParameterUp(parameterIndex),
+								),
+							)}
+							onMoveItemDown={parameterIndex => this.props.setProject(
+								this.props.project.setEntity(
+									this.state.selectedEntityIndex,
+									selectedEntity.moveParameterDown(parameterIndex),
+								),
+							)}
+							renderItem={parameter => parameter.data.name + ' (' + parameter.data.type + ')'}
 						/>
-					</TabPane>
+					</TabPane>}
 				</TabContent>
 			</Col>
 			{selectedEntity && <Col

@@ -14,7 +14,7 @@ interface Props<T> {
 	// for now the item list is only used in the project editor, so i'm going to assume a default of 250px
 	heightOffset?: number;
 	onSelectItem: (itemIndex: number) => void;
-	onAddItem: (itemIndex?: number) => void;
+	onAddItem: (menuItemIndex?: number) => void;
 	onRemoveItem: (itemIndex: number) => void;
 	onMoveItemUp: (itemIndex: number) => void;
 	onMoveItemDown: (itemIndex: number) => void;
