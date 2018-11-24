@@ -66,8 +66,8 @@ export default class Project {
 			defaultMapHeight: data.defaultMapHeight,
 			maxMapWidth: data.maxMapWidth,
 			maxMapHeight: data.maxMapHeight,
-			tilesets: data.tilesets.map(tilesetData => Tileset.Import(tilesetData, projectFilePath)),
-			entities: data.entities.map(entityData => Entity.Import(entityData, projectFilePath)),
+			tilesets: data.tilesets && data.tilesets.map(tilesetData => Tileset.Import(tilesetData, projectFilePath)),
+			entities: data.entities && data.entities.map(entityData => Entity.Import(entityData, projectFilePath)),
 		});
 	}
 
