@@ -10,7 +10,12 @@ import {
 	InputGroup,
 	InputGroupAddon,
 	Label,
+	Nav,
+	NavItem,
+	NavLink,
 	Row,
+	TabContent,
+	TabPane,
 } from 'reactstrap';
 import Image from '../../data/image';
 import Project from '../../data/project/project';
@@ -18,13 +23,19 @@ import { getUniqueId } from '../../util';
 import ColorDisplay from '../common/color-display';
 import ItemList from './item-list';
 
-export interface Props {
+enum EntityEditorTab {
+	Entities,
+	Parameters,
+}
+
+interface Props {
 	project: Project;
 	images: Map<string, Image>;
 	setProject: (project: Project) => void;
 }
 
-export interface State {
+interface State {
+	activeTab: EntityEditorTab;
 	selectedEntityIndex: number;
 	showColorPicker: boolean;
 	uniqueId: number;
@@ -34,6 +45,7 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
+			activeTab: EntityEditorTab.Entities,
 			selectedEntityIndex: 0,
 			showColorPicker: false,
 			uniqueId: getUniqueId(),
@@ -60,31 +72,53 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 		const selectedEntity = this.props.project.data.entities[this.state.selectedEntityIndex];
 		return <Row>
 			<Col md={4}>
-				<ItemList
-					title='Entities'
-					selectedItemIndex={this.state.selectedEntityIndex}
-					items={this.props.project.data.entities}
-					onSelectItem={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
-					onAddItem={() => this.props.setProject(this.props.project.addEntity())}
-					onRemoveItem={entityIndex => this.props.setProject(this.props.project.removeEntity(entityIndex))}
-					onMoveItemUp={entityIndex => this.props.setProject(this.props.project.moveEntityUp(entityIndex))}
-					onMoveItemDown={entityIndex => this.props.setProject(this.props.project.moveEntityDown(entityIndex))}
-					renderItem={entity => <div>
-						{
-							entity.data.imagePath && this.props.images.get(entity.data.imagePath) ?
-								<img
-									src={this.props.images.get(entity.data.imagePath).data}
-									style={{
-										width: 'auto',
-										height: '1em',
-									}}
-								/>
-								: ColorDisplay(entity.data.color)
-						}
-						&nbsp;&nbsp;
-						{entity.data.name}
-					</div>}
-				/>
+				<Nav tabs>
+					<NavItem>
+						<NavLink
+							active={this.state.activeTab === EntityEditorTab.Entities}
+							onClick={() => this.setState({activeTab: EntityEditorTab.Entities})}
+						>
+							Entities
+						</NavLink>
+					</NavItem>
+					{selectedEntity && <NavItem>
+						<NavLink
+							active={this.state.activeTab === EntityEditorTab.Parameters}
+							onClick={() => this.setState({activeTab: EntityEditorTab.Parameters})}
+						>
+							Parameters - {selectedEntity.data.name}
+						</NavLink>
+					</NavItem>}
+				</Nav>
+				<TabContent activeTab={this.state.activeTab}>
+					<TabPane tabId={EntityEditorTab.Entities}>
+						<ItemList
+							title='Entities'
+							selectedItemIndex={this.state.selectedEntityIndex}
+							items={this.props.project.data.entities}
+							onSelectItem={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
+							onAddItem={() => this.props.setProject(this.props.project.addEntity())}
+							onRemoveItem={entityIndex => this.props.setProject(this.props.project.removeEntity(entityIndex))}
+							onMoveItemUp={entityIndex => this.props.setProject(this.props.project.moveEntityUp(entityIndex))}
+							onMoveItemDown={entityIndex => this.props.setProject(this.props.project.moveEntityDown(entityIndex))}
+							renderItem={entity => <div>
+								{
+									entity.data.imagePath && this.props.images.get(entity.data.imagePath) ?
+										<img
+											src={this.props.images.get(entity.data.imagePath).data}
+											style={{
+												width: 'auto',
+												height: '1em',
+											}}
+										/>
+										: ColorDisplay(entity.data.color)
+								}
+								&nbsp;&nbsp;
+								{entity.data.name}
+							</div>}
+						/>
+					</TabPane>
+				</TabContent>
 			</Col>
 			{selectedEntity && <Col
 				md={8}
