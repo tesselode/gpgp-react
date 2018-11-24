@@ -263,6 +263,53 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 		</Form>;
 	}
 
+	private renderParameterEditorForm() {
+		const selectedEntity = this.props.project.data.entities[this.state.selectedEntityIndex];
+		const selectedParameter = selectedEntity.data.parameters[this.state.selectedParameterIndex];
+		if (!(selectedEntity && selectedParameter)) return <div />;
+		return <Form>
+			<FormGroup row>
+				<Label md={2}>Name</Label>
+				<Col md={10}>
+					<Input
+						value={selectedParameter.data.name}
+						onChange={event => {
+							this.props.setProject(
+								this.props.project.setEntity(
+									this.state.selectedEntityIndex,
+									selectedEntity.setParameter(
+										this.state.selectedParameterIndex,
+										selectedParameter.setName(event.target.value),
+									),
+								),
+							);
+						}}
+					/>
+				</Col>
+			</FormGroup>
+			<FormGroup check>
+				<Label check>
+					<Input
+						type='checkbox'
+						checked={selectedParameter.data.default}
+						onChange={event => {
+							this.props.setProject(
+								this.props.project.setEntity(
+									this.state.selectedEntityIndex,
+									selectedEntity.setParameter(
+										this.state.selectedParameterIndex,
+										selectedParameter.toggleDefault(),
+									),
+								),
+							);
+						}}
+					/>
+					Enabled by default
+				</Label>
+			</FormGroup>
+		</Form>;
+	}
+
 	public render() {
 		const selectedEntity = this.props.project.data.entities[this.state.selectedEntityIndex];
 		return <Row>
@@ -271,13 +318,19 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 			</Col>
 			{selectedEntity && <Col
 				md={8}
-				key={this.state.selectedEntityIndex}
 				style={{
 					height: 'calc(100vh - 194px)',
 					overflowY: 'auto',
 				}}
 			>
-				{this.renderEntityEditorForm()}
+				<TabContent activeTab={this.state.activeTab}>
+					<TabPane tabId={EntityEditorTab.Entities}>
+						{this.renderEntityEditorForm()}
+					</TabPane>
+					<TabPane tabId={EntityEditorTab.Parameters}>
+						{this.renderParameterEditorForm()}
+					</TabPane>
+				</TabContent>
 			</Col>}
 		</Row>;
 	}
