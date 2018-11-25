@@ -88,6 +88,8 @@ interface State {
 	cursorRect: Rect;
 	/** The current cursor state. */
 	cursorState: CursorState;
+	/** Whether to hide the grid. */
+	hideGrid: boolean;
 }
 
 /** The level editor screen, which allows you to create or edit levels. */
@@ -114,6 +116,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 			cursorY: 0,
 			cursorRect: new Rect(0, 0),
 			cursorState: CursorState.Idle,
+			hideGrid: false,
 		};
 		this.onKeyDown = this.onKeyDown.bind(this);
 	}
@@ -407,7 +410,9 @@ export default class LevelEditor extends React.Component<Props, State> {
 			>
 				<ToolPalette
 					tool={this.state.tool}
+					hideGrid={this.state.hideGrid}
 					onToolChanged={(tool) => this.setState({tool})}
+					onToggleGrid={() => this.setState({hideGrid: !this.state.hideGrid})}
 				/>
 				<LevelOptions
 					level={level}
@@ -472,6 +477,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					tileSize={this.props.project.data.tileSize}
 					width={level.data.width}
 					height={level.data.height}
+					hideGrid={this.state.hideGrid}
 					onMove={this.onMoveCursor.bind(this)}
 					onClick={this.onClickGrid.bind(this)}
 					onRelease={this.onReleaseGrid.bind(this)}

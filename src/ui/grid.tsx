@@ -12,6 +12,8 @@ interface Props {
 	height: number;
 	/** The zoom multiplier when the grid is first displayed (defaults to 2.0). */
 	startingZoom?: number;
+	/** Whether to hide the grid. */
+	hideGrid?: boolean;
 	/** A function that is called when the cursor is moved. */
 	onMove?: (x: number, y: number) => void;
 	/** A function that is called when the grid is clicked. */
@@ -114,6 +116,7 @@ export default class Grid extends React.Component<Props, State> {
 		const canvas = this.canvasRef.current;
 		canvas.width = this.props.width * this.props.tileSize * gridRenderingScale;
 		canvas.height = this.props.height * this.props.tileSize * gridRenderingScale;
+		if (this.props.hideGrid) return;
 		const context = canvas.getContext('2d');
 		context.strokeStyle = '#bbb';
 		for (let x = 1; x < this.props.width; x++) {
