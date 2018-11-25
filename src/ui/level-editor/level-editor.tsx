@@ -333,7 +333,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 			levelFilePath = chosenSaveLocation;
 		}
 		const level = this.state.levelHistory.getCurrentState();
-		const levelData = JSON.stringify(level.export(levelFilePath));
+		const levelData = JSON.stringify(level.export(levelFilePath), null, 4);
 		fs.writeFile(levelFilePath, levelData, (error) => {
 			if (error) {
 				remote.dialog.showErrorBox('Error saving level', 'The level could not be saved.');

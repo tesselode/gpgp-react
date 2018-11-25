@@ -110,7 +110,7 @@ export default class ProjectEditor extends React.Component<Props, State> {
 			projectFilePath = chosenSaveLocation;
 		}
 		const projectData = this.state.project.export(projectFilePath);
-		fs.writeFile(projectFilePath, JSON.stringify(projectData), (error) => {
+		fs.writeFile(projectFilePath, JSON.stringify(projectData, null, 4), (error) => {
 			if (error) {
 				remote.dialog.showErrorBox('Error saving project', 'The project could not be saved.');
 				return;

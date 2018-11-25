@@ -1,1 +1,50 @@
-{"name":"Seasonal platformer","tileSize":16,"defaultMapWidth":10,"defaultMapHeight":9,"maxMapWidth":1000,"maxMapHeight":1000,"tilesets":[{"name":"Grass","imagePath":"seasonal platformer\\grass.png"},{"name":"Tropical","imagePath":"seasonal platformer\\tropical.png"},{"name":"Winter","imagePath":"seasonal platformer\\winter.png"},{"name":"Fall","imagePath":"seasonal platformer\\fall.png"}],"entities":[{"name":"Player","width":2,"height":2,"color":"#ff0000","imagePath":"platformer in the forest\\player.png","parameters":[{"name":"Cool","type":"boolean","default":true}]},{"name":"Snake","width":2,"height":2,"color":"#ff0000","imagePath":"platformer in the forest\\snake.png","parameters":[]}]}
+{
+    "name": "Seasonal platformer",
+    "tileSize": 16,
+    "defaultMapWidth": 10,
+    "defaultMapHeight": 9,
+    "maxMapWidth": 1000,
+    "maxMapHeight": 1000,
+    "tilesets": [
+        {
+            "name": "Grass",
+            "imagePath": "seasonal platformer\\grass.png"
+        },
+        {
+            "name": "Tropical",
+            "imagePath": "seasonal platformer\\tropical.png"
+        },
+        {
+            "name": "Winter",
+            "imagePath": "seasonal platformer\\winter.png"
+        },
+        {
+            "name": "Fall",
+            "imagePath": "seasonal platformer\\fall.png"
+        }
+    ],
+    "entities": [
+        {
+            "name": "Player",
+            "width": 2,
+            "height": 2,
+            "color": "#ff0000",
+            "imagePath": "platformer in the forest\\player.png",
+            "parameters": [
+                {
+                    "name": "Cool",
+                    "type": "boolean",
+                    "default": true
+                }
+            ]
+        },
+        {
+            "name": "Snake",
+            "width": 2,
+            "height": 2,
+            "color": "#ff0000",
+            "imagePath": "platformer in the forest\\snake.png",
+            "parameters": []
+        }
+    ]
+}
