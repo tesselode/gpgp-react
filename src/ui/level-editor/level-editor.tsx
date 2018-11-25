@@ -465,12 +465,23 @@ export default class LevelEditor extends React.Component<Props, State> {
 					tileSize={this.props.project.data.tileSize}
 					width={level.data.width}
 					height={level.data.height}
-					background={level.data.hasBackgroundColor && level.data.backgroundColor}
 					onMove={this.onMoveCursor.bind(this)}
 					onClick={this.onClickGrid.bind(this)}
 					onRelease={this.onReleaseGrid.bind(this)}
 					onDoubleClick={this.onDoubleClickGrid.bind(this)}
 				>
+					{level.data.hasBackgroundColor && <div
+						style={{
+							position: 'absolute',
+							zIndex: -(level.data.layers.length + 3),
+							left: 0,
+							top: 0,
+							width: this.props.level.data.width * this.props.project.data.tileSize,
+							height: this.props.level.data.height * this.props.project.data.tileSize,
+							background: level.data.backgroundColor,
+							pointerEvents: 'none',
+						}}
+					/>}
 					{level.data.layers.map((layer, i) => {
 						if (!layer.data.visible) return '';
 						let order = -(i + 2);
