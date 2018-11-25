@@ -392,7 +392,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 
 		return <div>
-			<WarningsModal warnings={this.props.level.getWarnings()} />
+			<WarningsModal warnings={level.getWarnings()} />
 			<div
 				style={{
 					width: '28%',
