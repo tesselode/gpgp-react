@@ -98,7 +98,8 @@
                     "y": 2,
                     "entityName": "Player",
                     "parameters": {
-                        "Cool": false
+                        "Cool": false,
+                        "Not a real parameter": true
                     }
                 }
             ],

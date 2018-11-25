@@ -42,7 +42,7 @@ export default class Level {
 	public readonly project: Project;
 	public readonly data: LevelData;
 
-	public static New(project: Project, projectFilePath: string) {
+	public static New(project: Project, projectFilePath: string): Level {
 		return new Level(project, {
 			projectFilePath,
 			width: project.data.defaultMapWidth,
@@ -51,7 +51,7 @@ export default class Level {
 		});
 	}
 
-	public static Import(project: Project, levelFilePath: string, data: ExportedLevelData) {
+	public static Import(project: Project, levelFilePath: string, data: ExportedLevelData): Level {
 		const layers: Layer[] = [];
 		for (const layerData of data.layers) {
 			switch (layerData.type) {
@@ -62,11 +62,11 @@ export default class Level {
 					layers.push(TileLayer.Import(layerData));
 					break;
 				case 'Entity':
-					layers.push(EntityLayer.Import(layerData));
+					layers.push(EntityLayer.Import(layerData, project));
 					break;
 			}
 		}
-		return new Level(project, {
+		const level = new Level(project, {
 			projectFilePath: path.resolve(path.dirname(levelFilePath), data.projectFilePath),
 			width: data.width,
 			height: data.height,
@@ -74,6 +74,8 @@ export default class Level {
 			backgroundColor: data.backgroundColor,
 			layers,
 		});
+		console.log('imported level: ', level);
+		return level;
 	}
 
 	private constructor(project: Project, data: LevelData) {

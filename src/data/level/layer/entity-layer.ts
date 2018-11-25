@@ -1,15 +1,18 @@
 import Project from "../../project/project";
+import BooleanParameter from "../../project/entity/parameter/boolean-parameter";
 
 export interface EntityLayerItem {
 	readonly x: number;
 	readonly y: number;
 	readonly entityName: string;
+	readonly parameters: object;
 }
 
 export interface EntityLayerData {
 	readonly name: string;
 	readonly visible: boolean;
 	readonly items: EntityLayerItem[];
+	readonly warnings?: string[];
 }
 
 export interface ExportedEntityLayerData {
@@ -30,8 +33,36 @@ export default class EntityLayer {
 		return new EntityLayer();
 	}
 
-	public static Import(data: ExportedEntityLayerData): EntityLayer {
-		return new EntityLayer(data);
+	public static Import(data: ExportedEntityLayerData, project: Project): EntityLayer {
+		const warnings = [];
+		const items = data.items.map(item => {
+			const entity = project.getEntity(item.entityName);
+			const parameters = {};
+			for (const parameter of entity.data.parameters) {
+				if (parameter instanceof BooleanParameter) {
+					if (typeof(item.parameters[parameter.data.name]) === 'boolean')
+						parameters[parameter.data.name] = item.parameters[parameter.data.name];
+					else
+						parameters[parameter.data.name] = parameter.data.default;
+				}
+			}
+			for (const parameterName in item.parameters) {
+				if (entity.data.parameters.findIndex(parameter => parameter.data.name === parameterName) === -1)
+					warnings.push('Parameter "' + parameterName + '" of entity "' + entity.data.name + '" does not exist in the project file and will be discarded.');
+			}
+			return {
+				x: item.x,
+				y: item.y,
+				entityName: item.entityName,
+				parameters,
+			};
+		});
+		return new EntityLayer({
+			name: data.name,
+			visible: data.visible,
+			items,
+			warnings,
+		});
 	}
 
 	private constructor(data?: Partial<EntityLayerData>) {
@@ -60,7 +91,7 @@ export default class EntityLayer {
 
 	public place(x: number, y: number, entityName: string): EntityLayer {
 		const items = this.data.items.slice(0, this.data.items.length);
-		items.push({x, y, entityName});
+		items.push({x, y, entityName, parameters: {}});
 		return new EntityLayer({...this.data, items});
 	}
 
@@ -80,6 +111,11 @@ export default class EntityLayer {
 	}
 
 	public export(): ExportedEntityLayerData {
-		return {...this.data, type: 'Entity'};
+		return {
+			name: this.data.name,
+			type: 'Entity',
+			visible: this.data.visible,
+			items: this.data.items,
+		};
 	}
 }
