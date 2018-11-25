@@ -19,7 +19,6 @@ import {
 } from 'reactstrap';
 import Image from '../../data/image';
 import Project from '../../data/project/project';
-import { getUniqueId } from '../../util';
 import ColorDisplay from '../common/color-display';
 import ItemList from './item-list';
 
@@ -38,8 +37,6 @@ interface State {
 	activeTab: EntityEditorTab;
 	selectedEntityIndex: number;
 	selectedParameterIndex: number;
-	showColorPicker: boolean;
-	uniqueId: number;
 }
 
 export default class ProjectEntitiesTab extends React.Component<Props, State> {
@@ -49,8 +46,6 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 			activeTab: EntityEditorTab.Entities,
 			selectedEntityIndex: 0,
 			selectedParameterIndex: 0,
-			showColorPicker: false,
-			uniqueId: getUniqueId(),
 		};
 	}
 
