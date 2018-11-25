@@ -14,6 +14,8 @@ interface Props {
 	startingZoom?: number;
 	/** Whether to hide the grid. */
 	hideGrid?: boolean;
+	/** Whether to show a box shadow under the level. */
+	hasShadow?: boolean;
 	/** A function that is called when the cursor is moved. */
 	onMove?: (x: number, y: number) => void;
 	/** A function that is called when the grid is clicked. */
@@ -171,6 +173,7 @@ export default class Grid extends React.Component<Props, State> {
 						border: '1px solid black',
 						transform: 'scale(' + (1 / gridRenderingScale) + ')',
 						transformOrigin: '0% 0%',
+						boxShadow: this.props.hasShadow && '8px 8px 32px 0 rgba(0, 0, 0, .25)',
 					}}
 				/>
 				{this.props.children}

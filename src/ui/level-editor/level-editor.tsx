@@ -478,6 +478,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					width={level.data.width}
 					height={level.data.height}
 					hideGrid={this.state.hideGrid}
+					hasShadow
 					onMove={this.onMoveCursor.bind(this)}
 					onClick={this.onClickGrid.bind(this)}
 					onRelease={this.onReleaseGrid.bind(this)}
