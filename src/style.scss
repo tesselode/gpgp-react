@@ -34,18 +34,3 @@ $enable-rounded: false;
 	padding: .5em !important;
 	font-size: .875em;
 }
-
-#welcome-jumbotron {
-	animation: slide-in .15s;
-	animation-fill-mode: both;
-}
-
-#welcome-text {
-	animation: slide-in .5s .15s;
-	animation-fill-mode: both;
-}
-
-#welcome-buttons {
-	animation: slide-in .5s .4s;
-	animation-fill-mode: both;
-}
