@@ -1,5 +1,5 @@
-import Project from "../../project/project";
 import BooleanParameter from "../../project/entity/parameter/boolean-parameter";
+import Project from "../../project/project";
 
 export interface EntityLayerItem {
 	readonly x: number;
@@ -35,8 +35,13 @@ export default class EntityLayer {
 
 	public static Import(data: ExportedEntityLayerData, project: Project): EntityLayer {
 		const warnings = [];
-		const items = data.items.map(item => {
+		const items = [];
+		for (const item of data.items) {
 			const entity = project.getEntity(item.entityName);
+			if (!entity) {
+				warnings.push('Entity type "' + item.entityName + '" does not exist in the project file. Entities of this type in the level will be discarded.');
+				continue;
+			}
 			const parameters = {};
 			for (const parameter of entity.data.parameters) {
 				if (parameter instanceof BooleanParameter) {
@@ -50,13 +55,13 @@ export default class EntityLayer {
 				if (entity.data.parameters.findIndex(parameter => parameter.data.name === parameterName) === -1)
 					warnings.push('Parameter "' + parameterName + '" of entity "' + entity.data.name + '" does not exist in the project file and will be discarded.');
 			}
-			return {
+			items.push({
 				x: item.x,
 				y: item.y,
 				entityName: item.entityName,
 				parameters,
-			};
-		});
+			});
+		}
 		return new EntityLayer({
 			name: data.name,
 			visible: data.visible,

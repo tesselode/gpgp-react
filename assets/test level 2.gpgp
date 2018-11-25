@@ -101,6 +101,15 @@
                         "Cool": false,
                         "Not a real parameter": true
                     }
+                },
+                {
+                    "x": 9,
+                    "y": 2,
+                    "entityName": "Snek",
+                    "parameters": {
+                        "Cool": false,
+                        "Not a real parameter": true
+                    }
                 }
             ],
             "type": "Entity"
