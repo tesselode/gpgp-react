@@ -50,7 +50,7 @@ interface State {
  * Elements can be drawn on the grid by passing them as children.
  */
 export default class Grid extends React.Component<Props, State> {
-	private canvasRef = React.createRef<HTMLCanvasElement>();
+	private gridRef = React.createRef<HTMLDivElement>();
 
 	constructor(props) {
 		super(props);
@@ -73,7 +73,7 @@ export default class Grid extends React.Component<Props, State> {
 				panY: this.state.panY + (y - this.state.previousMouseY),
 			});
 		} else {
-			const canvasRect = this.canvasRef.current.getBoundingClientRect();
+			const canvasRect = this.gridRef.current.getBoundingClientRect();
 			const scale = this.props.tileSize * this.state.zoom;
 			const relativeMouseX = (x - canvasRect.left) / scale;
 			const relativeMouseY = (y - canvasRect.top) / scale;
@@ -113,37 +113,8 @@ export default class Grid extends React.Component<Props, State> {
 		}
 	}
 
-	/** Renders the lines of the grid. */
-	private renderCanvas() {
-		const canvas = this.canvasRef.current;
-		canvas.width = this.props.width * this.props.tileSize * gridRenderingScale;
-		canvas.height = this.props.height * this.props.tileSize * gridRenderingScale;
-		if (this.props.hideGrid) return;
-		const context = canvas.getContext('2d');
-		context.strokeStyle = '#bbb';
-		for (let x = 1; x < this.props.width; x++) {
-			context.moveTo(x * this.props.tileSize * gridRenderingScale, 0);
-			context.lineTo(x * this.props.tileSize * gridRenderingScale,
-				this.props.height * this.props.tileSize * gridRenderingScale);
-			context.stroke();
-		}
-		for (let y = 1; y < this.props.height; y++) {
-			context.moveTo(0, y * this.props.tileSize * gridRenderingScale);
-			context.lineTo(this.props.width * this.props.tileSize * gridRenderingScale,
-				y * this.props.tileSize * gridRenderingScale);
-			context.stroke();
-		}
-	}
-
-	public componentDidMount() {
-		this.renderCanvas();
-	}
-
-	public componentDidUpdate() {
-		this.renderCanvas();
-	}
-
 	public render() {
+		const scale = this.props.tileSize * this.state.zoom;
 		return <div
 			style={{
 				width: '100%',
@@ -159,33 +130,49 @@ export default class Grid extends React.Component<Props, State> {
 				style={{
 					width: 0,
 					height: 0,
-					transform: 'translate(' + this.state.panX + 'px, ' + this.state.panY + 'px) ' +
-						'scale(' + this.state.zoom + ')',
-					imageRendering: 'pixelated',
+					transform: 'translate(' + this.state.panX + 'px, ' + this.state.panY + 'px) ',
 				}}
 			>
+				<div
+					ref={this.gridRef}
+					style={{
+						width: 0,
+						height: 0,
+						transform: 'scale(' + this.state.zoom + ')',
+						imageRendering: 'pixelated',
+					}}
+				>
+					{this.props.children}
+				</div>
+				{!this.props.hideGrid && <div
+					style={{
+						position: 'absolute',
+						left: 0,
+						top: 0,
+						width: this.props.width * scale,
+						height: this.props.height * scale,
+						backgroundImage: 'repeating-linear-gradient(0deg, transparent, ' +
+							'transparent ' + (scale - 2) + 'px, ' +
+							'rgba(200, 200, 200, .33) ' + (scale - 2) + 'px, ' +
+							'rgba(200, 200, 200, .33) ' + scale + 'px), ' +
+							'repeating-linear-gradient(90deg, transparent, ' +
+							'transparent ' + (scale - 2) + 'px, ' +
+							'rgba(200, 200, 200, .33) ' + (scale - 2) + 'px, ' +
+							'rgba(200, 200, 200, .33) ' + scale + 'px)',
+						backgroundPosition: '0 -2px',
+					}}
+				/>}
 				<div
 					style={{
 						position: 'absolute',
 						left: 0,
 						top: 0,
-						width: this.props.width * this.props.tileSize,
-						height: this.props.height * this.props.tileSize,
-						outline: '1px solid black',
-					}}
-				/>
-				<canvas
-					ref={this.canvasRef}
-					style={{
-						position: 'absolute',
-						left: 0,
-						top: 0,
-						transform: 'scale(' + (1 / gridRenderingScale) + ')',
-						transformOrigin: '0% 0%',
+						width: this.props.width * scale,
+						height: this.props.height * scale,
 						boxShadow: this.props.hasShadow && '8px 8px 32px 0 rgba(0, 0, 0, .25)',
+						outline: '2px solid black',
 					}}
 				/>
-				{this.props.children}
 			</div>
 		</div>;
 	}
