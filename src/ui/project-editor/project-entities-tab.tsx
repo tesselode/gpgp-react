@@ -71,7 +71,7 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 			selectedItemIndex={this.state.selectedEntityIndex}
 			items={this.props.project.data.entities}
 			onSelectItem={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
-			onAddItem={() => this.props.setProject(this.props.project.addEntity())}
+			onAddItem={() => this.props.setProject(this.props.project.addEntity(this.state.selectedEntityIndex))}
 			onRemoveItem={entityIndex => this.props.setProject(this.props.project.removeEntity(entityIndex))}
 			onMoveItemUp={entityIndex => this.props.setProject(this.props.project.moveEntityUp(entityIndex))}
 			onMoveItemDown={entityIndex => this.props.setProject(this.props.project.moveEntityDown(entityIndex))}
@@ -107,7 +107,7 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 						this.props.setProject(
 							this.props.project.setEntity(
 								this.state.selectedEntityIndex,
-								selectedEntity.addBooleanParameter(),
+								selectedEntity.addBooleanParameter(this.state.selectedParameterIndex),
 							),
 						);
 						break;

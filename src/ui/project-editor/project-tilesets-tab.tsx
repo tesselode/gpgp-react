@@ -76,7 +76,7 @@ export default class ProjectTilesetsTab extends React.Component<Props, State> {
 					selectedItemIndex={this.state.selectedTilesetIndex}
 					items={this.props.project.data.tilesets}
 					onSelectItem={tilesetIndex => this.setState({selectedTilesetIndex: tilesetIndex})}
-					onAddItem={() => this.props.setProject(this.props.project.addTileset())}
+					onAddItem={() => this.props.setProject(this.props.project.addTileset(this.state.selectedTilesetIndex))}
 					onRemoveItem={tilesetIndex => this.props.setProject(this.props.project.removeTileset(tilesetIndex))}
 					onMoveItemUp={tilesetIndex => this.props.setProject(this.props.project.moveTilesetUp(tilesetIndex))}
 					onMoveItemDown={tilesetIndex => this.props.setProject(this.props.project.moveTilesetDown(tilesetIndex))}

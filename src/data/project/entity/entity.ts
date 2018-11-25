@@ -95,9 +95,9 @@ export default class Entity {
 		return new Entity({...this.data, imagePath: null});
 	}
 
-	public addBooleanParameter(): Entity {
+	public addBooleanParameter(position: number): Entity {
 		const parameters = this.data.parameters.slice(0, this.data.parameters.length);
-		parameters.push(BooleanParameter.New());
+		parameters.splice(position, 0, BooleanParameter.New());
 		return new Entity({...this.data, parameters});
 	}
 

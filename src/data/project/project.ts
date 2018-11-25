@@ -116,9 +116,9 @@ export default class Project {
 		return new Project({...this.data, maxMapHeight});
 	}
 
-	public addTileset(): Project {
+	public addTileset(position: number): Project {
 		const tilesets = this.data.tilesets.slice(0, this.data.tilesets.length);
-		tilesets.push(Tileset.New());
+		tilesets.splice(position, 0, Tileset.New());
 		return new Project({...this.data, tilesets});
 	}
 
@@ -148,9 +148,9 @@ export default class Project {
 		return new Project({...this.data, tilesets});
 	}
 
-	public addEntity(): Project {
+	public addEntity(position: number): Project {
 		const entities = this.data.entities.slice(0, this.data.entities.length);
-		entities.push(Entity.New());
+		entities.splice(position, 0, Entity.New());
 		return new Project({...this.data, entities});
 	}
 

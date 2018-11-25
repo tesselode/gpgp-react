@@ -94,7 +94,7 @@ export default class LayerList extends React.Component<Props, State> {
 							onClick={() => {
 								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
 								this.props.modifyLevel(
-									this.props.level.addGeometryLayer(),
+									this.props.level.addGeometryLayer(this.props.selectedLayerIndex),
 									'Add geometry layer',
 								);
 							}}
@@ -105,7 +105,7 @@ export default class LayerList extends React.Component<Props, State> {
 							onClick={() => {
 								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
 								this.props.modifyLevel(
-									this.props.level.addEntityLayer(),
+									this.props.level.addEntityLayer(this.props.selectedLayerIndex),
 									'Add entity layer',
 								);
 							}}
@@ -118,7 +118,7 @@ export default class LayerList extends React.Component<Props, State> {
 								onClick={() => {
 									this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
 									this.props.modifyLevel(
-										this.props.level.addTileLayer(tileset.data.name),
+										this.props.level.addTileLayer(this.props.selectedLayerIndex, tileset.data.name),
 										'Add tile layer',
 									);
 								}}

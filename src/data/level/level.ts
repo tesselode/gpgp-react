@@ -124,21 +124,21 @@ export default class Level {
 		return new Level(this.project, {...this.data, backgroundColor});
 	}
 
-	public addGeometryLayer(): Level {
+	public addGeometryLayer(position: number): Level {
 		const layers = this.data.layers.slice(0, this.data.layers.length);
-		layers.push(GeometryLayer.New());
+		layers.splice(position, 0, GeometryLayer.New());
 		return new Level(this.project, {...this.data, layers});
 	}
 
-	public addTileLayer(tilesetName: string): Level {
+	public addTileLayer(position: number, tilesetName: string): Level {
 		const layers = this.data.layers.slice(0, this.data.layers.length);
-		layers.push(TileLayer.New(tilesetName));
+		layers.splice(position, 0, TileLayer.New(tilesetName));
 		return new Level(this.project, {...this.data, layers});
 	}
 
-	public addEntityLayer(): Level {
+	public addEntityLayer(position: number): Level {
 		const layers = this.data.layers.slice(0, this.data.layers.length);
-		layers.push(EntityLayer.New());
+		layers.splice(position, 0, EntityLayer.New());
 		return new Level(this.project, {...this.data, layers});
 	}
 
