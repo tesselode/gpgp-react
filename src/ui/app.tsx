@@ -65,6 +65,8 @@ export default class App extends React.Component<{}, State> {
 		ipcRenderer.on('open project', event => this.onOpenProject());
 		ipcRenderer.on('open level', event => this.onOpenLevel());
 		ipcRenderer.on('close tab', event => this.onCloseTab(this.state.activeTab));
+		ipcRenderer.on('undo', () => this.onUndo());
+		ipcRenderer.on('redo', () => this.onRedo());
 		ipcRenderer.on('save', (event, saveAs) => this.onSave(saveAs));
 	}
 
@@ -155,6 +157,18 @@ export default class App extends React.Component<{}, State> {
 		this.setState({tabs, tabTitles}, () => {
 			this.setState({activeTab: this.state.tabs.length - 1});
 		});
+	}
+
+	private onUndo() {
+		const tab = this.state.tabs[this.state.activeTab];
+		if (!(tab && tab.ref.current && tab.type === TabType.LevelEditor)) return;
+		tab.ref.current.undo();
+	}
+
+	private onRedo() {
+		const tab = this.state.tabs[this.state.activeTab];
+		if (!(tab && tab.ref.current && tab.type === TabType.LevelEditor)) return;
+		tab.ref.current.redo();
 	}
 
 	private onSave(saveAs?: boolean) {

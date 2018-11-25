@@ -154,7 +154,6 @@ export default class LevelEditor extends React.Component<Props, State> {
 	}
 
 	private modifyLevel(level: Level, description: string, continuedAction?: boolean): void {
-		console.log('modified level: ', level);
 		this.setState({
 			levelHistory: this.state.levelHistory.addState(level, description, this.state.continuedAction),
 			unsavedChanges: true,
@@ -323,6 +322,14 @@ export default class LevelEditor extends React.Component<Props, State> {
 			'Remove entity',
 		);
 		this.setState({selectedEntityItemIndex: null});
+	}
+
+	public undo() {
+		this.setState({levelHistory: this.state.levelHistory.undo()});
+	}
+
+	public redo() {
+		this.setState({levelHistory: this.state.levelHistory.redo()});
 	}
 
 	public save(saveAs = false, onSave?: () => void) {

@@ -30,6 +30,14 @@ export default class HistoryList<T> {
 		return new HistoryList<T>(this.steps, position);
 	}
 
+	public undo(): HistoryList<T> {
+		return this.jump(Math.max(0, this.position - 1));
+	}
+
+	public redo(): HistoryList<T> {
+		return this.jump(Math.min(this.steps.length - 1, this.position + 1));
+	}
+
 	public getCurrentState(): T {
 		return this.steps[this.position].state;
 	}
