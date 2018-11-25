@@ -1,10 +1,30 @@
-// bootstrap customization
-
+// bootstrap customization //
 $enable-rounded: false;
-
 @import "../node_modules/bootstrap/scss/bootstrap";
 
-// components
+// components //
+
+@keyframes slide-in {
+	from {
+		transform: translateY(1em);
+		opacity: 0;
+	}
+
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
 
 #app {
 	user-select: none;
@@ -13,4 +33,19 @@ $enable-rounded: false;
 .compact-list-group-item {
 	padding: .5em !important;
 	font-size: .875em;
+}
+
+#welcome-jumbotron {
+	animation: slide-in .15s;
+	animation-fill-mode: both;
+}
+
+#welcome-text {
+	animation: slide-in .5s .15s;
+	animation-fill-mode: both;
+}
+
+#welcome-buttons {
+	animation: slide-in .5s .4s;
+	animation-fill-mode: both;
 }
