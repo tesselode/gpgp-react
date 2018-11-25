@@ -21,6 +21,8 @@ export interface LevelData {
 	backgroundColor?: string;
 	/** The layers the level is made up of. */
 	layers: Layer[];
+	/** Warnings about errors that occur when importing a level. */
+	warnings?: string[];
 }
 
 export interface ExportedLevelData {
@@ -52,6 +54,7 @@ export default class Level {
 	}
 
 	public static Import(project: Project, levelFilePath: string, data: ExportedLevelData): Level {
+		const warnings: string[] = [];
 		const layers: Layer[] = [];
 		for (const layerData of data.layers) {
 			switch (layerData.type) {
@@ -59,7 +62,10 @@ export default class Level {
 					layers.push(GeometryLayer.Import(layerData));
 					break;
 				case 'Tile':
-					layers.push(TileLayer.Import(layerData));
+					if (project.getTileset(layerData.tilesetName))
+						layers.push(TileLayer.Import(layerData));
+					else
+						warnings.push('Tileset "' + layerData.tilesetName + '", used by layer "' + layerData.name + '", was not found in the project file. This layer will be discarded.')
 					break;
 				case 'Entity':
 					layers.push(EntityLayer.Import(layerData, project));
@@ -73,6 +79,7 @@ export default class Level {
 			hasBackgroundColor: data.hasBackgroundColor,
 			backgroundColor: data.backgroundColor,
 			layers,
+			warnings,
 		});
 	}
 
@@ -83,6 +90,11 @@ export default class Level {
 
 	public getWarnings(): string[] {
 		const warnings = [];
+		if (this.data.warnings) {
+			for (const warning of this.data.warnings) {
+				warnings.push(warning);
+			}
+		}
 		for (const layer of this.data.layers) {
 			if (layer instanceof EntityLayer && layer.data.warnings) {
 				for (const warning of layer.data.warnings) {
