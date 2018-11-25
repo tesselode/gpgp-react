@@ -2,7 +2,7 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import React from 'react';
-import { Col, Container, Progress, Row } from 'reactstrap';
+import { Progress } from 'reactstrap';
 import { isNullOrUndefined } from 'util';
 import HistoryList from '../../data/history-list';
 import Image, { loadImage } from '../../data/image';
@@ -27,6 +27,7 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
+import WarningsModal from './warnings-modal';
 
 enum CursorState {
 	Idle,
@@ -381,6 +382,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 
 		return <div>
+			<WarningsModal warnings={this.props.level.getWarnings()} />
 			<div
 				style={{
 					width: '28%',

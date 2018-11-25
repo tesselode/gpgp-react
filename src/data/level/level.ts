@@ -1,8 +1,8 @@
 import path from 'path';
+import Project from "../project/project";
 import EntityLayer, { ExportedEntityLayerData } from './layer/entity-layer';
 import GeometryLayer, { ExportedGeometryLayerData } from "./layer/geometry-layer";
 import TileLayer, { ExportedTileLayerData } from "./layer/tile-layer";
-import Project from "../project/project";
 
 export type Layer = GeometryLayer | TileLayer | EntityLayer;
 export type ExportedLayerData = ExportedGeometryLayerData |
@@ -66,7 +66,7 @@ export default class Level {
 					break;
 			}
 		}
-		const level = new Level(project, {
+		return new Level(project, {
 			projectFilePath: path.resolve(path.dirname(levelFilePath), data.projectFilePath),
 			width: data.width,
 			height: data.height,
@@ -74,13 +74,23 @@ export default class Level {
 			backgroundColor: data.backgroundColor,
 			layers,
 		});
-		console.log('imported level: ', level);
-		return level;
 	}
 
 	private constructor(project: Project, data: LevelData) {
 		this.project = project;
 		this.data = data;
+	}
+
+	public getWarnings(): string[] {
+		const warnings = [];
+		for (const layer of this.data.layers) {
+			if (layer instanceof EntityLayer && layer.data.warnings) {
+				for (const warning of layer.data.warnings) {
+					warnings.push(warning);
+				}
+			}
+		}
+		return warnings;
 	}
 
 	public setWidth(width: number): Level {
