@@ -155,6 +155,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 	private modifyLevel(level: Level, description: string, continuedAction?: boolean): void {
 		this.setState({
 			levelHistory: this.state.levelHistory.addState(level, description, this.state.continuedAction),
+			unsavedChanges: true,
 			continuedAction,
 		}, () => {this.updateTabTitle(); });
 	}
