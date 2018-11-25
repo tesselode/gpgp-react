@@ -164,13 +164,22 @@ export default class Grid extends React.Component<Props, State> {
 					imageRendering: 'pixelated',
 				}}
 			>
+				<div
+					style={{
+						position: 'absolute',
+						left: 0,
+						top: 0,
+						width: this.props.width * this.props.tileSize,
+						height: this.props.height * this.props.tileSize,
+						outline: '1px solid black',
+					}}
+				/>
 				<canvas
 					ref={this.canvasRef}
 					style={{
 						position: 'absolute',
 						left: 0,
 						top: 0,
-						border: '1px solid black',
 						transform: 'scale(' + (1 / gridRenderingScale) + ')',
 						transformOrigin: '0% 0%',
 						boxShadow: this.props.hasShadow && '8px 8px 32px 0 rgba(0, 0, 0, .25)',

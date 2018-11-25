@@ -75,9 +75,9 @@ export default class EntityLayerDisplay extends React.Component<Props> {
 					zIndex: 2,
 					left: selectedItem.x * this.props.project.data.tileSize + 'px',
 					top: selectedItem.y * this.props.project.data.tileSize + 'px',
-					width: this.props.project.data.tileSize * entity.data.width + 1 + 'px',
-					height: this.props.project.data.tileSize * entity.data.height + 1 + 'px',
-					border: '1px solid red',
+					width: this.props.project.data.tileSize * entity.data.width + 'px',
+					height: this.props.project.data.tileSize * entity.data.height + 'px',
+					outline: '1px solid red',
 					pointerEvents: 'none',
 				}}
 			/>}

@@ -33,8 +33,8 @@ export default class TileCursor extends React.Component<Props> {
 			key={key}
 			style={{
 				position: 'absolute',
-				left: x * tileSize + 1 + 'px',
-				top: y * tileSize + 1 + 'px',
+				left: x * tileSize + 'px',
+				top: y * tileSize + 'px',
 				width: tileSize * (region.r - region.l + 1) - 1 + 'px',
 				height: tileSize * (region.b - region.t + 1) - 1 + 'px',
 				pointerEvents: 'none',
@@ -46,8 +46,8 @@ export default class TileCursor extends React.Component<Props> {
 				alt=''
 				style={{
 					position: 'absolute',
-					left: -region.l * tileSize - 1 + 'px',
-					top: -region.t * tileSize - 1 + 'px',
+					left: -region.l * tileSize + 'px',
+					top: -region.t * tileSize + 'px',
 					pointerEvents: 'none',
 					imageRendering: 'pixelated',
 				}}

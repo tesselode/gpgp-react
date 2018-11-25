@@ -14,8 +14,8 @@ interface Props {
 const GenericCursor = (props: Props) => <div
 	style={{
 		position: 'absolute',
-		left: props.cursor.l * props.tileSize + 1 + 'px',
-		top: props.cursor.t * props.tileSize + 1 + 'px',
+		left: props.cursor.l * props.tileSize + 'px',
+		top: props.cursor.t * props.tileSize + 'px',
 		width: props.tileSize * (props.cursor.r - props.cursor.l + 1) + 'px',
 		height: props.tileSize * (props.cursor.b - props.cursor.t + 1) + 'px',
 		background: props.removing ? 'rgba(255, 0, 0, .1)' : 'rgba(0, 0, 0, .1)',

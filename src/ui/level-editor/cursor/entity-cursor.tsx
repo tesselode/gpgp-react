@@ -37,8 +37,8 @@ const EntityCursor = (props: Props) => {
 			/> : <div
 				style={{
 					position: 'absolute',
-					left: props.x * props.tileSize + 1 + 'px',
-					top: props.y * props.tileSize + 1 + 'px',
+					left: props.x * props.tileSize + 'px',
+					top: props.y * props.tileSize + 'px',
 					width: props.tileSize * props.entity.data.width + 'px',
 					height: props.tileSize * props.entity.data.height + 'px',
 					background: props.entity.data.color,
