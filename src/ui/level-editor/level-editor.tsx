@@ -28,6 +28,7 @@ import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
+import EntityOptions from './sidebar/entity-options';
 
 enum CursorState {
 	Idle,
@@ -153,6 +154,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 	}
 
 	private modifyLevel(level: Level, description: string, continuedAction?: boolean): void {
+		console.log('modified level: ', level);
 		this.setState({
 			levelHistory: this.state.levelHistory.addState(level, description, this.state.continuedAction),
 			unsavedChanges: true,
@@ -264,7 +266,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 				this.modifyLevel(
 					level.setLayer(
 						this.state.selectedLayerIndex,
-						layer.place(this.state.cursorX, this.state.cursorY, entity.data.name),
+						layer.place(this.state.cursorX, this.state.cursorY, entity.data.name, this.props.project),
 					),
 					'Place entity',
 				);
@@ -437,6 +439,13 @@ export default class LevelEditor extends React.Component<Props, State> {
 					images={this.state.images}
 					selectedEntityIndex={this.state.selectedEntityIndex}
 					onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
+				/>
+				<EntityOptions
+					project={this.props.project}
+					level={level}
+					selectedLayerIndex={this.state.selectedLayerIndex}
+					selectedEntityItemIndex={this.state.selectedEntityItemIndex}
+					modifyLevel={this.modifyLevel.bind(this)}
 				/>
 				<HistoryBrowser
 					history={this.state.levelHistory}

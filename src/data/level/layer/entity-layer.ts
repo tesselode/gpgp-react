@@ -94,9 +94,13 @@ export default class EntityLayer {
 		});
 	}
 
-	public place(x: number, y: number, entityName: string): EntityLayer {
+	public place(x: number, y: number, entityName: string, project: Project): EntityLayer {
 		const items = this.data.items.slice(0, this.data.items.length);
-		items.push({x, y, entityName, parameters: {}});
+		const parameters = {};
+		for (const parameter of project.getEntity(entityName).data.parameters) {
+			parameters[parameter.data.name] = parameter.data.default;
+		}
+		items.push({x, y, entityName, parameters});
 		return new EntityLayer({...this.data, items});
 	}
 
@@ -111,6 +115,15 @@ export default class EntityLayer {
 		const item = {...items[itemIndex]};
 		item.x += deltaX;
 		item.y += deltaY;
+		items[itemIndex] = item;
+		return new EntityLayer({...this.data, items});
+	}
+
+	public setParameter(itemIndex: number, parameterName: string, parameterValue: any): EntityLayer {
+		const items = this.data.items.slice(0, this.data.items.length);
+		const item = {...items[itemIndex]};
+		item.parameters = {...item.parameters};
+		item.parameters[parameterName] = parameterValue;
 		items[itemIndex] = item;
 		return new EntityLayer({...this.data, items});
 	}
