@@ -81,6 +81,7 @@ export default class App extends React.Component<{}, State> {
 			filters: [
 				{name: 'GPGP projects', extensions: ['gpgpproj']},
 			],
+			properties: ['multiSelections'],
 		}, paths => {
 			if (!paths) return;
 			paths.forEach(path => {
@@ -117,6 +118,7 @@ export default class App extends React.Component<{}, State> {
 			filters: [
 				{name: 'GPGP levels', extensions: ['gpgp']},
 			],
+			properties: ['multiSelections'],
 		}, levelFilePaths => {
 			if (!levelFilePaths) return;
 			levelFilePaths.forEach(levelFilePath => {
