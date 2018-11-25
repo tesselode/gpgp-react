@@ -20,6 +20,7 @@ import { EditTool } from './edit-tool';
 import EntityLayerDisplay from './layer/entity-layer-display';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import TileLayerDisplay from './layer/tile-layer-display';
+import EntityOptions from './sidebar/entity-options';
 import EntityPicker from './sidebar/entity-picker';
 import HistoryBrowser from './sidebar/history-browser';
 import LayerList from './sidebar/layer-list';
@@ -28,7 +29,6 @@ import LevelOptions from './sidebar/level-options';
 import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
-import EntityOptions from './sidebar/entity-options';
 
 enum CursorState {
 	Idle,

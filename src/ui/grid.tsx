@@ -1,8 +1,5 @@
 import React from 'react';
 
-/** The resolution multiplier for rendering the grid lines. */
-const gridRenderingScale = 2;
-
 interface Props {
 	/** The width and height of tiles (in pixels). */
 	tileSize: number;
