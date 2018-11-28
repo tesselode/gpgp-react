@@ -25,7 +25,7 @@ export default (props: Props) => {
 	}
 	return <SidebarSection
 		name='History'
-		height='20em'
+		maxHeight='20em'
 		flush
 	>
 		<ListGroup flush>

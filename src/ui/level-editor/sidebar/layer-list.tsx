@@ -52,7 +52,7 @@ export default class LayerList extends React.Component<Props, State> {
 	public render() {
 		return <SidebarSection
 			name='Layers'
-			height='20em'
+			maxHeight='20em'
 			flush
 			startExpanded
 			headerContent={<ButtonGroup>

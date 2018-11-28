@@ -14,7 +14,7 @@ interface Props {
 
 const EntityPicker = (props: Props) => <SidebarSection
 	name='Entities'
-	height='20em'
+	maxHeight='20em'
 	flush
 	startExpanded
 >

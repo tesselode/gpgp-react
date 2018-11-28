@@ -8,6 +8,8 @@ export interface Props {
 	startExpanded?: boolean;
 	/** An optional fixed height for the sidebar section. */
 	height?: string;
+	/** An optional max height for the sidebar section. */
+	maxHeight?: string;
 	/** Whether the contents of the section should have zero padding. */
 	flush?: boolean;
 	/** Additional elements to add to the section header. */
@@ -49,6 +51,7 @@ export default class SidebarSection extends React.Component<Props, State> {
 					style={{
 						padding: this.props.flush && 0,
 						height: this.props.height,
+						maxHeight: this.props.maxHeight,
 						overflowY: 'auto',
 						resize: 'vertical',
 					}}
