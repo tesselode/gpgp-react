@@ -1,5 +1,6 @@
 import { EditTool } from "../../../ui/level-editor/edit-tool";
 import Rect from "../../rect";
+import Stamp from "../../stamp";
 
 export interface TileLayerItem {
 	readonly x: number;
@@ -62,34 +63,30 @@ export default class TileLayer {
 		});
 	}
 
-	public place(tool: EditTool, rect: Rect, tiles: Rect): TileLayer {
+	public place(tool: EditTool, rect: Rect, stamp: Stamp) {
 		const items = this.data.items.filter(item =>
 			item.x < rect.l || item.x > rect.r || item.y < rect.t || item.y > rect.b);
 		switch (tool) {
-			case EditTool.Rectangle:
-				let tileX = tiles.l - 1;
-				for (let x = rect.l; x <= rect.r; x++) {
-					tileX++;
-					if (tileX > tiles.r) tileX = tiles.l;
-					let tileY = tiles.t - 1;
-					for (let y = rect.t; y <= rect.b; y++) {
-						tileY++;
-						if (tileY > tiles.b) tileY = tiles.t;
-						items.push({x, y, tileX, tileY});
-					}
-				}
+			case EditTool.Pencil:
+				stamp.tiles.forEach(tile => {
+					items.push({
+						x: tile.positionX + rect.l,
+						y: tile.positionY + rect.t,
+						tileX: tile.tileX,
+						tileY: tile.tileY,
+					});
+				});
 				break;
-			default:
-				for (let tileX = tiles.l; tileX <= tiles.r; tileX++) {
-					for (let tileY = tiles.t; tileY <= tiles.b; tileY++) {
-						items.push({
-							x: rect.l + (tileX - tiles.l),
-							y: rect.t + (tileY - tiles.t),
-							tileX,
-							tileY,
-						});
-					}
-				}
+			case EditTool.Rectangle:
+				const extendedStamp = stamp.extend(rect.r - rect.l + 1, rect.b - rect.t + 1);
+				extendedStamp.tiles.forEach(tile => {
+					items.push({
+						x: tile.positionX + rect.l,
+						y: tile.positionY + rect.t,
+						tileX: tile.tileX,
+						tileY: tile.tileY,
+					});
+				});
 				break;
 		}
 		return new TileLayer({...this.data, items});

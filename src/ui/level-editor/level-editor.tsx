@@ -12,6 +12,7 @@ import TileLayer from '../../data/level/layer/tile-layer';
 import Level from '../../data/level/level';
 import Project from '../../data/project/project';
 import Rect from '../../data/rect';
+import Stamp from '../../data/stamp';
 import Grid from '../grid';
 import EntityCursor from './cursor/entity-cursor';
 import GenericCursor from './cursor/generic-cursor';
@@ -74,6 +75,8 @@ interface State {
 	selectedEntityIndex: number;
 	/** The number of the currently selected entity layer item. */
 	selectedEntityItemIndex?: number;
+	/** The current contents of the tile stamp. */
+	tileStamp?: Stamp;
 	/** The currently selected region of the tileset. */
 	tilesetSelection?: Rect;
 	/** Whether a level editing action is currently taking place
@@ -288,11 +291,11 @@ export default class LevelEditor extends React.Component<Props, State> {
 				'Place tiles',
 				true,
 			);
-		else if (layer instanceof TileLayer && this.state.tilesetSelection)
+		else if (layer instanceof TileLayer && this.state.tileStamp)
 			this.modifyLevel(
 				level.setLayer(
 					this.state.selectedLayerIndex,
-					layer.place(this.state.tool, rect, this.state.tilesetSelection),
+					layer.place(this.state.tool, rect, this.state.tileStamp),
 				),
 				'Place tiles',
 				true,
@@ -444,7 +447,10 @@ export default class LevelEditor extends React.Component<Props, State> {
 					project={this.props.project}
 					images={this.state.images}
 					layer={selectedLayer}
-					onSelectTiles={(rect) => {this.setState({tilesetSelection: rect}); }}
+					onSelectTiles={(rect) => {this.setState({
+						tilesetSelection: rect,
+						tileStamp: Stamp.FromRect(rect),
+					}); }}
 				/>
 				<EntityPicker
 					project={this.props.project}
@@ -541,7 +547,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 							tilesetImage={this.state.images.get(
 								this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
 							)}
-							tilesetSelection={this.state.tilesetSelection}
+							stamp={this.state.tileStamp}
 						/> : selectedLayer instanceof EntityLayer ? <EntityCursor
 							tileSize={this.props.project.data.tileSize}
 							x={this.state.cursorX}
