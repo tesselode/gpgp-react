@@ -1,4 +1,5 @@
 import Rect from "./rect";
+import { isNullOrUndefined } from "util";
 
 class StampTile {
 	public readonly positionX: number;
@@ -44,6 +45,7 @@ export default class Stamp {
 		for (let x = 0; x < width; x++) {
 			for (let y = 0; y < height; y++) {
 				const tile = this.getTileAt(x % this.width, y % this.height);
+				if (isNullOrUndefined(tile)) continue;
 				tiles.push({
 					positionX: x,
 					positionY: y,

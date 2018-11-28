@@ -5,6 +5,7 @@ import Button from 'reactstrap/lib/Button';
 import { EditTool } from '../edit-tool';
 
 export interface Props {
+	isTileLayerSelected: boolean;
 	tool: EditTool;
 	hideGrid: boolean;
 	onToolChanged: (tool: EditTool) => void;
@@ -34,6 +35,12 @@ export default (props: Props) => <div
 				onClick={() => props.onToolChanged(EditTool.Rectangle)}
 			>
 				<Octicon icon={PrimitiveSquare} />
+			</Button>
+			<Button
+				active={props.tool === EditTool.Stamp}
+				onClick={() => props.onToolChanged(EditTool.Stamp)}
+			>
+				Stamp
 			</Button>
 		</ButtonGroup>
 		<Button

@@ -1,10 +1,10 @@
 import React from 'react';
+import { isNullOrUndefined } from 'util';
 import Image from '../../../data/image';
 import Rect from '../../../data/rect';
 import Stamp from '../../../data/stamp';
 import { EditTool } from '../edit-tool';
 import GenericCursor from './generic-cursor';
-import { isNullOrUndefined } from 'util';
 
 interface Props {
 	/** The tile size of the grid. */
@@ -55,7 +55,7 @@ export default class TileCursor extends React.Component<Props> {
 		this.renderCanvas();
 	}
 
-	public render() {
+	private renderTiles() {
 		if (isNullOrUndefined(this.props.stamp)) return '';
 		const width = this.props.tool === EditTool.Rectangle ?
 			(this.props.cursor.r - this.props.cursor.l + 1) * this.props.tileSize :
@@ -72,11 +72,22 @@ export default class TileCursor extends React.Component<Props> {
 				width,
 				height,
 				overflow: 'hidden',
-				opacity: .67,
+				opacity: this.props.tool === EditTool.Stamp ? 0 : .67,
 				pointerEvents: 'none',
 			}}
 		>
 			<canvas ref={this.canvasRef}/>
+		</div>;
+	}
+
+	public render() {
+		return <div>
+			<GenericCursor
+				tileSize={this.props.tileSize}
+				cursor={this.props.cursor}
+				removing={this.props.removing}
+			/>
+			{this.renderTiles()}
 		</div>;
 	}
 }

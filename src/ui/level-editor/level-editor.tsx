@@ -77,8 +77,8 @@ interface State {
 	selectedEntityItemIndex?: number;
 	/** The current contents of the tile stamp. */
 	tileStamp?: Stamp;
-	/** The currently selected region of the tileset. */
-	tilesetSelection?: Rect;
+	/** The currently selected region in the tile picker. */
+	tilePickerSelection?: Rect;
 	/** Whether a level editing action is currently taking place
 	 * (i.e., the user is currently placing tiles by dragging with the pencil tool).
 	 */
@@ -167,6 +167,18 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}, () => {this.updateTabTitle(); });
 	}
 
+	private onSelectLayer(layerIndex: number) {
+		const level = this.state.levelHistory.getCurrentState();
+		const layer = level.data.layers[layerIndex];
+		if (this.state.tool === EditTool.Stamp && !(layer instanceof TileLayer)) {
+			this.setState({tool: EditTool.Pencil});
+		}
+		this.setState({
+			selectedLayerIndex: layerIndex,
+			selectedEntityItemIndex: null,
+		});
+	}
+
 	private onMoveCursor(x: number, y: number): void {
 		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
@@ -209,6 +221,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 							}
 							break;
 						case EditTool.Rectangle:
+						case EditTool.Stamp:
 							this.setState({cursorRect: new Rect(
 								this.state.cursorRect.l,
 								this.state.cursorRect.t,
@@ -225,7 +238,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
 		switch (button) {
-			case 0:
+			case 0: // left mouse button
 				this.setState({cursorState: CursorState.Place});
 				if (layer instanceof EntityLayer) {
 					const itemIndex = layer.getItemAt(this.props.project, this.state.cursorX, this.state.cursorY);
@@ -233,7 +246,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 				} else if (this.state.tool === EditTool.Pencil)
 					this.onPlace(this.state.cursorRect.normalized());
 				break;
-			case 2:
+			case 2: // right mouse button
 				this.setState({cursorState: CursorState.Remove});
 				if (this.state.tool === EditTool.Pencil)
 					this.onRemove(this.state.cursorRect.normalized());
@@ -254,6 +267,16 @@ export default class LevelEditor extends React.Component<Props, State> {
 				}
 				this.setState({cursorRect: new Rect(this.state.cursorX, this.state.cursorY)});
 				break;
+			case EditTool.Stamp:
+				const level = this.state.levelHistory.getCurrentState();
+				const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
+				if (selectedLayer instanceof TileLayer)
+					this.setState({
+						tileStamp: selectedLayer.createStampFromRect(this.state.cursorRect),
+						tilePickerSelection: null,
+						cursorRect: new Rect(this.state.cursorX, this.state.cursorY),
+						tool: EditTool.Pencil,
+					});
 		}
 		this.setState({
 			cursorState: CursorState.Idle,
@@ -412,6 +435,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 				}}
 			>
 				<ToolPalette
+					isTileLayerSelected={selectedLayer instanceof TileLayer}
 					tool={this.state.tool}
 					hideGrid={this.state.hideGrid}
 					onToolChanged={(tool) => this.setState({tool})}
@@ -430,10 +454,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					onToggleShowSelectedLayerOnTop={() => this.setState({
 						showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop,
 					})}
-					onSelectLayer={(layerIndex: number) => this.setState({
-						selectedLayerIndex: layerIndex,
-						selectedEntityItemIndex: null,
-					})}
+					onSelectLayer={this.onSelectLayer.bind(this)}
 					modifyLevel={this.modifyLevel.bind(this)}
 				/>
 				<LayerOptions
@@ -448,7 +469,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					images={this.state.images}
 					layer={selectedLayer}
 					onSelectTiles={(rect) => {this.setState({
-						tilesetSelection: rect,
+						tilePickerSelection: rect,
 						tileStamp: Stamp.FromRect(rect),
 					}); }}
 				/>

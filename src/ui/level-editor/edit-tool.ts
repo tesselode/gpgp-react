@@ -4,4 +4,6 @@ export enum EditTool {
 	Pencil,
 	/** Places rectangles of items. */
 	Rectangle,
+	/** Creates stamps for placing tiles. */
+	Stamp,
 }

@@ -1,3 +1,4 @@
+import { isNullOrUndefined } from "util";
 import { EditTool } from "../../../ui/level-editor/edit-tool";
 import Rect from "../../rect";
 import Stamp from "../../stamp";
@@ -44,6 +45,29 @@ export default class TileLayer {
 		this.data = data;
 	}
 
+	public getItemAt(x: number, y: number): TileLayerItem {
+		return this.data.items.find(item => item.x === x && item.y === y);
+	}
+
+	public createStampFromRect(rect: Rect): Stamp {
+		const width = rect.r - rect.l + 1;
+		const height = rect.b - rect.t + 1;
+		const tiles = [];
+		for (let x = rect.l; x <= rect.r; x++) {
+			for (let y = rect.t; y <= rect.b; y++) {
+				const item = this.getItemAt(x, y);
+				if (isNullOrUndefined(item)) continue;
+				tiles.push({
+					positionX: x - rect.l,
+					positionY: y - rect.t,
+					tileX: item.tileX,
+					tileY: item.tileY,
+				});
+			}
+		}
+		return new Stamp(width, height, tiles);
+	}
+
 	public setName(name: string): TileLayer {
 		return new TileLayer({...this.data, name});
 	}
@@ -64,14 +88,16 @@ export default class TileLayer {
 	}
 
 	public place(tool: EditTool, rect: Rect, stamp: Stamp) {
-		const items = this.data.items.filter(item =>
-			item.x < rect.l || item.x > rect.r || item.y < rect.t || item.y > rect.b);
+		let items = this.data.items.slice(0, this.data.items.length);
 		switch (tool) {
 			case EditTool.Pencil:
 				stamp.tiles.forEach(tile => {
+					const x = tile.positionX + rect.l;
+					const y = tile.positionY + rect.t;
+					items = items.filter(item => !(item.x === x && item.y === y));
 					items.push({
-						x: tile.positionX + rect.l,
-						y: tile.positionY + rect.t,
+						x,
+						y,
 						tileX: tile.tileX,
 						tileY: tile.tileY,
 					});
@@ -80,9 +106,12 @@ export default class TileLayer {
 			case EditTool.Rectangle:
 				const extendedStamp = stamp.extend(rect.r - rect.l + 1, rect.b - rect.t + 1);
 				extendedStamp.tiles.forEach(tile => {
+					const x = tile.positionX + rect.l;
+					const y = tile.positionY + rect.t;
+					items = items.filter(item => !(item.x === x && item.y === y));
 					items.push({
-						x: tile.positionX + rect.l,
-						y: tile.positionY + rect.t,
+						x,
+						y,
 						tileX: tile.tileX,
 						tileY: tile.tileY,
 					});
