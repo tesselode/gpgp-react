@@ -76,7 +76,14 @@ export default class TileCursor extends React.Component<Props> {
 				pointerEvents: 'none',
 			}}
 		>
-			<canvas ref={this.canvasRef}/>
+			<canvas
+				ref={this.canvasRef}
+				style={{
+					position: 'absolute',
+					left: 0,
+					top: 0,
+				}}
+			/>
 		</div>;
 	}
 
