@@ -145,7 +145,7 @@ export default class Grid extends React.Component<Props, State> {
 					style={{
 						position: 'absolute',
 						left: 0,
-						top: 0,
+						top: -2,
 						width: this.props.width * scale,
 						height: this.props.height * scale,
 						backgroundImage: 'repeating-linear-gradient(0deg, transparent, ' +
@@ -156,7 +156,6 @@ export default class Grid extends React.Component<Props, State> {
 							'transparent ' + (scale - 2) + 'px, ' +
 							'rgba(200, 200, 200, .33) ' + (scale - 2) + 'px, ' +
 							'rgba(200, 200, 200, .33) ' + scale + 'px)',
-						backgroundPosition: '0 -2px',
 					}}
 				/>}
 				<div
