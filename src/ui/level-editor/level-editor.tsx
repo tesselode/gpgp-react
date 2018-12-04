@@ -415,9 +415,9 @@ export default class LevelEditor extends React.Component<Props, State> {
 
 		return <div>
 			<WarningsModal warnings={level.getWarnings()} />
-			{/*<div
+			<div
 				style={{
-					width: '28%',
+					width: '350px',
 					maxWidth: '75%',
 					float: 'left',
 					height: 'calc(100vh - 42px)',
@@ -476,7 +476,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 						this.setState({levelHistory: this.state.levelHistory.jump(position)});
 					}}
 				/>
-			</div>*/}
+			</div>
 			<div
 				style={{
 					height: 'calc(100vh - 42px)',
@@ -484,8 +484,10 @@ export default class LevelEditor extends React.Component<Props, State> {
 				}}
 			>
 				<GridEditor
-					viewportWidth={window.innerWidth}
+					viewportWidth={window.innerWidth - 350}
 					viewportHeight={window.innerHeight - 42}
+					project={this.props.project}
+					level={level}
 				/>
 			</div>
 		</div>;
