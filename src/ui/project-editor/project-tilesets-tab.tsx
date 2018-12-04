@@ -14,7 +14,6 @@ import {
 } from 'reactstrap';
 import Image from '../../data/image';
 import Project from '../../data/project/project';
-import Grid from '../grid';
 import ItemList from './item-list';
 
 export interface Props {
@@ -50,21 +49,6 @@ export default class ProjectTilesetsTab extends React.Component<Props, State> {
 				));
 			}
 		});
-	}
-
-	private renderTilesetPreview() {
-		if (!this.props.focused) return;
-		const selectedTileset = this.props.project.data.tilesets[this.state.selectedTilesetIndex];
-		const selectedTilesetImage: Image = this.props.images.get(selectedTileset.data.imagePath);
-		if (!selectedTilesetImage) return;
-		if (selectedTilesetImage.error) return <div>{selectedTilesetImage.error}</div>;
-		return <Grid
-			tileSize={this.props.project.data.tileSize}
-			width={Math.ceil(selectedTilesetImage.width / this.props.project.data.tileSize)}
-			height={Math.ceil(selectedTilesetImage.height / this.props.project.data.tileSize)}
-		>
-			<img src={selectedTilesetImage.data} />
-		</Grid>;
 	}
 
 	public render() {
@@ -123,7 +107,6 @@ export default class ProjectTilesetsTab extends React.Component<Props, State> {
 						</Col>
 					</FormGroup>
 				</Form>
-				{this.renderTilesetPreview()}
 			</Col>}
 		</Row>;
 	}

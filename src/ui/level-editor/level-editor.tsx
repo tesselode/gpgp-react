@@ -13,21 +13,13 @@ import Level from '../../data/level/level';
 import Project from '../../data/project/project';
 import Rect from '../../data/rect';
 import Stamp from '../../data/stamp';
-import Grid from '../grid';
-import EntityCursor from './cursor/entity-cursor';
-import GenericCursor from './cursor/generic-cursor';
-import TileCursor from './cursor/tile-cursor';
 import { EditTool } from './edit-tool';
-import EntityLayerDisplay from './layer/entity-layer-display';
-import GeometryLayerDisplay from './layer/geometry-layer-display';
-import TileLayerDisplay from './layer/tile-layer-display';
 import EntityOptions from './sidebar/entity-options';
 import EntityPicker from './sidebar/entity-picker';
 import HistoryBrowser from './sidebar/history-browser';
 import LayerList from './sidebar/layer-list';
 import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
-import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
 
@@ -464,15 +456,6 @@ export default class LevelEditor extends React.Component<Props, State> {
 					modifyLevel={this.modifyLevel.bind(this)}
 					onBlur={() => this.setState({continuedAction: false})}
 				/>
-				<TilePicker
-					project={this.props.project}
-					images={this.state.images}
-					layer={selectedLayer}
-					onSelectTiles={(rect) => {this.setState({
-						tilePickerSelection: rect,
-						tileStamp: Stamp.FromRect(rect),
-					}); }}
-				/>
 				<EntityPicker
 					project={this.props.project}
 					images={this.state.images}
@@ -492,96 +475,6 @@ export default class LevelEditor extends React.Component<Props, State> {
 						this.setState({levelHistory: this.state.levelHistory.jump(position)});
 					}}
 				/>
-			</div>
-			<div
-				style={{
-					height: 'calc(100vh - 42px)',
-					overflowY: 'auto',
-					padding: '.5em',
-				}}
-			>
-				<Grid
-					tileSize={this.props.project.data.tileSize}
-					width={level.data.width}
-					height={level.data.height}
-					hideGrid={this.state.hideGrid}
-					hasShadow
-					onMove={this.onMoveCursor.bind(this)}
-					onClick={this.onClickGrid.bind(this)}
-					onRelease={this.onReleaseGrid.bind(this)}
-					onDoubleClick={this.onDoubleClickGrid.bind(this)}
-				>
-					{level.data.hasBackgroundColor && <div
-						style={{
-							position: 'absolute',
-							zIndex: -(level.data.layers.length + 3),
-							left: 0,
-							top: 0,
-							width: this.props.level.data.width * this.props.project.data.tileSize,
-							height: this.props.level.data.height * this.props.project.data.tileSize,
-							background: level.data.backgroundColor,
-							pointerEvents: 'none',
-						}}
-					/>}
-					{level.data.layers.map((layer, i) => {
-						if (!layer.data.visible) return '';
-						let order = -(i + 2);
-						if (this.state.showSelectedLayerOnTop && i === this.state.selectedLayerIndex)
-							order = -1;
-						if (layer instanceof TileLayer)
-							return <TileLayerDisplay
-								key={i}
-								project={this.props.project}
-								level={level}
-								layer={layer}
-								tilesetImage={this.state.images.get(
-									this.props.project.getTileset(layer.data.tilesetName).data.imagePath,
-								)}
-								order={order}
-							/>;
-						else if (layer instanceof EntityLayer)
-							return <EntityLayerDisplay
-								key={i}
-								project={this.props.project}
-								images={this.state.images}
-								level={level}
-								layer={layer}
-								order={order}
-								selectedEntityItemIndex={this.state.selectedEntityItemIndex}
-							/>;
-						else if (layer instanceof GeometryLayer)
-							return <GeometryLayerDisplay
-								key={i}
-								project={this.props.project}
-								level={level}
-								layer={layer}
-								order={order}
-							/>;
-						return '';
-					})}
-					{
-						selectedLayer instanceof TileLayer ? <TileCursor
-							tileSize={this.props.project.data.tileSize}
-							cursor={this.state.cursorRect.normalized()}
-							removing={this.state.cursorState === CursorState.Remove}
-							tool={this.state.tool}
-							tilesetImage={this.state.images.get(
-								this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath,
-							)}
-							stamp={this.state.tileStamp}
-						/> : selectedLayer instanceof EntityLayer ? <EntityCursor
-							tileSize={this.props.project.data.tileSize}
-							x={this.state.cursorX}
-							y={this.state.cursorY}
-							entity={this.props.project.data.entities[this.state.selectedEntityIndex]}
-							images={this.state.images}
-						/> : <GenericCursor
-							tileSize={this.props.project.data.tileSize}
-							cursor={this.state.cursorRect.normalized()}
-							removing={this.state.cursorState === CursorState.Remove}
-						/>
-					}
-				</Grid>
 			</div>
 		</div>;
 	}
