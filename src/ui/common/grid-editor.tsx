@@ -33,6 +33,25 @@ export default class GridEditor extends React.Component<Props, State> {
         };
     }
 
+    private getCursorPosition(x: number, y: number): {x: number, y: number} {
+        const tileSize = this.props.project.data.tileSize;
+        const width = this.props.level.data.width;
+        const height = this.props.level.data.height;
+        x -= this.props.viewportWidth / 2;
+        y -= this.props.viewportHeight / 2;
+        x -= this.state.panX;
+        y -= this.state.panY;
+        x /= this.state.zoom;
+        y /= this.state.zoom;
+        x /= tileSize;
+        y /= tileSize;
+        x += width / 2;
+        y += height / 2;
+        x = Math.floor(x);
+        y = Math.floor(y);
+        return {x, y};
+    }
+
     private renderGridlines(context: CanvasRenderingContext2D) {
         const tileSize = this.props.project.data.tileSize;
         const width = this.props.level.data.width;
@@ -62,8 +81,8 @@ export default class GridEditor extends React.Component<Props, State> {
         canvas.width = this.props.viewportWidth;
         canvas.height = this.props.viewportHeight;
         const context = canvas.getContext('2d');
-        context.translate(this.state.panX, this.state.panY);
         context.translate(this.props.viewportWidth / 2, this.props.viewportHeight / 2);
+        context.translate(this.state.panX, this.state.panY);
         context.scale(this.state.zoom, this.state.zoom);
         context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
         this.renderGridlines(context);
@@ -93,15 +112,19 @@ export default class GridEditor extends React.Component<Props, State> {
                 }
             }}
             onMouseMove={event => {
+                const rect = this.canvasRef.current.getBoundingClientRect();
+                const mouseX = event.clientX - rect.left;
+                const mouseY = event.clientY - rect.top;
                 if (this.state.panning)
                     this.setState({
-                        panX: this.state.panX + event.clientX - this.state.mouseX,
-                        panY: this.state.panY + event.clientY - this.state.mouseY,
+                        panX: this.state.panX + mouseX - this.state.mouseX,
+                        panY: this.state.panY + mouseY - this.state.mouseY,
                     });
                 this.setState({
-                    mouseX: event.clientX,
-                    mouseY: event.clientY,
+                    mouseX,
+                    mouseY,
                 });
+                console.log(this.getCursorPosition(mouseX, mouseY));
             }}
             onWheel={event => {
                 if (!event.ctrlKey) return;
