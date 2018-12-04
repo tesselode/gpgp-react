@@ -7,6 +7,7 @@ interface Props {
     viewportHeight: number;
     project: Project;
     level: Level;
+    onMoveCursor?: (x: number, y: number) => void;
 }
 
 interface State {
@@ -16,6 +17,8 @@ interface State {
     panY: number;
     zoom: number;
     panning: boolean;
+    cursorX: number;
+    cursorY: number;
 }
 
 export default class GridEditor extends React.Component<Props, State> {
@@ -30,6 +33,8 @@ export default class GridEditor extends React.Component<Props, State> {
             panY: 0,
             zoom: 2,
             panning: false,
+            cursorX: 0,
+            cursorY: 0,
         };
     }
 
@@ -124,7 +129,15 @@ export default class GridEditor extends React.Component<Props, State> {
                     mouseX,
                     mouseY,
                 });
-                console.log(this.getCursorPosition(mouseX, mouseY));
+                const cursorPosition = this.getCursorPosition(mouseX, mouseY);
+                if (cursorPosition.x !== this.state.cursorX || cursorPosition.y !== this.state.cursorY) {
+                    if (this.props.onMoveCursor)
+                        this.props.onMoveCursor(cursorPosition.x, cursorPosition.y);
+                }
+                this.setState({
+                    cursorX: cursorPosition.x,
+                    cursorY: cursorPosition.y,
+                });
             }}
             onWheel={event => {
                 if (!event.ctrlKey) return;
