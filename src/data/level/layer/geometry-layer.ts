@@ -37,6 +37,10 @@ export default class GeometryLayer {
 		this.data = {...this.data, ...data};
 	}
 
+	public hasItemAt(x: number, y: number): boolean {
+		return this.data.items.findIndex(item => item.x === x && item.y === y) !== -1;
+	}
+
 	public setName(name: string): GeometryLayer {
 		return new GeometryLayer({...this.data, name});
 	}
