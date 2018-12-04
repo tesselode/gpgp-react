@@ -2,11 +2,14 @@ import React from 'react';
 import Level from '../../data/level/level';
 import Project from '../../data/project/project';
 
+export type GridEditorLayer = (context: CanvasRenderingContext2D) => void;
+
 interface Props {
     viewportWidth: number;
     viewportHeight: number;
     project: Project;
     level: Level;
+    layers?: GridEditorLayer[];
     onMoveCursor?: (x: number, y: number) => void;
 }
 
@@ -57,12 +60,18 @@ export default class GridEditor extends React.Component<Props, State> {
         return {x, y};
     }
 
-    private renderGridlines(context: CanvasRenderingContext2D) {
+    private renderOutline(context: CanvasRenderingContext2D) {
         const tileSize = this.props.project.data.tileSize;
         const width = this.props.level.data.width;
         const height = this.props.level.data.height;
         context.strokeStyle = 'rgba(0, 0, 0, 1)';
         context.strokeRect(0, 0, width * tileSize, height * tileSize);
+    }
+
+    private renderGridlines(context: CanvasRenderingContext2D) {
+        const tileSize = this.props.project.data.tileSize;
+        const width = this.props.level.data.width;
+        const height = this.props.level.data.height;
         context.strokeStyle = 'rgba(0, 0, 0, .25)';
         for (let x = 1; x < width; x++) {
             context.beginPath();
@@ -91,6 +100,12 @@ export default class GridEditor extends React.Component<Props, State> {
         context.scale(this.state.zoom, this.state.zoom);
         context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
         this.renderGridlines(context);
+        if (this.props.layers) {
+            this.props.layers.forEach(display => {
+                display(context);
+            });
+        }
+        this.renderOutline(context);
     }
 
     public componentDidMount() {

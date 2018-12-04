@@ -13,7 +13,7 @@ import Level from '../../data/level/level';
 import Project from '../../data/project/project';
 import Rect from '../../data/rect';
 import Stamp from '../../data/stamp';
-import GridEditor from '../common/grid-editor';
+import GridEditor, { GridEditorLayer } from '../common/grid-editor';
 import { EditTool } from './edit-tool';
 import EntityOptions from './sidebar/entity-options';
 import EntityPicker from './sidebar/entity-picker';
@@ -23,6 +23,7 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
+import GeometryLayerDisplay from './layer/geometry-layer-display';
 
 enum CursorState {
 	Idle,
@@ -402,9 +403,6 @@ export default class LevelEditor extends React.Component<Props, State> {
 	}
 
 	public render() {
-		const level = this.state.levelHistory.getCurrentState();
-		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
-
 		if (this.state.imagesLoaded < this.state.totalImages) {
 			return <Progress
 				style={{transition: '0'}}
@@ -412,6 +410,17 @@ export default class LevelEditor extends React.Component<Props, State> {
 				animated
 			/>;
 		}
+
+		const level = this.state.levelHistory.getCurrentState();
+		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
+		const gridEditorLayers: GridEditorLayer[] = [];
+		level.data.layers.forEach(layer => {
+			if (layer instanceof GeometryLayer)
+				gridEditorLayers.push(GeometryLayerDisplay({
+					project: this.props.project,
+					layer,
+				}));
+		});
 
 		return <div>
 			<WarningsModal warnings={level.getWarnings()} />
@@ -488,6 +497,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					viewportHeight={window.innerHeight - 42}
 					project={this.props.project}
 					level={level}
+					layers={gridEditorLayers}
 				/>
 			</div>
 		</div>;
