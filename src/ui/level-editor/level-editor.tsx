@@ -13,6 +13,7 @@ import Level from '../../data/level/level';
 import Project from '../../data/project/project';
 import Rect from '../../data/rect';
 import Stamp from '../../data/stamp';
+import GridEditor from '../common/grid-editor';
 import { EditTool } from './edit-tool';
 import EntityOptions from './sidebar/entity-options';
 import EntityPicker from './sidebar/entity-picker';
@@ -414,7 +415,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 
 		return <div>
 			<WarningsModal warnings={level.getWarnings()} />
-			<div
+			{/*<div
 				style={{
 					width: '28%',
 					maxWidth: '75%',
@@ -474,6 +475,17 @@ export default class LevelEditor extends React.Component<Props, State> {
 					onJump={(position: number) => {
 						this.setState({levelHistory: this.state.levelHistory.jump(position)});
 					}}
+				/>
+			</div>*/}
+			<div
+				style={{
+					height: 'calc(100vh - 42px)',
+					overflow: 'hidden',
+				}}
+			>
+				<GridEditor
+					viewportWidth={window.innerWidth}
+					viewportHeight={window.innerHeight - 42}
 				/>
 			</div>
 		</div>;
