@@ -14,6 +14,7 @@ interface State {
     mouseY: number;
     panX: number;
     panY: number;
+    zoom: number;
     panning: boolean;
 }
 
@@ -27,6 +28,7 @@ export default class GridEditor extends React.Component<Props, State> {
             mouseY: 0,
             panX: 0,
             panY: 0,
+            zoom: 2,
             panning: false,
         };
     }
@@ -60,9 +62,10 @@ export default class GridEditor extends React.Component<Props, State> {
         canvas.width = this.props.viewportWidth;
         canvas.height = this.props.viewportHeight;
         const context = canvas.getContext('2d');
-        context.translate(this.props.viewportWidth / 2, this.props.viewportHeight / 2);
-        context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
         context.translate(this.state.panX, this.state.panY);
+        context.translate(this.props.viewportWidth / 2, this.props.viewportHeight / 2);
+        context.scale(this.state.zoom, this.state.zoom);
+        context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
         this.renderGridlines(context);
     }
 
@@ -99,6 +102,15 @@ export default class GridEditor extends React.Component<Props, State> {
                     mouseX: event.clientX,
                     mouseY: event.clientY,
                 });
+            }}
+            onWheel={event => {
+                if (!event.ctrlKey) return;
+                if (event.deltaY > 0) {
+                    this.setState({zoom: this.state.zoom / 1.1});
+                }
+                if (event.deltaY < 0) {
+                    this.setState({zoom: this.state.zoom * 1.1});
+                }
             }}
         />;
     }
