@@ -117,16 +117,23 @@ export default class LevelEditor extends React.Component<Props, State> {
 			cursorState: CursorState.Idle,
 			hideGrid: false,
 		};
+		this.onResize = this.onResize.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 	}
 
 	public componentDidMount() {
+		window.addEventListener('resize', this.onResize);
 		window.addEventListener('keydown', this.onKeyDown);
 		this.loadImages();
 	}
 
 	public componentWillUnmount() {
+		window.removeEventListener('resize', this.onResize);
 		window.removeEventListener('keydown', this.onKeyDown);
+	}
+
+	public onResize() {
+		this.forceUpdate();
 	}
 
 	public onKeyDown(event: KeyboardEvent) {

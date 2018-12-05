@@ -112,7 +112,7 @@ export default class GridEditor extends React.Component<Props, State> {
         this.renderCanvas();
     }
 
-    public componentWillUpdate() {
+    public componentDidUpdate() {
         this.renderCanvas();
     }
 
