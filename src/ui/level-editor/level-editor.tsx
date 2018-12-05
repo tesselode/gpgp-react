@@ -25,6 +25,7 @@ import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
 import TileLayerDisplay from './layer/tile-layer-display';
+import EntityLayerDisplay from './layer/entity-layer-display';
 
 enum CursorState {
 	Idle,
@@ -418,13 +419,19 @@ export default class LevelEditor extends React.Component<Props, State> {
 		for (let i = level.data.layers.length - 1; i > 0; i--) {
 			const layer = level.data.layers[i];
 			if (!layer.data.visible) continue;
+			if (layer instanceof EntityLayer)
+				gridEditorLayers.push(EntityLayerDisplay({
+					project: this.props.project,
+					images: this.state.images,
+					layer,
+				}));
 			if (layer instanceof TileLayer)
 				gridEditorLayers.push(TileLayerDisplay({
 					project: this.props.project,
 					images: this.state.images,
 					layer,
 				}));
-			else if (layer instanceof GeometryLayer)
+			if (layer instanceof GeometryLayer)
 				gridEditorLayers.push(GeometryLayerDisplay({
 					project: this.props.project,
 					layer,
