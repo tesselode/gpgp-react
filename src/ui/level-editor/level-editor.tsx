@@ -9,12 +9,15 @@ import Image, { loadImage } from '../../data/image';
 import EntityLayer from '../../data/level/layer/entity-layer';
 import GeometryLayer from '../../data/level/layer/geometry-layer';
 import TileLayer from '../../data/level/layer/tile-layer';
-import Level from '../../data/level/level';
+import Level, { Layer } from '../../data/level/level';
 import Project from '../../data/project/project';
 import Rect from '../../data/rect';
 import Stamp from '../../data/stamp';
 import GridEditor, { GridEditorLayer } from '../common/grid-editor';
 import { EditTool } from './edit-tool';
+import EntityLayerDisplay from './layer/entity-layer-display';
+import GeometryLayerDisplay from './layer/geometry-layer-display';
+import TileLayerDisplay from './layer/tile-layer-display';
 import EntityOptions from './sidebar/entity-options';
 import EntityPicker from './sidebar/entity-picker';
 import HistoryBrowser from './sidebar/history-browser';
@@ -23,9 +26,6 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
-import GeometryLayerDisplay from './layer/geometry-layer-display';
-import TileLayerDisplay from './layer/tile-layer-display';
-import EntityLayerDisplay from './layer/entity-layer-display';
 
 enum CursorState {
 	Idle,
@@ -404,6 +404,36 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 	}
 
+	private getLayerDisplay(layer: Layer): GridEditorLayer {
+		return layer instanceof EntityLayer ? EntityLayerDisplay({
+			project: this.props.project,
+			images: this.state.images,
+			layer,
+		}) : layer instanceof TileLayer ? TileLayerDisplay({
+			project: this.props.project,
+			images: this.state.images,
+			layer,
+		}) : GeometryLayerDisplay({
+			project: this.props.project,
+			layer,
+		});
+	}
+
+	private getLayerDisplays(): GridEditorLayer[] {
+		const level = this.state.levelHistory.getCurrentState();
+		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
+		const gridEditorLayers: GridEditorLayer[] = [];
+		for (let i = level.data.layers.length - 1; i >= 0; i--) {
+			const layer = level.data.layers[i];
+			if (!layer.data.visible) continue;
+			if (this.state.showSelectedLayerOnTop && this.state.selectedLayerIndex === i) continue;
+			gridEditorLayers.push(this.getLayerDisplay(layer));
+		}
+		if (this.state.showSelectedLayerOnTop && selectedLayer.data.visible)
+			gridEditorLayers.push(this.getLayerDisplay(selectedLayer));
+		return gridEditorLayers;
+	}
+
 	public render() {
 		if (this.state.imagesLoaded < this.state.totalImages) {
 			return <Progress
@@ -415,28 +445,6 @@ export default class LevelEditor extends React.Component<Props, State> {
 
 		const level = this.state.levelHistory.getCurrentState();
 		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
-		const gridEditorLayers: GridEditorLayer[] = [];
-		for (let i = level.data.layers.length - 1; i > 0; i--) {
-			const layer = level.data.layers[i];
-			if (!layer.data.visible) continue;
-			if (layer instanceof EntityLayer)
-				gridEditorLayers.push(EntityLayerDisplay({
-					project: this.props.project,
-					images: this.state.images,
-					layer,
-				}));
-			if (layer instanceof TileLayer)
-				gridEditorLayers.push(TileLayerDisplay({
-					project: this.props.project,
-					images: this.state.images,
-					layer,
-				}));
-			if (layer instanceof GeometryLayer)
-				gridEditorLayers.push(GeometryLayerDisplay({
-					project: this.props.project,
-					layer,
-				}));
-		}
 
 		return <div>
 			<WarningsModal warnings={level.getWarnings()} />
@@ -513,7 +521,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					viewportHeight={window.innerHeight - 42}
 					project={this.props.project}
 					level={level}
-					layers={gridEditorLayers}
+					layers={this.getLayerDisplays()}
 				/>
 			</div>
 		</div>;
