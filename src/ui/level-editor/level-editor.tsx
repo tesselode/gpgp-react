@@ -2,6 +2,7 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import React from 'react';
+import SplitPane from 'react-split-pane';
 import { Progress } from 'reactstrap';
 import { isNullOrUndefined } from 'util';
 import HistoryList from '../../data/history-list';
@@ -93,6 +94,8 @@ interface State {
 	cursorState: CursorState;
 	/** Whether to hide the grid. */
 	hideGrid: boolean;
+	/** The current width of the sidebar (in pixels). */
+	sidebarWidth: number;
 }
 
 /** The level editor screen, which allows you to create or edit levels. */
@@ -120,6 +123,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 			cursorRect: new Rect(0, 0),
 			cursorState: CursorState.Idle,
 			hideGrid: false,
+			sidebarWidth: 350,
 		};
 		this.onResize = this.onResize.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
@@ -483,100 +487,100 @@ export default class LevelEditor extends React.Component<Props, State> {
 
 		return <div>
 			<WarningsModal warnings={level.getWarnings()} />
-			<div
+			<SplitPane
+				split='vertical'
+				minSize={250}
+				size={this.state.sidebarWidth}
 				style={{
-					width: '350px',
-					maxWidth: '75%',
-					float: 'left',
 					height: 'calc(100vh - 42px)',
-					overflowY: 'auto',
-					resize: 'horizontal',
-					padding: '.5em',
-					paddingTop: 0,
 				}}
 			>
-				<ToolPalette
-					isTileLayerSelected={selectedLayer instanceof TileLayer}
-					tool={this.state.tool}
-					hideGrid={this.state.hideGrid}
-					onToolChanged={(tool) => this.setState({tool})}
-					onToggleGrid={() => this.setState({hideGrid: !this.state.hideGrid})}
-				/>
-				<LevelOptions
-					level={level}
-					modifyLevel={this.modifyLevel.bind(this)}
-					onBlur={() => this.setState({continuedAction: false})}
-				/>
-				<LayerList
-					project={this.props.project}
-					level={level}
-					selectedLayerIndex={this.state.selectedLayerIndex}
-					showSelectedLayerOnTop={this.state.showSelectedLayerOnTop}
-					onToggleShowSelectedLayerOnTop={() => this.setState({
-						showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop,
-					})}
-					onSelectLayer={this.onSelectLayer.bind(this)}
-					modifyLevel={this.modifyLevel.bind(this)}
-				/>
-				<LayerOptions
-					level={level}
-					project={this.props.project}
-					selectedLayerIndex={this.state.selectedLayerIndex}
-					modifyLevel={this.modifyLevel.bind(this)}
-					onBlur={() => this.setState({continuedAction: false})}
-				/>
-				<TilePicker
-					project={this.props.project}
-					images={this.state.images}
-					layer={selectedLayer}
-					sidebarWidth={350}
-					onSelectTiles={(rect) => {this.setState({
-						tilePickerSelection: rect,
-						tileStamp: Stamp.FromRect(rect),
-					}); }}
-				/>
-				<EntityPicker
-					project={this.props.project}
-					images={this.state.images}
-					selectedEntityIndex={this.state.selectedEntityIndex}
-					onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
-				/>
-				<EntityOptions
-					project={this.props.project}
-					level={level}
-					selectedLayerIndex={this.state.selectedLayerIndex}
-					selectedEntityItemIndex={this.state.selectedEntityItemIndex}
-					modifyLevel={this.modifyLevel.bind(this)}
-				/>
-				<HistoryBrowser
-					history={this.state.levelHistory}
-					onJump={(position: number) => {
-						this.setState({levelHistory: this.state.levelHistory.jump(position)});
+				<div
+					style={{
+						height: 'calc(100vh - 42px)',
+						overflowY: 'scroll',
+						paddingLeft: '.5em',
+						paddingRight: '.5em',
 					}}
-				/>
-			</div>
-			<div
-				style={{
-					height: 'calc(100vh - 42px)',
-					overflow: 'hidden',
-				}}
-			>
-				<GridEditor
-					viewportWidth={window.innerWidth - 350}
-					viewportHeight={window.innerHeight - 42}
-					tileSize={this.props.project.data.tileSize}
-					width={level.data.width}
-					height={level.data.height}
-					hideGrid={this.state.hideGrid}
-					hasShadow
-					backgroundColor={level.data.hasBackgroundColor && level.data.backgroundColor}
-					layers={this.getLayerDisplays()}
-					onMoveCursor={this.onMoveCursor.bind(this)}
-					onClick={this.onClickGrid.bind(this)}
-					onRelease={this.onReleaseGrid.bind(this)}
-					onDoubleClick={this.onDoubleClickGrid.bind(this)}
-				/>
-			</div>
+				>
+					<ToolPalette
+						isTileLayerSelected={selectedLayer instanceof TileLayer}
+						tool={this.state.tool}
+						hideGrid={this.state.hideGrid}
+						onToolChanged={(tool) => this.setState({tool})}
+						onToggleGrid={() => this.setState({hideGrid: !this.state.hideGrid})}
+					/>
+					<LevelOptions
+						level={level}
+						modifyLevel={this.modifyLevel.bind(this)}
+						onBlur={() => this.setState({continuedAction: false})}
+					/>
+					<LayerList
+						project={this.props.project}
+						level={level}
+						selectedLayerIndex={this.state.selectedLayerIndex}
+						showSelectedLayerOnTop={this.state.showSelectedLayerOnTop}
+						onToggleShowSelectedLayerOnTop={() => this.setState({
+							showSelectedLayerOnTop: !this.state.showSelectedLayerOnTop,
+						})}
+						onSelectLayer={this.onSelectLayer.bind(this)}
+						modifyLevel={this.modifyLevel.bind(this)}
+					/>
+					<LayerOptions
+						level={level}
+						project={this.props.project}
+						selectedLayerIndex={this.state.selectedLayerIndex}
+						modifyLevel={this.modifyLevel.bind(this)}
+						onBlur={() => this.setState({continuedAction: false})}
+					/>
+					<TilePicker
+						project={this.props.project}
+						images={this.state.images}
+						layer={selectedLayer}
+						sidebarWidth={350}
+						onSelectTiles={(rect) => {this.setState({
+							tilePickerSelection: rect,
+							tileStamp: Stamp.FromRect(rect),
+						}); }}
+					/>
+					<EntityPicker
+						project={this.props.project}
+						images={this.state.images}
+						selectedEntityIndex={this.state.selectedEntityIndex}
+						onSelectEntity={entityIndex => this.setState({selectedEntityIndex: entityIndex})}
+					/>
+					<EntityOptions
+						project={this.props.project}
+						level={level}
+						selectedLayerIndex={this.state.selectedLayerIndex}
+						selectedEntityItemIndex={this.state.selectedEntityItemIndex}
+						modifyLevel={this.modifyLevel.bind(this)}
+					/>
+					<HistoryBrowser
+						history={this.state.levelHistory}
+						onJump={(position: number) => {
+							this.setState({levelHistory: this.state.levelHistory.jump(position)});
+						}}
+					/>
+				</div>
+				<div>
+					<GridEditor
+						viewportWidth={window.innerWidth - this.state.sidebarWidth}
+						viewportHeight={window.innerHeight - 42}
+						tileSize={this.props.project.data.tileSize}
+						width={level.data.width}
+						height={level.data.height}
+						hideGrid={this.state.hideGrid}
+						hasShadow
+						backgroundColor={level.data.hasBackgroundColor && level.data.backgroundColor}
+						layers={this.getLayerDisplays()}
+						onMoveCursor={this.onMoveCursor.bind(this)}
+						onClick={this.onClickGrid.bind(this)}
+						onRelease={this.onReleaseGrid.bind(this)}
+						onDoubleClick={this.onDoubleClickGrid.bind(this)}
+					/>
+				</div>
+			</SplitPane>
 		</div>;
 	}
 }
