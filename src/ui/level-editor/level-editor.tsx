@@ -27,6 +27,7 @@ import LevelOptions from './sidebar/level-options';
 import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
 import GenericCursor from './cursor/generic-cursor';
+import TilePicker from './sidebar/tile-picker';
 
 enum CursorState {
 	Idle,
@@ -509,6 +510,16 @@ export default class LevelEditor extends React.Component<Props, State> {
 					modifyLevel={this.modifyLevel.bind(this)}
 					onBlur={() => this.setState({continuedAction: false})}
 				/>
+				<TilePicker
+					project={this.props.project}
+					images={this.state.images}
+					layer={selectedLayer}
+					sidebarWidth={350}
+					onSelectTiles={(rect) => {this.setState({
+						tilePickerSelection: rect,
+						tileStamp: Stamp.FromRect(rect),
+					}); }}
+				/>
 				<EntityPicker
 					project={this.props.project}
 					images={this.state.images}
@@ -538,8 +549,9 @@ export default class LevelEditor extends React.Component<Props, State> {
 				<GridEditor
 					viewportWidth={window.innerWidth - 350}
 					viewportHeight={window.innerHeight - 42}
-					project={this.props.project}
-					level={level}
+					tileSize={this.props.project.data.tileSize}
+					width={level.data.width}
+					height={level.data.height}
 					layers={this.getLayerDisplays()}
 					onMoveCursor={this.onMoveCursor.bind(this)}
 					onClick={this.onClickGrid.bind(this)}
