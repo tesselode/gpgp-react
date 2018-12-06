@@ -567,6 +567,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					tileSize={this.props.project.data.tileSize}
 					width={level.data.width}
 					height={level.data.height}
+					hideGrid={this.state.hideGrid}
 					layers={this.getLayerDisplays()}
 					onMoveCursor={this.onMoveCursor.bind(this)}
 					onClick={this.onClickGrid.bind(this)}

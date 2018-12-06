@@ -1,6 +1,4 @@
 import React from 'react';
-import Level from '../../data/level/level';
-import Project from '../../data/project/project';
 
 export type GridEditorLayer = (context: CanvasRenderingContext2D) => void;
 
@@ -10,6 +8,7 @@ interface Props {
     tileSize: number;
     width: number;
     height: number;
+    hideGrid?: boolean;
     layers?: GridEditorLayer[];
     /** A function that is called when the cursor is moved. */
 	onMoveCursor?: (x: number, y: number) => void;
@@ -109,12 +108,12 @@ export default class GridEditor extends React.Component<Props, State> {
         context.translate(this.state.panX, this.state.panY);
         context.scale(this.state.zoom, this.state.zoom);
         context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
-        this.renderGridlines(context);
         if (this.props.layers) {
             this.props.layers.forEach(display => {
                 display(context);
             });
         }
+        if (!this.props.hideGrid) this.renderGridlines(context);
         this.renderOutline(context);
     }
 
