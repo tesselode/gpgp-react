@@ -9,6 +9,7 @@ interface Props {
     width: number;
     height: number;
     hideGrid?: boolean;
+    hasShadow?: boolean;
     layers?: GridEditorLayer[];
     /** A function that is called when the cursor is moved. */
 	onMoveCursor?: (x: number, y: number) => void;
@@ -69,6 +70,19 @@ export default class GridEditor extends React.Component<Props, State> {
         return {x, y};
     }
 
+    private renderShadow(context: CanvasRenderingContext2D) {
+        const tileSize = this.props.tileSize;
+        const width = this.props.width;
+        const height = this.props.height;
+        context.fillStyle = 'rgba(255, 255, 255, 1)';
+        context.shadowColor = 'rgba(0, 0, 0, .33)';
+        context.shadowBlur = 32;
+        context.shadowOffsetX = 8;
+        context.shadowOffsetY = 8;
+        context.fillRect(0, 0, width * tileSize, height * tileSize);
+        context.shadowColor = 'rgba(0, 0, 0, 0)';
+    }
+
     private renderOutline(context: CanvasRenderingContext2D) {
         const tileSize = this.props.tileSize;
         const width = this.props.width;
@@ -81,6 +95,7 @@ export default class GridEditor extends React.Component<Props, State> {
         const tileSize = this.props.tileSize;
         const width = this.props.width;
         const height = this.props.height;
+        context.lineWidth = 1 / this.state.zoom;
         context.strokeStyle = 'rgba(0, 0, 0, .25)';
         for (let x = 1; x < width; x++) {
             context.beginPath();
@@ -94,6 +109,7 @@ export default class GridEditor extends React.Component<Props, State> {
             context.lineTo(width * tileSize, y * tileSize);
             context.stroke();
         }
+        context.lineWidth = 1;
     }
 
     private renderCanvas() {
@@ -108,6 +124,7 @@ export default class GridEditor extends React.Component<Props, State> {
         context.translate(this.state.panX, this.state.panY);
         context.scale(this.state.zoom, this.state.zoom);
         context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
+        if (this.props.hasShadow) this.renderShadow(context);
         if (this.props.layers) {
             this.props.layers.forEach(display => {
                 display(context);
