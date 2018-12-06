@@ -46,6 +46,7 @@ export default (props: Props) => <div
 		</ButtonGroup>
 		<Button
 			active={!props.hideGrid}
+			outline={props.hideGrid}
 			onClick={() => props.onToggleGrid()}
 		>
 			<FontAwesomeIcon icon={faTh} />

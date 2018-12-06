@@ -56,110 +56,113 @@ export default class LayerList extends React.Component<Props, State> {
 			maxHeight='20em'
 			flush
 			startExpanded
-			headerContent={<ButtonGroup>
+			headerContent={<div>
 				<Button
 					id='toggleShowSelectedLayerOnTopButton'
 					size='sm'
 					outline={!this.props.showSelectedLayerOnTop}
 					onClick={() => this.props.onToggleShowSelectedLayerOnTop()}
 				>
-					<FontAwesomeIcon icon={faEye} />
+					{this.props.showSelectedLayerOnTop ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />}
 				</Button>
-				<Button
-					id='removeLayerButton'
-					size='sm'
-					disabled={this.props.level.data.layers.length < 2}
-					onClick={() => {
-						const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
-						this.props.onSelectLayer(Math.min(this.props.selectedLayerIndex, this.props.level.data.layers.length - 2));
-						this.props.modifyLevel(
-							this.props.level.removeLayer(this.props.selectedLayerIndex),
-							'Remove layer "' + layer.data.name + '"',
-						);
-					}}
-				>
-					<FontAwesomeIcon icon={faTrash} />
-				</Button>
-				<ButtonDropdown
-					isOpen={this.state.dropdownOpen}
-					toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
-				>
-					<DropdownToggle
-						id='addLayerButton'
+				&nbsp;
+				<ButtonGroup>
+					<Button
+						id='removeLayerButton'
 						size='sm'
+						disabled={this.props.level.data.layers.length < 2}
+						onClick={() => {
+							const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
+							this.props.onSelectLayer(Math.min(this.props.selectedLayerIndex, this.props.level.data.layers.length - 2));
+							this.props.modifyLevel(
+								this.props.level.removeLayer(this.props.selectedLayerIndex),
+								'Remove layer "' + layer.data.name + '"',
+							);
+						}}
 					>
-						<FontAwesomeIcon icon={faPlus} />
-					</DropdownToggle>
-					<DropdownMenu>
-						<DropdownItem
-							onClick={() => {
-								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
-								this.props.modifyLevel(
-									this.props.level.addGeometryLayer(this.props.selectedLayerIndex),
-									'Add geometry layer',
-								);
-							}}
+						<FontAwesomeIcon icon={faTrash} />
+					</Button>
+					<ButtonDropdown
+						isOpen={this.state.dropdownOpen}
+						toggle={() => this.setState({dropdownOpen: !this.state.dropdownOpen})}
+					>
+						<DropdownToggle
+							id='addLayerButton'
+							size='sm'
 						>
-							Geometry
-						</DropdownItem>
-						{this.props.project.data.entities.length > 0 && <DropdownItem
-							onClick={() => {
-								this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
-								this.props.modifyLevel(
-									this.props.level.addEntityLayer(this.props.selectedLayerIndex),
-									'Add entity layer',
-								);
-							}}
-						>
-							Entity
-						</DropdownItem>}
-						{this.props.project.data.tilesets.map((tileset, i) =>
+							<FontAwesomeIcon icon={faPlus} />
+						</DropdownToggle>
+						<DropdownMenu>
 							<DropdownItem
-								key={i}
 								onClick={() => {
 									this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
 									this.props.modifyLevel(
-										this.props.level.addTileLayer(this.props.selectedLayerIndex, tileset.data.name),
-										'Add tile layer',
+										this.props.level.addGeometryLayer(this.props.selectedLayerIndex),
+										'Add geometry layer',
 									);
 								}}
 							>
-								Tile - {tileset.data.name}
-							</DropdownItem>,
-						)}
-					</DropdownMenu>
-				</ButtonDropdown>
-				<Button
-					id='moveLayerUpButton'
-					size='sm'
-					disabled={this.props.selectedLayerIndex === 0}
-					onClick={() => {
-						const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
-						this.props.onSelectLayer(this.props.selectedLayerIndex - 1);
-						this.props.modifyLevel(
-							this.props.level.moveLayerUp(this.props.selectedLayerIndex),
-							'Move layer "' + layer.data.name + '" up',
-						);
-					}}
-				>
-					<FontAwesomeIcon icon={faArrowUp} />
-				</Button>
-				<Button
-					id='moveLayerDownButton'
-					size='sm'
-					disabled={this.props.selectedLayerIndex === this.props.level.data.layers.length - 1}
-					onClick={() => {
-						const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
-						this.props.onSelectLayer(this.props.selectedLayerIndex + 1);
-						this.props.modifyLevel(
-							this.props.level.moveLayerDown(this.props.selectedLayerIndex),
-							'Move layer "' + layer.data.name + '" down',
-						);
-					}}
-				>
-					<FontAwesomeIcon icon={faArrowDown} />
-				</Button>
-			</ButtonGroup>}
+								Geometry
+							</DropdownItem>
+							{this.props.project.data.entities.length > 0 && <DropdownItem
+								onClick={() => {
+									this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
+									this.props.modifyLevel(
+										this.props.level.addEntityLayer(this.props.selectedLayerIndex),
+										'Add entity layer',
+									);
+								}}
+							>
+								Entity
+							</DropdownItem>}
+							{this.props.project.data.tilesets.map((tileset, i) =>
+								<DropdownItem
+									key={i}
+									onClick={() => {
+										this.props.onSelectLayer(Math.max(this.props.selectedLayerIndex, 0));
+										this.props.modifyLevel(
+											this.props.level.addTileLayer(this.props.selectedLayerIndex, tileset.data.name),
+											'Add tile layer',
+										);
+									}}
+								>
+									Tile - {tileset.data.name}
+								</DropdownItem>,
+							)}
+						</DropdownMenu>
+					</ButtonDropdown>
+					<Button
+						id='moveLayerUpButton'
+						size='sm'
+						disabled={this.props.selectedLayerIndex === 0}
+						onClick={() => {
+							const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
+							this.props.onSelectLayer(this.props.selectedLayerIndex - 1);
+							this.props.modifyLevel(
+								this.props.level.moveLayerUp(this.props.selectedLayerIndex),
+								'Move layer "' + layer.data.name + '" up',
+							);
+						}}
+					>
+						<FontAwesomeIcon icon={faArrowUp} />
+					</Button>
+					<Button
+						id='moveLayerDownButton'
+						size='sm'
+						disabled={this.props.selectedLayerIndex === this.props.level.data.layers.length - 1}
+						onClick={() => {
+							const layer = this.props.level.data.layers[this.props.selectedLayerIndex];
+							this.props.onSelectLayer(this.props.selectedLayerIndex + 1);
+							this.props.modifyLevel(
+								this.props.level.moveLayerDown(this.props.selectedLayerIndex),
+								'Move layer "' + layer.data.name + '" down',
+							);
+						}}
+					>
+						<FontAwesomeIcon icon={faArrowDown} />
+					</Button>
+				</ButtonGroup>
+			</div>}
 		>
 			<ListGroup flush>
 				{this.props.level.data.layers.map((layer, i) =>
@@ -182,8 +185,7 @@ export default class LayerList extends React.Component<Props, State> {
 							}
 							<Button
 								id={'toggleLayerVisibilityButton' + i}
-								outline
-								color={this.props.selectedLayerIndex === i ? 'light' : 'dark'}
+								color={this.props.selectedLayerIndex === i ? 'primary' : 'link'}
 								size='sm'
 								onClick={() => {
 									const layer = this.props.level.data.layers[i];
