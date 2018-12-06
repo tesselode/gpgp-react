@@ -1,4 +1,5 @@
-import Octicon, { FileDirectory } from '@githubprimer/octicons-react';
+import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { remote } from 'electron';
 import React from 'react';
 import {
@@ -96,7 +97,7 @@ export default class ProjectTilesetsTab extends React.Component<Props, State> {
 									<Button
 										onClick={() => this.chooseTilesetImage()}
 									>
-										<Octicon icon={FileDirectory} />
+										<FontAwesomeIcon icon={faFolderOpen} />
 									</Button>
 								</InputGroupAddon>
 								<Input

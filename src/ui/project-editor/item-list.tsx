@@ -1,10 +1,11 @@
-import Octicon, { ArrowDown, ArrowUp, Plus, Trashcan } from '@githubprimer/octicons-react';
 import React from 'react';
 import { Button, DropdownMenu, DropdownToggle, ListGroupItem, Navbar, UncontrolledButtonDropdown } from 'reactstrap';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 import DropdownItem from 'reactstrap/lib/DropdownItem';
 import ListGroup from 'reactstrap/lib/ListGroup';
 import NavbarBrand from 'reactstrap/lib/NavbarBrand';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash, faPlus, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 interface Props<T> {
 	title: string;
@@ -34,10 +35,10 @@ export default function ItemList<T>(props: Props<T>) {
 						props.onSelectItem(Math.min(props.selectedItemIndex, props.items.length - 2));
 					}}
 				>
-					<Octicon icon={Trashcan}/>
+					<FontAwesomeIcon icon={faTrash} />
 				</Button>
 				{props.addMenuItems ? <UncontrolledButtonDropdown>
-					<DropdownToggle><Octicon icon={Plus}/></DropdownToggle>
+					<DropdownToggle><FontAwesomeIcon icon={faPlus} /></DropdownToggle>
 					<DropdownMenu>
 						{props.addMenuItems.map((label, i) => <DropdownItem
 							key={i}
@@ -55,7 +56,7 @@ export default function ItemList<T>(props: Props<T>) {
 						props.onSelectItem(Math.max(props.selectedItemIndex, 0));
 					}}
 				>
-					<Octicon icon={Plus}/>
+					<FontAwesomeIcon icon={faPlus} />
 				</Button>}
 				<Button
 					disabled={!(selectedItem && props.selectedItemIndex !== 0)}
@@ -64,7 +65,7 @@ export default function ItemList<T>(props: Props<T>) {
 						props.onSelectItem(props.selectedItemIndex - 1);
 					}}
 				>
-					<Octicon icon={ArrowUp}/>
+					<FontAwesomeIcon icon={faArrowUp} />
 				</Button>
 				<Button
 					disabled={!(selectedItem && props.selectedItemIndex !== props.items.length - 1)}
@@ -73,7 +74,7 @@ export default function ItemList<T>(props: Props<T>) {
 						props.onSelectItem(props.selectedItemIndex + 1);
 					}}
 				>
-					<Octicon icon={ArrowDown}/>
+					<FontAwesomeIcon icon={faArrowDown} />
 				</Button>
 			</ButtonGroup>
 		</Navbar>

@@ -1,4 +1,5 @@
-import Octicon, { Pencil, PrimitiveSquare } from '@githubprimer/octicons-react';
+import { faEdit, faSquare, faStamp, faTh } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { ButtonGroup, Navbar } from 'reactstrap';
 import Button from 'reactstrap/lib/Button';
@@ -28,26 +29,27 @@ export default (props: Props) => <div
 				active={props.tool === EditTool.Pencil}
 				onClick={() => props.onToolChanged(EditTool.Pencil)}
 			>
-				<Octicon icon={Pencil} />
+				<FontAwesomeIcon icon={faEdit} />
 			</Button>
 			<Button
 				active={props.tool === EditTool.Rectangle}
 				onClick={() => props.onToolChanged(EditTool.Rectangle)}
 			>
-				<Octicon icon={PrimitiveSquare} />
+				<FontAwesomeIcon icon={faSquare} />
 			</Button>
 			<Button
 				active={props.tool === EditTool.Stamp}
 				onClick={() => props.onToolChanged(EditTool.Stamp)}
 			>
-				Stamp
+				<FontAwesomeIcon icon={faStamp} />
 			</Button>
 		</ButtonGroup>
 		<Button
 			active={!props.hideGrid}
 			onClick={() => props.onToggleGrid()}
 		>
-			G
+			<FontAwesomeIcon icon={faTh} />
 		</Button>
 	</Navbar>
 </div>;
+;

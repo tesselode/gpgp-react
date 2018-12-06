@@ -1,4 +1,3 @@
-import Octicon, { FileDirectory, X } from '@githubprimer/octicons-react';
 import { remote } from 'electron';
 import React from 'react';
 import {
@@ -21,6 +20,8 @@ import Image from '../../data/image';
 import Project from '../../data/project/project';
 import ColorDisplay from '../common/color-display';
 import ItemList from './item-list';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFolderOpen, faEraser } from '@fortawesome/free-solid-svg-icons';
 
 enum EntityEditorTab {
 	Entities,
@@ -235,7 +236,7 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 							<Button
 								onClick={() => this.chooseEntityImage()}
 							>
-								<Octicon icon={FileDirectory} />
+								<FontAwesomeIcon icon={faFolderOpen} />
 							</Button>
 						</InputGroupAddon>
 						<InputGroupAddon addonType='prepend'>
@@ -245,7 +246,7 @@ export default class ProjectEntitiesTab extends React.Component<Props, State> {
 									selectedEntity.clearImagePath(),
 								))}
 							>
-								<Octicon icon={X} />
+								<FontAwesomeIcon icon={faEraser} />
 							</Button>
 						</InputGroupAddon>
 						<Input

@@ -1,4 +1,3 @@
-import Octicon, { Plus } from '@githubprimer/octicons-react';
 import { ipcRenderer, remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
@@ -20,6 +19,8 @@ import Project, { ExportedProjectData } from '../data/project/project';
 import LevelEditor from './level-editor/level-editor';
 import ProjectEditor from './project-editor/project-editor';
 import Welcome from './welcome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 enum TabType {
 	ProjectEditor,
@@ -225,7 +226,7 @@ export default class App extends React.Component<{}, State> {
 						toggle={() => this.setState({newTabDropdownOpen: !this.state.newTabDropdownOpen})}
 					>
 						<DropdownToggle nav>
-							<Octicon icon={Plus} />
+							<FontAwesomeIcon icon={faPlus} />
 						</DropdownToggle>
 						<DropdownMenu>
 							<DropdownItem

@@ -1,4 +1,5 @@
-import Octicon, { ArrowDown, ArrowUp, Eye, Plus, Trashcan } from '@githubprimer/octicons-react';
+import { faArrowDown, faArrowUp, faEye, faEyeSlash, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import {
 	Button,
@@ -62,7 +63,7 @@ export default class LayerList extends React.Component<Props, State> {
 					outline={!this.props.showSelectedLayerOnTop}
 					onClick={() => this.props.onToggleShowSelectedLayerOnTop()}
 				>
-					<Octicon icon={Eye} />
+					<FontAwesomeIcon icon={faEye} />
 				</Button>
 				<Button
 					id='removeLayerButton'
@@ -77,7 +78,7 @@ export default class LayerList extends React.Component<Props, State> {
 						);
 					}}
 				>
-					<Octicon icon={Trashcan} />
+					<FontAwesomeIcon icon={faTrash} />
 				</Button>
 				<ButtonDropdown
 					isOpen={this.state.dropdownOpen}
@@ -87,7 +88,7 @@ export default class LayerList extends React.Component<Props, State> {
 						id='addLayerButton'
 						size='sm'
 					>
-						<Octicon icon={Plus} />
+						<FontAwesomeIcon icon={faPlus} />
 					</DropdownToggle>
 					<DropdownMenu>
 						<DropdownItem
@@ -141,7 +142,7 @@ export default class LayerList extends React.Component<Props, State> {
 						);
 					}}
 				>
-					<Octicon icon={ArrowUp} />
+					<FontAwesomeIcon icon={faArrowUp} />
 				</Button>
 				<Button
 					id='moveLayerDownButton'
@@ -156,7 +157,7 @@ export default class LayerList extends React.Component<Props, State> {
 						);
 					}}
 				>
-					<Octicon icon={ArrowDown} />
+					<FontAwesomeIcon icon={faArrowDown} />
 				</Button>
 			</ButtonGroup>}
 		>
@@ -181,7 +182,7 @@ export default class LayerList extends React.Component<Props, State> {
 							}
 							<Button
 								id={'toggleLayerVisibilityButton' + i}
-								outline={!layer.data.visible}
+								outline
 								color={this.props.selectedLayerIndex === i ? 'light' : 'dark'}
 								size='sm'
 								onClick={() => {
@@ -193,7 +194,7 @@ export default class LayerList extends React.Component<Props, State> {
 									);
 								}}
 							>
-								<Octicon icon={Eye} />
+								{layer.data.visible ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />}
 							</Button>
 						</Navbar>
 					</ListGroupItem>,

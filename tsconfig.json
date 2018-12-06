@@ -10,6 +10,5 @@
 	},
 	"files": [
 		"node_modules/electron/electron.d.ts",
-		"node_modules/@githubprimer/octicons-react/dist/index.d.ts",
 	]
 }

@@ -22,7 +22,6 @@ Once the project is saved, you can create a new level based on that project. Eac
 - **react** for rendering and architecture
 - **reactstrap** for using bootstrap controls as react components
 - **jimp** for loading images from the filesystem and getting size and data URIs for `<img>` tags
-- **octicons-react** for nice button icons~
 
 ## Basic code structure
 - `main.js` - basic electron setup/configuration
