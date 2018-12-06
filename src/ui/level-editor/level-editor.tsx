@@ -29,6 +29,7 @@ import WarningsModal from './warnings-modal';
 import GenericCursor from './cursor/generic-cursor';
 import TilePicker from './sidebar/tile-picker';
 import TileCursor from './cursor/tile-cursor';
+import EntityCursor from './cursor/entity-cursor';
 
 enum CursorState {
 	Idle,
@@ -432,7 +433,13 @@ export default class LevelEditor extends React.Component<Props, State> {
 	private getCursorDisplay(): GridEditorLayer {
 		const level = this.state.levelHistory.getCurrentState();
 		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
-		return selectedLayer instanceof TileLayer ? TileCursor({
+		return selectedLayer instanceof EntityLayer ? EntityCursor({
+			tileSize: this.props.project.data.tileSize,
+			x: this.state.cursorX,
+			y: this.state.cursorY,
+			entity: this.props.project.data.entities[this.state.selectedEntityIndex],
+			images: this.state.images,
+		}) : selectedLayer instanceof TileLayer ? TileCursor({
 			tileSize: this.props.project.data.tileSize,
 			cursor: this.state.cursorRect.normalized(),
 			removing: this.state.cursorState === CursorState.Remove,
