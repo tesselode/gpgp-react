@@ -29,6 +29,7 @@ const TileCursor = (props: Props) =>
 			removing: props.removing,
 		})(context);
 		if (isNullOrUndefined(props.stamp)) return;
+		context.globalAlpha = 2 / 3;
 		let stamp = props.stamp;
 		if (props.tool === EditTool.Rectangle)
 			stamp = stamp.extend(props.cursor.r - props.cursor.l + 1,
@@ -44,6 +45,7 @@ const TileCursor = (props: Props) =>
 				context.drawImage(props.tilesetImage.element, sx, sy, props.tileSize,
 					props.tileSize, x, y, props.tileSize, props.tileSize);
 		});
+		context.globalAlpha = 1;
 	};
 
 export default TileCursor;

@@ -18,6 +18,7 @@ interface Props {
 const EntityCursor = (props: Props) =>
 	(context: CanvasRenderingContext2D) => {
 		if (!props.entity) return;
+		context.globalAlpha = 2 / 3;
 		if (props.entity.data.imagePath) {
 			const image = props.images.get(props.entity.data.imagePath);
 			if (!image) return;
@@ -31,6 +32,7 @@ const EntityCursor = (props: Props) =>
 				props.entity.data.width * props.tileSize,
 				props.entity.data.height * props.tileSize);
 		}
+		context.globalAlpha = 1;
 	};
 
 export default EntityCursor;
