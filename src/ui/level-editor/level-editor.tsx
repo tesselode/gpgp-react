@@ -26,6 +26,7 @@ import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
 import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
+import GenericCursor from './cursor/generic-cursor';
 
 enum CursorState {
 	Idle,
@@ -426,6 +427,16 @@ export default class LevelEditor extends React.Component<Props, State> {
 		});
 	}
 
+	private getCursorDisplay(): GridEditorLayer {
+		const level = this.state.levelHistory.getCurrentState();
+		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
+		return GenericCursor({
+			tileSize: this.props.project.data.tileSize,
+			cursor: this.state.cursorRect.normalized(),
+			removing: this.state.cursorState === CursorState.Remove,
+		});
+	}
+
 	private getLayerDisplays(): GridEditorLayer[] {
 		const level = this.state.levelHistory.getCurrentState();
 		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
@@ -438,6 +449,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 		if (this.state.showSelectedLayerOnTop && selectedLayer.data.visible)
 			gridEditorLayers.push(this.getLayerDisplay(selectedLayer));
+		gridEditorLayers.push(this.getCursorDisplay());
 		return gridEditorLayers;
 	}
 
@@ -529,6 +541,10 @@ export default class LevelEditor extends React.Component<Props, State> {
 					project={this.props.project}
 					level={level}
 					layers={this.getLayerDisplays()}
+					onMoveCursor={this.onMoveCursor.bind(this)}
+					onClick={this.onClickGrid.bind(this)}
+					onRelease={this.onReleaseGrid.bind(this)}
+					onDoubleClick={this.onDoubleClickGrid.bind(this)}
 				/>
 			</div>
 		</div>;

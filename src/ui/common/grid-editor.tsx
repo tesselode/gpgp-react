@@ -10,12 +10,20 @@ interface Props {
     project: Project;
     level: Level;
     layers?: GridEditorLayer[];
-    onMoveCursor?: (x: number, y: number) => void;
+    /** A function that is called when the cursor is moved. */
+	onMoveCursor?: (x: number, y: number) => void;
+	/** A function that is called when the grid is clicked. */
+	onClick?: (button: number) => void;
+	/** A function that is called when a mouse button is released. */
+	onRelease?: (button: number) => void;
+	/** A function that is called when the grid is double-clicekd. */
+	onDoubleClick?: (button: number) => void;
 }
 
 interface State {
     mouseX: number;
     mouseY: number;
+    button: number | false;
     panX: number;
     panY: number;
     zoom: number;
@@ -32,6 +40,7 @@ export default class GridEditor extends React.Component<Props, State> {
         this.state = {
             mouseX: 0,
             mouseY: 0,
+            button: false,
             panX: 0,
             panY: 0,
             zoom: 2,
@@ -124,12 +133,23 @@ export default class GridEditor extends React.Component<Props, State> {
                     case 1:
                         this.setState({panning: true});
                 }
+                if (this.state.button === false) {
+                    this.setState({button: event.button});
+                    if (this.props.onClick) this.props.onClick(event.button);
+                }
             }}
             onMouseUp={event => {
                 switch (event.button) {
                     case 1:
                         this.setState({panning: false});
                 }
+                if (event.button === this.state.button) {
+                    this.setState({button: false});
+                    if (this.props.onRelease) this.props.onRelease(event.button);
+                }
+            }}
+            onDoubleClick={event => {
+                this.props.onDoubleClick(event.button);
             }}
             onMouseMove={event => {
                 const rect = this.canvasRef.current.getBoundingClientRect();
