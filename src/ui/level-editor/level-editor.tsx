@@ -14,6 +14,9 @@ import Project from '../../data/project/project';
 import Rect from '../../data/rect';
 import Stamp from '../../data/stamp';
 import GridEditor, { GridEditorLayer } from '../common/grid-editor';
+import EntityCursor from './cursor/entity-cursor';
+import GenericCursor from './cursor/generic-cursor';
+import TileCursor from './cursor/tile-cursor';
 import { EditTool } from './edit-tool';
 import EntityLayerDisplay from './layer/entity-layer-display';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
@@ -24,12 +27,9 @@ import HistoryBrowser from './sidebar/history-browser';
 import LayerList from './sidebar/layer-list';
 import LayerOptions from './sidebar/layer-options';
 import LevelOptions from './sidebar/level-options';
+import TilePicker from './sidebar/tile-picker';
 import ToolPalette from './sidebar/tool-palette';
 import WarningsModal from './warnings-modal';
-import GenericCursor from './cursor/generic-cursor';
-import TilePicker from './sidebar/tile-picker';
-import TileCursor from './cursor/tile-cursor';
-import EntityCursor from './cursor/entity-cursor';
 
 enum CursorState {
 	Idle,
@@ -569,6 +569,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 					height={level.data.height}
 					hideGrid={this.state.hideGrid}
 					hasShadow
+					backgroundColor={level.data.hasBackgroundColor && level.data.backgroundColor}
 					layers={this.getLayerDisplays()}
 					onMoveCursor={this.onMoveCursor.bind(this)}
 					onClick={this.onClickGrid.bind(this)}

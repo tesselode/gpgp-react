@@ -10,6 +10,7 @@ interface Props {
     height: number;
     hideGrid?: boolean;
     hasShadow?: boolean;
+    backgroundColor?: string;
     layers?: GridEditorLayer[];
     /** A function that is called when the cursor is moved. */
 	onMoveCursor?: (x: number, y: number) => void;
@@ -70,15 +71,17 @@ export default class GridEditor extends React.Component<Props, State> {
         return {x, y};
     }
 
-    private renderShadow(context: CanvasRenderingContext2D) {
+    private renderBackground(context: CanvasRenderingContext2D) {
         const tileSize = this.props.tileSize;
         const width = this.props.width;
         const height = this.props.height;
-        context.fillStyle = 'rgba(255, 255, 255, 1)';
-        context.shadowColor = 'rgba(0, 0, 0, .33)';
-        context.shadowBlur = 32;
-        context.shadowOffsetX = 8;
-        context.shadowOffsetY = 8;
+        context.fillStyle = this.props.backgroundColor || 'rgba(255, 255, 255, 1)';
+        if (this.props.hasShadow) {
+            context.shadowColor = 'rgba(0, 0, 0, .33)';
+            context.shadowBlur = 32;
+            context.shadowOffsetX = 8;
+            context.shadowOffsetY = 8;
+        }
         context.fillRect(0, 0, width * tileSize, height * tileSize);
         context.shadowColor = 'rgba(0, 0, 0, 0)';
     }
@@ -124,7 +127,7 @@ export default class GridEditor extends React.Component<Props, State> {
         context.translate(this.state.panX, this.state.panY);
         context.scale(this.state.zoom, this.state.zoom);
         context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
-        if (this.props.hasShadow) this.renderShadow(context);
+        this.renderBackground(context);
         if (this.props.layers) {
             this.props.layers.forEach(display => {
                 display(context);
