@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stage } from '@inlet/react-pixi';
+import { Stage, Graphics, Container } from '@inlet/react-pixi';
 
 export type GridEditorLayer = (context: CanvasRenderingContext2D) => void;
 
@@ -72,79 +72,52 @@ export default class GridEditor extends React.Component<Props, State> {
         return {x, y};
     }
 
-    private renderBackground(context: CanvasRenderingContext2D) {
+    private renderBackground() {
         const tileSize = this.props.tileSize;
         const width = this.props.width;
         const height = this.props.height;
-        context.fillStyle = this.props.backgroundColor || 'rgba(255, 255, 255, 1)';
-        if (this.props.hasShadow) {
-            context.shadowColor = 'rgba(0, 0, 0, .33)';
-            context.shadowBlur = 32;
-            context.shadowOffsetX = 8;
-            context.shadowOffsetY = 8;
-        }
-        context.fillRect(0, 0, width * tileSize, height * tileSize);
-        context.shadowColor = 'rgba(0, 0, 0, 0)';
+        return <Graphics
+            draw={g => {
+                g.beginFill(this.props.backgroundColor ?
+                    parseInt(this.props.backgroundColor.substring(1), 16)
+                    : 0xffffff);
+                g.drawRect(0, 0, width * tileSize, height * tileSize);
+                g.endFill();
+            }}
+        />;
     }
 
-    private renderOutline(context: CanvasRenderingContext2D) {
+    private renderOutline() {
         const tileSize = this.props.tileSize;
         const width = this.props.width;
         const height = this.props.height;
-        context.strokeStyle = 'rgba(0, 0, 0, 1)';
-        context.strokeRect(0, 0, width * tileSize, height * tileSize);
+        return <Graphics
+            draw={g => {
+                g.clear();
+                g.lineStyle(1, 0x000000);
+                g.drawRect(0, 0, width * tileSize, height * tileSize);
+            }}
+        />;
     }
 
-    private renderGridlines(context: CanvasRenderingContext2D) {
+    private renderGridlines() {
         const tileSize = this.props.tileSize;
         const width = this.props.width;
         const height = this.props.height;
-        context.lineWidth = 1 / this.state.zoom;
-        context.strokeStyle = 'rgba(0, 0, 0, .25)';
-        for (let x = 1; x < width; x++) {
-            context.beginPath();
-            context.moveTo(x * tileSize, 0);
-            context.lineTo(x * tileSize, height * tileSize);
-            context.stroke();
-        }
-        for (let y = 1; y < height; y++) {
-            context.beginPath();
-            context.moveTo(0, y * tileSize);
-            context.lineTo(width * tileSize, y * tileSize);
-            context.stroke();
-        }
-        context.lineWidth = 1;
-    }
-
-    private renderCanvas() {
-        return;
-        const tileSize = this.props.tileSize;
-        const width = this.props.width;
-        const height = this.props.height;
-        const canvas = this.canvasRef.current;
-        canvas.width = this.props.viewportWidth;
-        canvas.height = this.props.viewportHeight;
-        const context = canvas.getContext('2d');
-        context.translate(this.props.viewportWidth / 2, this.props.viewportHeight / 2);
-        context.translate(this.state.panX, this.state.panY);
-        context.scale(this.state.zoom, this.state.zoom);
-        context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
-        this.renderBackground(context);
-        if (this.props.layers) {
-            this.props.layers.forEach(display => {
-                display(context);
-            });
-        }
-        if (!this.props.hideGrid) this.renderGridlines(context);
-        this.renderOutline(context);
-    }
-
-    public componentDidMount() {
-        this.renderCanvas();
-    }
-
-    public componentDidUpdate() {
-        this.renderCanvas();
+        return <Graphics
+            draw={g => {
+                g.clear();
+                g.lineStyle(1, 0x000000, .25);
+                for (let x = 1; x < width; x++) {
+                    g.moveTo(x * tileSize, 0);
+                    g.lineTo(x * tileSize, height * tileSize);
+                }
+                for (let y = 1; y < height; y++) {
+                    g.moveTo(0, y * tileSize);
+                    g.lineTo(width * tileSize, y * tileSize);
+                }
+            }}
+        />;
     }
 
     public render() {
@@ -152,9 +125,17 @@ export default class GridEditor extends React.Component<Props, State> {
             width={this.props.viewportWidth}
             height={this.props.viewportHeight}
             options={{
-                backgroundColor: '0xff0000',
+                transparent: true,
             }}
         >
-        </Stage>
+            <Container
+                position={{x: this.state.panX, y: this.state.panY}}
+                scale={this.state.zoom}
+            >
+                {this.renderBackground()}
+                {this.renderGridlines()}
+                {this.renderOutline()}
+            </Container>
+        </Stage>;
     }
 }
