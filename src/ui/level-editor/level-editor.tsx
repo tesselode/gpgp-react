@@ -517,6 +517,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 				split='vertical'
 				minSize={250}
 				size={this.state.sidebarWidth}
+				onChange={size => this.setState({sidebarWidth: size})}
 				style={{
 					height: 'calc(100vh - 42px)',
 				}}
