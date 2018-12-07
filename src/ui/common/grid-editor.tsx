@@ -1,4 +1,5 @@
 import React from 'react';
+import { Stage } from '@inlet/react-pixi';
 
 export type GridEditorLayer = (context: CanvasRenderingContext2D) => void;
 
@@ -116,6 +117,7 @@ export default class GridEditor extends React.Component<Props, State> {
     }
 
     private renderCanvas() {
+        return;
         const tileSize = this.props.tileSize;
         const width = this.props.width;
         const height = this.props.height;
@@ -146,63 +148,13 @@ export default class GridEditor extends React.Component<Props, State> {
     }
 
     public render() {
-        return <canvas
-            ref={this.canvasRef}
-            onMouseDown={event => {
-                switch (event.button) {
-                    case 1:
-                        this.setState({panning: true});
-                }
-                if (this.state.button === false) {
-                    this.setState({button: event.button});
-                    if (this.props.onClick) this.props.onClick(event.button);
-                }
+        return <Stage
+            width={this.props.viewportWidth}
+            height={this.props.viewportHeight}
+            options={{
+                backgroundColor: '0xff0000',
             }}
-            onMouseUp={event => {
-                switch (event.button) {
-                    case 1:
-                        this.setState({panning: false});
-                }
-                if (event.button === this.state.button) {
-                    this.setState({button: false});
-                    if (this.props.onRelease) this.props.onRelease(event.button);
-                }
-            }}
-            onDoubleClick={event => {
-                this.props.onDoubleClick(event.button);
-            }}
-            onMouseMove={event => {
-                const rect = this.canvasRef.current.getBoundingClientRect();
-                const mouseX = event.clientX - rect.left;
-                const mouseY = event.clientY - rect.top;
-                if (this.state.panning)
-                    this.setState({
-                        panX: this.state.panX + mouseX - this.state.mouseX,
-                        panY: this.state.panY + mouseY - this.state.mouseY,
-                    });
-                this.setState({
-                    mouseX,
-                    mouseY,
-                });
-                const cursorPosition = this.getCursorPosition(mouseX, mouseY);
-                if (cursorPosition.x !== this.state.cursorX || cursorPosition.y !== this.state.cursorY) {
-                    if (this.props.onMoveCursor)
-                        this.props.onMoveCursor(cursorPosition.x, cursorPosition.y);
-                }
-                this.setState({
-                    cursorX: cursorPosition.x,
-                    cursorY: cursorPosition.y,
-                });
-            }}
-            onWheel={event => {
-                if (!event.ctrlKey) return;
-                if (event.deltaY > 0) {
-                    this.setState({zoom: this.state.zoom / 1.1});
-                }
-                if (event.deltaY < 0) {
-                    this.setState({zoom: this.state.zoom * 1.1});
-                }
-            }}
-        />;
+        >
+        </Stage>
     }
 }
