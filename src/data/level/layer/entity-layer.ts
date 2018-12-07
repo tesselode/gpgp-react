@@ -119,6 +119,17 @@ export default class EntityLayer {
 		return new EntityLayer({...this.data, items});
 	}
 
+	public shift(deltaX: number, deltaY: number): EntityLayer {
+		const items = this.data.items.slice(0, this.data.items.length);
+		for (let i = 0; i < items.length; i++) {
+			const item = {...items[i]};
+			item.x += deltaX;
+			item.y += deltaY;
+			items[i] = item;
+		}
+		return new EntityLayer({...this.data, items});
+	}
+
 	public setParameter(itemIndex: number, parameterName: string, parameterValue: any): EntityLayer {
 		const items = this.data.items.slice(0, this.data.items.length);
 		const item = {...items[itemIndex]};

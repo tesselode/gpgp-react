@@ -209,6 +209,18 @@ export default class LevelEditor extends React.Component<Props, State> {
 							'Move entity',
 							true,
 						);
+					} else if (this.state.tool === EditTool.Shift) {
+						this.modifyLevel(
+							level.setLayer(
+								this.state.selectedLayerIndex,
+								layer.shift(
+									x - this.state.cursorX,
+									y - this.state.cursorY,
+								),
+							),
+							'Shift entities',
+							true,
+						);
 					}
 					break;
 			}
@@ -218,6 +230,19 @@ export default class LevelEditor extends React.Component<Props, State> {
 					this.setState({cursorRect: new Rect(x, y)});
 					break;
 				case CursorState.Place:
+					if (this.state.tool === EditTool.Shift) {
+						this.modifyLevel(
+							level.setLayer(
+								this.state.selectedLayerIndex,
+								layer.shift(
+									x - this.state.cursorX,
+									y - this.state.cursorY,
+								),
+							),
+							'Shift tiles',
+							true,
+						);
+					}
 				case CursorState.Remove:
 					switch (this.state.tool) {
 						case EditTool.Pencil:
@@ -424,6 +449,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 			project: this.props.project,
 			images: this.state.images,
 			layer,
+			selectedEntityItemIndex: this.state.selectedEntityItemIndex,
 		}) : layer instanceof TileLayer ? TileLayerDisplay({
 			project: this.props.project,
 			images: this.state.images,

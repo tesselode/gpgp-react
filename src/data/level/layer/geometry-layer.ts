@@ -67,6 +67,17 @@ export default class GeometryLayer {
 		return new GeometryLayer({...this.data, items});
 	}
 
+	public shift(deltaX: number, deltaY: number): GeometryLayer {
+		const items = this.data.items.slice(0, this.data.items.length);
+		for (let i = 0; i < items.length; i++) {
+			const item = {...items[i]};
+			item.x += deltaX;
+			item.y += deltaY;
+			items[i] = item;
+		}
+		return new GeometryLayer({...this.data, items});
+	}
+
 	public export(): ExportedGeometryLayerData {
 		return {...this.data, type: 'Geometry'};
 	}

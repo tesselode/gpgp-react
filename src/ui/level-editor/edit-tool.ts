@@ -6,4 +6,6 @@ export enum EditTool {
 	Rectangle,
 	/** Creates stamps for placing tiles. */
 	Stamp,
+	/** Moves all the tiles on a layer. */
+	Shift,
 }

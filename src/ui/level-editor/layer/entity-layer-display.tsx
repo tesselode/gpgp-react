@@ -1,18 +1,20 @@
-import Project from "../../../data/project/project";
 import Image from "../../../data/image";
 import EntityLayer from "../../../data/level/layer/entity-layer";
+import Project from "../../../data/project/project";
 
 interface Props {
     project: Project;
     images: Map<string, Image>;
     layer: EntityLayer;
+    /** The currently selected entity layer item. */
+	selectedEntityItemIndex?: number;
 }
 
 const EntityLayerDisplay = (props: Props) =>
     (context: CanvasRenderingContext2D) => {
         const tileSize = props.project.data.tileSize;
         context.imageSmoothingEnabled = false;
-        props.layer.data.items.forEach(item => {
+        props.layer.data.items.forEach((item, i) => {
             const entity = props.project.getEntity(item.entityName);
             if (entity.data.imagePath) {
                 const entityImage = props.images.get(entity.data.imagePath);
@@ -22,6 +24,11 @@ const EntityLayerDisplay = (props: Props) =>
             } else {
                 context.fillStyle = entity.data.color;
                 context.fillRect(item.x * tileSize, item.y * tileSize,
+                    entity.data.width * tileSize, entity.data.height * tileSize);
+            }
+            if (props.selectedEntityItemIndex === i) {
+                context.strokeStyle = 'rgba(255, 0, 0, 1)';
+                context.strokeRect(item.x * tileSize, item.y * tileSize,
                     entity.data.width * tileSize, entity.data.height * tileSize);
             }
         });

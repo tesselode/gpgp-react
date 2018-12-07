@@ -121,6 +121,17 @@ export default class TileLayer {
 		return new TileLayer({...this.data, items});
 	}
 
+	public shift(deltaX: number, deltaY: number): TileLayer {
+		const items = this.data.items.slice(0, this.data.items.length);
+		for (let i = 0; i < items.length; i++) {
+			const item = {...items[i]};
+			item.x += deltaX;
+			item.y += deltaY;
+			items[i] = item;
+		}
+		return new TileLayer({...this.data, items});
+	}
+
 	public export(): ExportedTileLayerData {
 		return {...this.data, type: 'Tile'};
 	}

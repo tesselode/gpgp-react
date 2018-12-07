@@ -1,4 +1,4 @@
-import { faEdit, faSquare, faStamp, faTh } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faSquare, faStamp, faTh, faArrowsAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { ButtonGroup, Navbar } from 'reactstrap';
@@ -37,11 +37,17 @@ export default (props: Props) => <div
 			>
 				<FontAwesomeIcon icon={faSquare} />
 			</Button>
-			<Button
+			{props.isTileLayerSelected && <Button
 				active={props.tool === EditTool.Stamp}
 				onClick={() => props.onToolChanged(EditTool.Stamp)}
 			>
 				<FontAwesomeIcon icon={faStamp} />
+			</Button>}
+			<Button
+				active={props.tool === EditTool.Shift}
+				onClick={() => props.onToolChanged(EditTool.Shift)}
+			>
+				<FontAwesomeIcon icon={faArrowsAlt} />
 			</Button>
 		</ButtonGroup>
 		<Button
