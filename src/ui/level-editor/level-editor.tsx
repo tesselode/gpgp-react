@@ -444,7 +444,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 	}
 
-	private getLayerDisplay(layer: Layer): JSX.Element {
+	private getLayerDisplay(layer: Layer) {
 		/*return layer instanceof EntityLayer ? EntityLayerDisplay({
 			project: this.props.project,
 			images: this.state.images,
@@ -459,10 +459,14 @@ export default class LevelEditor extends React.Component<Props, State> {
 			layer,
 		});*/
 
-		return layer instanceof GeometryLayer && <GeometryLayerDisplay
+		return layer instanceof TileLayer ? <TileLayerDisplay
+			project={this.props.project}
+			images={this.state.images}
+			layer={layer}
+		/> : layer instanceof GeometryLayer ? <GeometryLayerDisplay
 			project={this.props.project}
 			layer={layer}
-		/>;
+		/> : null;
 	}
 
 	private getCursorDisplay(): GridEditorLayer {
@@ -488,10 +492,10 @@ export default class LevelEditor extends React.Component<Props, State> {
 		});
 	}
 
-	private getLayerDisplays(): JSX.Element[] {
+	private getLayerDisplays() {
 		const level = this.state.levelHistory.getCurrentState();
 		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
-		const gridEditorLayers: JSX.Element[] = [];
+		const gridEditorLayers = [];
 		for (let i = level.data.layers.length - 1; i >= 0; i--) {
 			const layer = level.data.layers[i];
 			if (!layer.data.visible) continue;
