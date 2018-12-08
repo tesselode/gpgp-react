@@ -2,7 +2,7 @@ import React from 'react';
 import Image from "../../../data/image";
 import TileLayer from "../../../data/level/layer/tile-layer";
 import Project from "../../../data/project/project";
-import { Container, Sprite } from "@inlet/react-pixi";
+import { Container, Sprite, Graphics } from "@inlet/react-pixi";
 import * as PIXI from 'pixi.js';
 
 interface Props {
@@ -15,21 +15,25 @@ const TileLayerDisplay = (props: Props) => {
     const tileSize = props.project.data.tileSize;
     const tileset = props.project.getTileset(props.layer.data.tilesetName);
     const tilesetImage = props.images.get(tileset.data.imagePath);
-    if (!tilesetImage || !tilesetImage.element) return null;
-    return <div>
+    if (!tilesetImage || !tilesetImage.texture) return null;
+    return <Container>
         {
             props.layer.data.items.map((item, i) => <Container
                 key={i}
                 position={[item.x * tileSize, item.y * tileSize]}
-                width={tileSize}
-                height={tileSize}
             >
                 <Sprite
-                    texture={new PIXI.Texture(new PIXI.BaseTexture(tilesetImage.element))}
+                    texture={tilesetImage.texture}
+                    mask={<Graphics
+                        draw={g => {
+                            g.clear();
+                            g.drawRect(0, 0, tileSize, tileSize);
+                        }}
+                    />}
                 />
             </Container>)
         }
-    </div>;
+    </Container>;
 };
 
 export default TileLayerDisplay;

@@ -1,9 +1,12 @@
 import Jimp from 'jimp';
+import * as PIXI from 'pixi.js';
 
 /** Data for an image. */
 export default interface Image {
 	/** The image element. */
 	element?: HTMLImageElement;
+	/** The image as a PIXI texture. */
+	texture?: PIXI.Texture;
 	/** The image data, suitable for use in an <img> tag. */
 	data?: string;
 	/** The width of the image (in pixels). */
@@ -28,6 +31,7 @@ export function loadImage(imagePath: string): Promise<Image> {
 						element.onload = () => {resolve({
 							element,
 							data,
+							texture: new PIXI.Texture(new PIXI.BaseTexture(element)),
 							width: image.bitmap.width,
 							height: image.bitmap.height,
 						}); };
