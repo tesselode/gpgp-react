@@ -444,8 +444,8 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 	}
 
-	private getLayerDisplay(layer: Layer): GridEditorLayer {
-		return layer instanceof EntityLayer ? EntityLayerDisplay({
+	private getLayerDisplay(layer: Layer): JSX.Element {
+		/*return layer instanceof EntityLayer ? EntityLayerDisplay({
 			project: this.props.project,
 			images: this.state.images,
 			layer,
@@ -457,7 +457,12 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}) : GeometryLayerDisplay({
 			project: this.props.project,
 			layer,
-		});
+		});*/
+
+		return layer instanceof GeometryLayer && <GeometryLayerDisplay
+			project={this.props.project}
+			layer={layer}
+		/>;
 	}
 
 	private getCursorDisplay(): GridEditorLayer {
@@ -483,10 +488,10 @@ export default class LevelEditor extends React.Component<Props, State> {
 		});
 	}
 
-	private getLayerDisplays(): GridEditorLayer[] {
+	private getLayerDisplays(): JSX.Element[] {
 		const level = this.state.levelHistory.getCurrentState();
 		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
-		const gridEditorLayers: GridEditorLayer[] = [];
+		const gridEditorLayers: JSX.Element[] = [];
 		for (let i = level.data.layers.length - 1; i >= 0; i--) {
 			const layer = level.data.layers[i];
 			if (!layer.data.visible) continue;
@@ -495,7 +500,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 		if (this.state.showSelectedLayerOnTop && selectedLayer.data.visible)
 			gridEditorLayers.push(this.getLayerDisplay(selectedLayer));
-		gridEditorLayers.push(this.getCursorDisplay());
+		//gridEditorLayers.push(this.getCursorDisplay());
 		return gridEditorLayers;
 	}
 
@@ -600,12 +605,13 @@ export default class LevelEditor extends React.Component<Props, State> {
 						hideGrid={this.state.hideGrid}
 						hasShadow
 						backgroundColor={level.data.hasBackgroundColor && level.data.backgroundColor}
-						layers={this.getLayerDisplays()}
 						onMoveCursor={this.onMoveCursor.bind(this)}
 						onClick={this.onClickGrid.bind(this)}
 						onRelease={this.onReleaseGrid.bind(this)}
 						onDoubleClick={this.onDoubleClickGrid.bind(this)}
-					/>
+					>
+						{this.getLayerDisplays()}
+					</GridEditor>
 				</div>
 			</SplitPane>
 		</div>;

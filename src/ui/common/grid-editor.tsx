@@ -12,7 +12,6 @@ interface Props {
     hideGrid?: boolean;
     hasShadow?: boolean;
     backgroundColor?: string;
-    layers?: GridEditorLayer[];
     /** A function that is called when the cursor is moved. */
 	onMoveCursor?: (x: number, y: number) => void;
 	/** A function that is called when the grid is clicked. */
@@ -196,6 +195,7 @@ export default class GridEditor extends React.Component<Props, State> {
                     scale={this.state.zoom}
                 >
                     {this.renderBackground()}
+                    {this.props.children}
                     {this.renderGridlines()}
                     {this.renderOutline()}
                 </Container>
