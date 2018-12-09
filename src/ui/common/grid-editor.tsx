@@ -112,7 +112,7 @@ export default class GridEditor extends React.Component<Props, State> {
         context.lineWidth = 1;
     }
 
-    private renderCanvas() {
+    private updateCanvas() {
         const tileSize = this.props.tileSize;
         const width = this.props.width;
         const height = this.props.height;
@@ -124,14 +124,9 @@ export default class GridEditor extends React.Component<Props, State> {
         context.translate(this.state.panX, this.state.panY);
         context.scale(this.state.zoom, this.state.zoom);
         context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
-        this.renderBackground(context);
-        if (!this.props.hideGrid) this.renderGridlines(context);
-        this.renderOutline(context);
     }
 
     public render() {
-        if (this.canvasRef.current) this.renderCanvas();
-
         return <div>
             <canvas
                 ref={this.canvasRef}
@@ -191,11 +186,17 @@ export default class GridEditor extends React.Component<Props, State> {
                     }
                 }}
             />
-            {this.canvasRef.current && React.Children.map(this.props.children, (child) =>
-                (typeof(child) !== 'string' && typeof(child) !== 'number') && React.cloneElement(child, {
-                    context: this.canvasRef.current.getContext('2d'),
-                }),
-            )}
+            {this.canvasRef.current && <>
+                {this.updateCanvas()}
+                {this.renderBackground(this.canvasRef.current.getContext('2d'))}
+                {React.Children.map(this.props.children, (child) =>
+                    (typeof(child) !== 'string' && typeof(child) !== 'number') && React.cloneElement(child, {
+                        context: this.canvasRef.current.getContext('2d'),
+                    }),
+                )}
+                {this.renderGridlines(this.canvasRef.current.getContext('2d'))}
+                {this.renderOutline(this.canvasRef.current.getContext('2d'))}
+            </>}
         </div>;
     }
 }
