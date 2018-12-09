@@ -457,12 +457,13 @@ export default class LevelEditor extends React.Component<Props, State> {
 		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
 
 		const layers = [];
-		level.data.layers.forEach(layer => {
+		level.data.layers.forEach((layer, i) => {
 			if (layer instanceof GeometryLayer) {
-				layers.push(GeometryLayerDisplay({
-					project: this.props.project,
-					layer,
-				}));
+				layers.push(<GeometryLayerDisplay
+					key={i}
+					project={this.props.project}
+					layer={layer}
+				/>);
 			}
 		});
 
@@ -553,14 +554,15 @@ export default class LevelEditor extends React.Component<Props, State> {
 						width={level.data.width}
 						height={level.data.height}
 						hideGrid={this.state.hideGrid}
-						layers={layers}
 						hasShadow
 						backgroundColor={level.data.hasBackgroundColor && level.data.backgroundColor}
 						onMoveCursor={this.onMoveCursor.bind(this)}
 						onClick={this.onClickGrid.bind(this)}
 						onRelease={this.onReleaseGrid.bind(this)}
 						onDoubleClick={this.onDoubleClickGrid.bind(this)}
-					/>
+					>
+						{layers}
+					</GridEditor>
 				</div>
 			</SplitPane>
 		</div>;

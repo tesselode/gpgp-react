@@ -9,7 +9,6 @@ interface Props {
     hideGrid?: boolean;
     hasShadow?: boolean;
     backgroundColor?: string;
-    layers?: React.ComponentClass<any>[];
     /** A function that is called when the cursor is moved. */
 	onMoveCursor?: (x: number, y: number) => void;
 	/** A function that is called when the grid is clicked. */
@@ -192,9 +191,8 @@ export default class GridEditor extends React.Component<Props, State> {
                     }
                 }}
             />
-            {(this.props.layers && this.canvasRef.current) && this.props.layers.map((layer, i) =>
-                React.createElement(layer, {
-                    key: i,
+            {this.canvasRef.current && React.Children.map(this.props.children, (child) =>
+                (typeof(child) !== 'string' && typeof(child) !== 'number') && React.cloneElement(child, {
                     context: this.canvasRef.current.getContext('2d'),
                 }),
             )}

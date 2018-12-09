@@ -5,19 +5,18 @@ import Project from '../../../data/project/project';
 interface Props {
     project: Project;
     layer: GeometryLayer;
+    context?: CanvasRenderingContext2D;
 }
 
-const GeometryLayerDisplay = (props: Props) =>
-    class extends React.Component<Props & {context: CanvasRenderingContext2D}> {
-        public render() {
-            console.log('rendering!')
-            const tileSize = props.project.data.tileSize;
+export default class GeometryLayerDisplay extends React.Component<Props> {
+    public render() {
+        if (this.props.context) {
+            const tileSize = this.props.project.data.tileSize;
             this.props.context.fillStyle = 'rgba(39, 187, 232, .33)';
-            for (const item of props.layer.data.items) {
+            for (const item of this.props.layer.data.items) {
                 this.props.context.fillRect(item.x * tileSize, item.y * tileSize, tileSize, tileSize);
             }
-            return null;
         }
-    };
-
-export default GeometryLayerDisplay;
+        return null;
+    }
+}
