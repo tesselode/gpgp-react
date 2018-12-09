@@ -14,7 +14,7 @@ import Level, { Layer } from '../../data/level/level';
 import Project from '../../data/project/project';
 import Rect from '../../data/rect';
 import Stamp from '../../data/stamp';
-import GridEditor, { GridEditorLayer } from '../common/grid-editor';
+import GridEditor from '../common/grid-editor';
 import EntityCursor from './cursor/entity-cursor';
 import GenericCursor from './cursor/generic-cursor';
 import TileCursor from './cursor/tile-cursor';
@@ -444,61 +444,6 @@ export default class LevelEditor extends React.Component<Props, State> {
 		}
 	}
 
-	private getLayerDisplay(layer: Layer): GridEditorLayer {
-		return layer instanceof EntityLayer ? EntityLayerDisplay({
-			project: this.props.project,
-			images: this.state.images,
-			layer,
-			selectedEntityItemIndex: this.state.selectedEntityItemIndex,
-		}) : layer instanceof TileLayer ? TileLayerDisplay({
-			project: this.props.project,
-			images: this.state.images,
-			layer,
-		}) : GeometryLayerDisplay({
-			project: this.props.project,
-			layer,
-		});
-	}
-
-	private getCursorDisplay(): GridEditorLayer {
-		const level = this.state.levelHistory.getCurrentState();
-		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
-		return selectedLayer instanceof EntityLayer ? EntityCursor({
-			tileSize: this.props.project.data.tileSize,
-			x: this.state.cursorX,
-			y: this.state.cursorY,
-			entity: this.props.project.data.entities[this.state.selectedEntityIndex],
-			images: this.state.images,
-		}) : selectedLayer instanceof TileLayer ? TileCursor({
-			tileSize: this.props.project.data.tileSize,
-			cursor: this.state.cursorRect.normalized(),
-			removing: this.state.cursorState === CursorState.Remove,
-			tool: this.state.tool,
-			tilesetImage: this.state.images.get(this.props.project.getTileset(selectedLayer.data.tilesetName).data.imagePath),
-			stamp: this.state.tileStamp,
-		}) : GenericCursor({
-			tileSize: this.props.project.data.tileSize,
-			cursor: this.state.cursorRect.normalized(),
-			removing: this.state.cursorState === CursorState.Remove,
-		});
-	}
-
-	private getLayerDisplays(): GridEditorLayer[] {
-		const level = this.state.levelHistory.getCurrentState();
-		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
-		const gridEditorLayers: GridEditorLayer[] = [];
-		for (let i = level.data.layers.length - 1; i >= 0; i--) {
-			const layer = level.data.layers[i];
-			if (!layer.data.visible) continue;
-			if (this.state.showSelectedLayerOnTop && this.state.selectedLayerIndex === i) continue;
-			gridEditorLayers.push(this.getLayerDisplay(layer));
-		}
-		if (this.state.showSelectedLayerOnTop && selectedLayer.data.visible)
-			gridEditorLayers.push(this.getLayerDisplay(selectedLayer));
-		gridEditorLayers.push(this.getCursorDisplay());
-		return gridEditorLayers;
-	}
-
 	public render() {
 		if (this.state.imagesLoaded < this.state.totalImages) {
 			return <Progress
@@ -510,6 +455,16 @@ export default class LevelEditor extends React.Component<Props, State> {
 
 		const level = this.state.levelHistory.getCurrentState();
 		const selectedLayer = level.data.layers[this.state.selectedLayerIndex];
+
+		const layers = [];
+		level.data.layers.forEach(layer => {
+			if (layer instanceof GeometryLayer) {
+				layers.push(GeometryLayerDisplay({
+					project: this.props.project,
+					layer,
+				}));
+			}
+		});
 
 		return <div>
 			<WarningsModal warnings={level.getWarnings()} />
@@ -598,9 +553,9 @@ export default class LevelEditor extends React.Component<Props, State> {
 						width={level.data.width}
 						height={level.data.height}
 						hideGrid={this.state.hideGrid}
+						layers={layers}
 						hasShadow
 						backgroundColor={level.data.hasBackgroundColor && level.data.backgroundColor}
-						layers={this.getLayerDisplays()}
 						onMoveCursor={this.onMoveCursor.bind(this)}
 						onClick={this.onClickGrid.bind(this)}
 						onRelease={this.onReleaseGrid.bind(this)}

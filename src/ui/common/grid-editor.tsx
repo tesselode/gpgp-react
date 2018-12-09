@@ -1,7 +1,5 @@
 import React from 'react';
 
-export type GridEditorLayer = (context: CanvasRenderingContext2D) => void;
-
 interface Props {
     viewportWidth: number;
     viewportHeight: number;
@@ -11,7 +9,7 @@ interface Props {
     hideGrid?: boolean;
     hasShadow?: boolean;
     backgroundColor?: string;
-    layers?: GridEditorLayer[];
+    layers?: React.ComponentClass<any>[];
     /** A function that is called when the cursor is moved. */
 	onMoveCursor?: (x: number, y: number) => void;
 	/** A function that is called when the grid is clicked. */
@@ -128,81 +126,78 @@ export default class GridEditor extends React.Component<Props, State> {
         context.scale(this.state.zoom, this.state.zoom);
         context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
         this.renderBackground(context);
-        if (this.props.layers) {
-            this.props.layers.forEach(display => {
-                display(context);
-            });
-        }
         if (!this.props.hideGrid) this.renderGridlines(context);
         this.renderOutline(context);
     }
 
-    public componentDidMount() {
-        this.renderCanvas();
-    }
-
-    public componentDidUpdate() {
-        this.renderCanvas();
-    }
-
     public render() {
-        return <canvas
-            ref={this.canvasRef}
-            onMouseDown={event => {
-                switch (event.button) {
-                    case 1:
-                        this.setState({panning: true});
-                }
-                if (this.state.button === false) {
-                    this.setState({button: event.button});
-                    if (this.props.onClick) this.props.onClick(event.button);
-                }
-            }}
-            onMouseUp={event => {
-                switch (event.button) {
-                    case 1:
-                        this.setState({panning: false});
-                }
-                if (event.button === this.state.button) {
-                    this.setState({button: false});
-                    if (this.props.onRelease) this.props.onRelease(event.button);
-                }
-            }}
-            onDoubleClick={event => {
-                this.props.onDoubleClick(event.button);
-            }}
-            onMouseMove={event => {
-                const rect = this.canvasRef.current.getBoundingClientRect();
-                const mouseX = event.clientX - rect.left;
-                const mouseY = event.clientY - rect.top;
-                if (this.state.panning)
+        if (this.canvasRef.current) this.renderCanvas();
+
+        return <div>
+            <canvas
+                ref={this.canvasRef}
+                onMouseDown={event => {
+                    switch (event.button) {
+                        case 1:
+                            this.setState({panning: true});
+                    }
+                    if (this.state.button === false) {
+                        this.setState({button: event.button});
+                        if (this.props.onClick) this.props.onClick(event.button);
+                    }
+                }}
+                onMouseUp={event => {
+                    switch (event.button) {
+                        case 1:
+                            this.setState({panning: false});
+                    }
+                    if (event.button === this.state.button) {
+                        this.setState({button: false});
+                        if (this.props.onRelease) this.props.onRelease(event.button);
+                    }
+                }}
+                onDoubleClick={event => {
+                    this.props.onDoubleClick(event.button);
+                }}
+                onMouseMove={event => {
+                    const rect = this.canvasRef.current.getBoundingClientRect();
+                    const mouseX = event.clientX - rect.left;
+                    const mouseY = event.clientY - rect.top;
+                    if (this.state.panning)
+                        this.setState({
+                            panX: this.state.panX + mouseX - this.state.mouseX,
+                            panY: this.state.panY + mouseY - this.state.mouseY,
+                        });
                     this.setState({
-                        panX: this.state.panX + mouseX - this.state.mouseX,
-                        panY: this.state.panY + mouseY - this.state.mouseY,
+                        mouseX,
+                        mouseY,
                     });
-                this.setState({
-                    mouseX,
-                    mouseY,
-                });
-                const cursorPosition = this.getCursorPosition(mouseX, mouseY);
-                if (cursorPosition.x !== this.state.cursorX || cursorPosition.y !== this.state.cursorY) {
-                    if (this.props.onMoveCursor)
-                        this.props.onMoveCursor(cursorPosition.x, cursorPosition.y);
-                }
-                this.setState({
-                    cursorX: cursorPosition.x,
-                    cursorY: cursorPosition.y,
-                });
-            }}
-            onWheel={event => {
-                if (!event.ctrlKey) return;
-                if (event.deltaY > 0) {
-                    this.setState({zoom: this.state.zoom / 1.1});
-                }
-                if (event.deltaY < 0) {
-                    this.setState({zoom: this.state.zoom * 1.1});
-                }
-            }}
-        />;
+                    const cursorPosition = this.getCursorPosition(mouseX, mouseY);
+                    if (cursorPosition.x !== this.state.cursorX || cursorPosition.y !== this.state.cursorY) {
+                        if (this.props.onMoveCursor)
+                            this.props.onMoveCursor(cursorPosition.x, cursorPosition.y);
+                    }
+                    this.setState({
+                        cursorX: cursorPosition.x,
+                        cursorY: cursorPosition.y,
+                    });
+                }}
+                onWheel={event => {
+                    if (!event.ctrlKey) return;
+                    if (event.deltaY > 0) {
+                        this.setState({zoom: this.state.zoom / 1.1});
+                    }
+                    if (event.deltaY < 0) {
+                        this.setState({zoom: this.state.zoom * 1.1});
+                    }
+                }}
+            />
+            {(this.props.layers && this.canvasRef.current) && this.props.layers.map((layer, i) =>
+                React.createElement(layer, {
+                    key: i,
+                    context: this.canvasRef.current.getContext('2d'),
+                }),
+            )}
+        </div>;
     }
 }

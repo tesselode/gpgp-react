@@ -84,7 +84,7 @@ export default class TilePicker extends React.Component<Props, State> {
 			startExpanded
 			flush
 		>
-			<GridEditor
+			{/* <GridEditor
 				viewportWidth={this.props.sidebarWidth - 40}
 				viewportHeight={320}
 				tileSize={this.props.project.data.tileSize}
@@ -105,7 +105,7 @@ export default class TilePicker extends React.Component<Props, State> {
 							(normalizedSelection.b - normalizedSelection.t + 1) * tileSize);
 					},
 				]}
-			/>
+			/> */}
 		</SidebarSection>;
 	}
 }
