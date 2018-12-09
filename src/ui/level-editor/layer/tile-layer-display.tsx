@@ -18,20 +18,14 @@ const TileLayerDisplay = (props: Props) => {
     if (!tilesetImage || !tilesetImage.texture) return null;
     return <Container>
         {
-            props.layer.data.items.map((item, i) => <Container
+            props.layer.data.items.map((item, i) => <Sprite
                 key={i}
-                position={[item.x * tileSize, item.y * tileSize]}
-            >
-                <Sprite
-                    texture={tilesetImage.texture}
-                    mask={<Graphics
-                        draw={g => {
-                            g.clear();
-                            g.drawRect(0, 0, tileSize, tileSize);
-                        }}
-                    />}
-                />
-            </Container>)
+                texture={tilesetImage.texture}
+                position={new PIXI.Point(item.x * tileSize, item.y * tileSize)}
+                width={tileSize}
+                height={tileSize}
+                scale={new PIXI.Point(1, 1)}
+            />)
         }
     </Container>;
 };

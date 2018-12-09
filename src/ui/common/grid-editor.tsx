@@ -1,4 +1,5 @@
 import React from 'react';
+import * as PIXI from 'pixi.js';
 import { Stage, Graphics, Container } from '@inlet/react-pixi';
 
 export type GridEditorLayer = (context: CanvasRenderingContext2D) => void;
@@ -188,11 +189,10 @@ export default class GridEditor extends React.Component<Props, State> {
                 options={{
                     transparent: true,
                 }}
-                
             >
                 <Container
-                    position={{x: this.state.panX, y: this.state.panY}}
-                    scale={this.state.zoom}
+                    position={new PIXI.Point(this.state.panX, this.state.panY)}
+                    scale={new PIXI.Point(this.state.zoom, this.state.zoom)}
                 >
                     {this.renderBackground()}
                     {this.props.children}
