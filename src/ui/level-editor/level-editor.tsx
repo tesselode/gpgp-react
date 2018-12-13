@@ -462,6 +462,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 				layers.push(<GeometryLayerDisplay
 					key={i}
 					project={this.props.project}
+					level={level}
 					layer={layer}
 				/>);
 			}
