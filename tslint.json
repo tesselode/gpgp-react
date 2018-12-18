@@ -4,6 +4,12 @@
         "tslint:recommended", "tslint-react"
     ],
     "jsRules": {},
-    "rules": {},
+    "rules": {
+        "quotemark": false,
+        "indent": [true, "tabs"],
+        "object-literal-sort-keys": false,
+        "jsx-wrap-multiline": false,
+        "jsx-no-multiline-js": false
+    },
     "rulesDirectory": []
 }
