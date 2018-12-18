@@ -11,7 +11,9 @@
         "jsx-wrap-multiline": false,
         "jsx-no-multiline-js": false,
         "member-ordering": false,
-        "interface-name": false
+        "interface-name": false,
+        "arrow-parens": false,
+        "curly": false
     },
     "rulesDirectory": []
 }

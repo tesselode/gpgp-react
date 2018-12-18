@@ -1,5 +1,8 @@
 import * as PIXI from 'pixi.js';
 import React from 'react';
+import GeometryLayerDisplay from './layer/geometry';
+
+type LayerDisplay = GeometryLayerDisplay;
 
 interface Props {
 	/** The width of the space available for the grid. */
@@ -10,6 +13,8 @@ interface Props {
 	width: number;
 	/** The height of the grid (in tiles). */
 	height: number;
+	/** The content to display in the grid. */
+	layers?: Array<React.RefObject<LayerDisplay>>;
 }
 
 /** An interactive grid that can display content. */
@@ -51,6 +56,10 @@ export default class Grid extends React.Component<Props> {
 
 	public componentDidMount() {
 		this.containerRef.current.appendChild(this.pixiApp.view);
+		if (this.props.layers)
+			this.props.layers.forEach(layer => {
+				this.pixiApp.stage.addChild(layer.current.container);
+			});
 		this.pixiApp.stage.addChild(this.createGridlines());
 		this.pixiApp.stage.addChild(this.createBorder());
 		this.pixiApp.stage.scale = new PIXI.Point(this.zoom, this.zoom);
