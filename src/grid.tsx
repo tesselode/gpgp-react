@@ -18,18 +18,42 @@ interface Props {
 	content?: GridContent[];
 }
 
+interface State {
+	/** The current x position of the cursor (in tiles). */
+	cursorX: number;
+	/** The current y position of the cursor (in tiles). */
+	cursorY: number;
+}
+
 /** An interactive grid that can display content. */
-export default class Grid extends React.Component<Props> {
+export default class Grid extends React.Component<Props, State> {
 	private pixiApp: PIXI.Application;
 	private containerRef = React.createRef<HTMLDivElement>();
 	private zoom = 16;
 
 	constructor(props: Props) {
 		super(props);
+		this.state = {
+			cursorX: 0,
+			cursorY: 0,
+		};
 		this.pixiApp = new PIXI.Application({
 			width: props.viewportWidth,
 			height: props.viewportHeight,
 			transparent: true,
+		});
+		this.onMouseMove = this.onMouseMove.bind(this);
+	}
+
+	private onMouseMove(event: React.MouseEvent<HTMLDivElement>) {
+		const rect = this.containerRef.current.getBoundingClientRect();
+		let mouseX = event.clientX - rect.left;
+		let mouseY = event.clientY - rect.top;
+		mouseX /= this.zoom;
+		mouseY /= this.zoom;
+		this.setState({
+			cursorX: Math.floor(mouseX),
+			cursorY: Math.floor(mouseY),
 		});
 	}
 
@@ -67,8 +91,20 @@ export default class Grid extends React.Component<Props> {
 	}
 
 	public render() {
-		return <div
-			ref={this.containerRef}
-		/>;
+		return <div>
+			<div
+				ref={this.containerRef}
+				style={{
+					width: this.props.viewportWidth,
+					height: this.props.viewportHeight,
+				}}
+				onMouseMove={this.onMouseMove}
+			/>
+			<div>
+				{this.state.cursorX}
+				<br />
+				{this.state.cursorY}
+			</div>
+		</div>;
 	}
 }

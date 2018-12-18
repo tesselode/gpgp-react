@@ -11,7 +11,7 @@ export default class App extends React.Component {
 		return <div>
 			<Grid
 				viewportWidth={window.innerWidth}
-				viewportHeight={window.innerHeight}
+				viewportHeight={window.innerHeight - 64}
 				width={32}
 				height={18}
 				content={this.layerDisplays}
