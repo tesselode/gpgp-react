@@ -18,43 +18,61 @@ interface Props {
 	content?: GridContent[];
 }
 
-interface State {
-	/** The current x position of the cursor (in tiles). */
-	cursorX: number;
-	/** The current y position of the cursor (in tiles). */
-	cursorY: number;
-}
-
 /** An interactive grid that can display content. */
-export default class Grid extends React.Component<Props, State> {
+export default class Grid extends React.Component<Props> {
 	private pixiApp: PIXI.Application;
 	private containerRef = React.createRef<HTMLDivElement>();
-	private zoom = 16;
+	private zoom = 32;
+	private panX = 0;
+	private panY = 0;
+	private middleMouseButtonDown = false;
+	private cursorX = 0;
+	private cursorY = 0;
 
 	constructor(props: Props) {
 		super(props);
-		this.state = {
-			cursorX: 0,
-			cursorY: 0,
-		};
 		this.pixiApp = new PIXI.Application({
 			width: props.viewportWidth,
 			height: props.viewportHeight,
 			transparent: true,
 		});
+		this.onMouseDown = this.onMouseDown.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 	}
 
+	private onMouseDown(event: React.MouseEvent<HTMLDivElement>) {
+		switch (event.button) {
+			case 1:
+				event.preventDefault();
+				this.middleMouseButtonDown = true;
+				break;
+		}
+	}
+
+	private onMouseUp(event: React.MouseEvent<HTMLDivElement>) {
+		switch (event.button) {
+			case 1:
+				event.preventDefault();
+				this.middleMouseButtonDown = false;
+				break;
+		}
+	}
+
 	private onMouseMove(event: React.MouseEvent<HTMLDivElement>) {
+		if (this.middleMouseButtonDown) {
+			this.panX += event.movementX;
+			this.panY += event.movementY;
+			this.pixiApp.stage.position.x = this.panX;
+			this.pixiApp.stage.position.y = this.panY;
+		}
 		const rect = this.containerRef.current.getBoundingClientRect();
 		let mouseX = event.clientX - rect.left;
 		let mouseY = event.clientY - rect.top;
 		mouseX /= this.zoom;
 		mouseY /= this.zoom;
-		this.setState({
-			cursorX: Math.floor(mouseX),
-			cursorY: Math.floor(mouseY),
-		});
+		this.cursorX = Math.floor(mouseX);
+		this.cursorY = Math.floor(mouseY);
 	}
 
 	private createGridlines() {
@@ -99,12 +117,9 @@ export default class Grid extends React.Component<Props, State> {
 					height: this.props.viewportHeight,
 				}}
 				onMouseMove={this.onMouseMove}
+				onMouseDown={this.onMouseDown}
+				onMouseUp={this.onMouseUp}
 			/>
-			<div>
-				{this.state.cursorX}
-				<br />
-				{this.state.cursorY}
-			</div>
 		</div>;
 	}
 }
