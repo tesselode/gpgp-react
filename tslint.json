@@ -9,7 +9,9 @@
         "indent": [true, "tabs"],
         "object-literal-sort-keys": false,
         "jsx-wrap-multiline": false,
-        "jsx-no-multiline-js": false
+        "jsx-no-multiline-js": false,
+        "member-ordering": false,
+        "interface-name": false
     },
     "rulesDirectory": []
 }
