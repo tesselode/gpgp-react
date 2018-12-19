@@ -4,12 +4,15 @@ import Level from './data/level';
 import Rect from './data/rect';
 import Grid from './ui/grid';
 import GeometryLayerDisplay from './ui/layer-display/geometry-layer-display';
+import LayerList from './ui/sidebar/layer-list';
+import SplitPane from 'react-split-pane';
 
 type LayerDisplay = GeometryLayerDisplay;
 
 interface State {
 	level: Level;
 	selectedLayerIndex: number;
+	sidebarWidth: number;
 }
 
 export default class App extends React.Component<{}, State> {
@@ -20,6 +23,7 @@ export default class App extends React.Component<{}, State> {
 		this.state = {
 			level: Level.New(),
 			selectedLayerIndex: 0,
+			sidebarWidth: 400,
 		};
 		this.state.level.data.layers.forEach(layer => {
 			if (layer instanceof GeometryLayer)
@@ -42,15 +46,24 @@ export default class App extends React.Component<{}, State> {
 	}
 
 	public render() {
-		return <div>
+		return <SplitPane
+			size={this.state.sidebarWidth}
+		>
+			<div>
+				<LayerList
+					level={this.state.level}
+					selectedLayerIndex={this.state.selectedLayerIndex}
+					onSelectLayer={() => {}}
+				/>
+			</div>
 			<Grid
-				viewportWidth={window.innerWidth}
+				viewportWidth={window.innerWidth - this.state.sidebarWidth}
 				viewportHeight={window.innerHeight}
 				width={32}
 				height={18}
 				content={this.layerDisplays}
 				onClick={this.onClick}
 			/>
-		</div>;
+		</SplitPane>;
 	}
 }

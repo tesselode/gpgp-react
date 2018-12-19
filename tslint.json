@@ -13,7 +13,9 @@
         "member-ordering": false,
         "interface-name": false,
         "arrow-parens": false,
-        "curly": false
+        "curly": false,
+        "jsx-no-lambda": false,
+        "jsx-boolean-value": false
     },
     "rulesDirectory": []
 }
