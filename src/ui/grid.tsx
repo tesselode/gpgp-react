@@ -16,6 +16,8 @@ interface Props {
 	height: number;
 	/** The content to display in the grid. */
 	content?: GridContent[];
+	/** A function to call when the grid is clicked. */
+	onClick?: (cursorX: number, cursorY: number) => void;
 }
 
 /** An interactive grid that can display content. */
@@ -48,6 +50,8 @@ export default class Grid extends React.Component<Props> {
 				this.middleMouseButtonDown = true;
 				break;
 		}
+		if (this.props.onClick)
+			this.props.onClick(this.cursorX, this.cursorY);
 	}
 
 	private onMouseUp(event: React.MouseEvent<HTMLDivElement>) {

@@ -24,16 +24,19 @@ export default class GeometryLayer {
 		this.data = data;
 	}
 
+	public hasItemAt(x: number, y: number) {
+		return this.data.items.findIndex(item => item.x === x && item.y === y) !== -1;
+	}
+
 	public setName(name: string) {
 		return new GeometryLayer({...this.data, name});
 	}
 
 	public place(rect: Rect) {
-		let items = this.data.items.slice(0, this.data.items.length);
-		items = items.filter(item => !rect.containsPoint(item.x, item.y));
+		const items = this.data.items.slice(0, this.data.items.length);
 		for (let x = rect.left; x <= rect.right; x++) {
 			for (let y = rect.top; y <= rect.bottom; y++) {
-				items.push({x, y});
+				if (!this.hasItemAt(x, y)) items.push({x, y});
 			}
 		}
 		return new GeometryLayer({...this.data, items});
