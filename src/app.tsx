@@ -1,6 +1,6 @@
 import React from 'react';
-import Grid from './grid';
-import GeometryLayerDisplay from './layer/geometry';
+import Grid from './ui/grid';
+import GeometryLayerDisplay from './ui/layer-display/geometry-layer-display';
 
 type LayerDisplay = GeometryLayerDisplay;
 
