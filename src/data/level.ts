@@ -23,6 +23,24 @@ export default class Level {
 		this.data = data;
 	}
 
+	public addLayer(layerIndex: number, layer: Layer) {
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.splice(layerIndex, 0, layer);
+		return new Level({...this.data, layers});
+	}
+
+	public removeLayer(layerIndex: number) {
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.splice(layerIndex, 1);
+		return new Level({...this.data, layers});
+	}
+
+	public moveLayer(currentIndex: number, newIndex: number) {
+		const layers = this.data.layers.slice(0, this.data.layers.length);
+		layers.splice(newIndex, 0, layers.splice(currentIndex, 1)[0]);
+		return new Level({...this.data, layers});
+	}
+
 	public setLayer(layerIndex: number, layer: Layer) {
 		const layers = this.data.layers.slice(0, this.data.layers.length);
 		layers[layerIndex] = layer;
