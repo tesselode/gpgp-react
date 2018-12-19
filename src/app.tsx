@@ -49,7 +49,11 @@ export default class App extends React.Component<{}, State> {
 		return <SplitPane
 			size={this.state.sidebarWidth}
 		>
-			<div>
+			<div
+				style={{
+					padding: '.1em',
+				}}
+			>
 				<LayerList
 					level={this.state.level}
 					selectedLayerIndex={this.state.selectedLayerIndex}

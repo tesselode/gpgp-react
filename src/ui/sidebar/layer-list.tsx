@@ -1,6 +1,7 @@
 import React from 'react';
 import { ListGroup, ListGroupItem } from "reactstrap";
 import Level from "../../data/level";
+import SidebarSection from './sidebar-section';
 
 interface Props {
 	level: Level;
@@ -8,17 +9,22 @@ interface Props {
 	onSelectLayer: (layerIndex: number) => void;
 }
 
-const LayerList = (props: Props) => <ListGroup
+const LayerList = (props: Props) => <SidebarSection
+	title='Layers'
 	flush
 >
-	{props.level.data.layers.map((layer, i) => <ListGroupItem
-		key={i}
-		active={props.selectedLayerIndex === i}
-		onClick={() => {props.onSelectLayer(i); }}
+	<ListGroup
+		flush
 		size='sm'
 	>
-		{layer.data.name}
-	</ListGroupItem>)}
-</ListGroup>;
+		{props.level.data.layers.map((layer, i) => <ListGroupItem
+			key={i}
+			active={props.selectedLayerIndex === i}
+			onClick={() => {props.onSelectLayer(i); }}
+		>
+			{layer.data.name}
+		</ListGroupItem>)}
+	</ListGroup>
+</SidebarSection>;
 
 export default LayerList;
