@@ -73,6 +73,8 @@ export default class Grid extends React.Component<Props> {
 		const rect = this.containerRef.current.getBoundingClientRect();
 		let mouseX = event.clientX - rect.left;
 		let mouseY = event.clientY - rect.top;
+		mouseX -= this.panX;
+		mouseY -= this.panY;
 		mouseX /= this.zoom;
 		mouseY /= this.zoom;
 		this.cursorX = Math.floor(mouseX);
