@@ -4,6 +4,7 @@ import { Button, Card, CardBody, CardHeader, Collapse, Navbar, NavbarBrand } fro
 interface Props {
 	title: string;
 	flush?: boolean;
+	headerContent?: JSX.Element;
 }
 
 interface State {
@@ -19,17 +20,20 @@ export default class SidebarSection extends React.Component<Props, State> {
 	}
 
 	public render() {
-		return <Card>
-			<CardHeader
-				style={{
-					padding: '.5em',
-					cursor: 'pointer',
-				}}
-				onClick={() => {
-					this.setState({expanded: !this.state.expanded});
-				}}
-			>
-				{this.props.title}
+		return <Card style={{marginBottom: '1em'}}>
+			<CardHeader style={{padding: 0}}>
+				<Navbar style={{padding: 0}}>
+					<Button
+						color='link'
+						size='sm'
+						onClick={() => {
+							this.setState({expanded: !this.state.expanded});
+						}}
+					>
+						{this.props.title}
+					</Button>
+					{this.props.headerContent}
+				</Navbar>
 			</CardHeader>
 			<Collapse isOpen={this.state.expanded}>
 				<CardBody

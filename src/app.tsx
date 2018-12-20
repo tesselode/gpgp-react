@@ -51,7 +51,7 @@ export default class App extends React.Component<{}, State> {
 		>
 			<div
 				style={{
-					padding: '.1em',
+					padding: '.5em',
 				}}
 			>
 				<LayerList
