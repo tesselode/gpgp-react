@@ -1,5 +1,6 @@
 import React from 'react';
-import { ListGroup, ListGroupItem } from "reactstrap";
+import { Button, ButtonGroup, ListGroup, ListGroupItem } from "reactstrap";
+import GeometryLayer from '../../data/layer/geometry-layer';
 import Level from "../../data/level";
 import SidebarSection from './sidebar-section';
 
@@ -7,11 +8,26 @@ interface Props {
 	level: Level;
 	selectedLayerIndex: number;
 	onSelectLayer: (layerIndex: number) => void;
+	onAddLayer: (layerIndex: number, layer: GeometryLayer) => void;
 }
 
 const LayerList = (props: Props) => <SidebarSection
 	title='Layers'
 	flush
+	headerContent={<ButtonGroup
+		size='sm'
+	>
+		<Button
+			onClick={() => {
+				props.onAddLayer(
+					props.selectedLayerIndex,
+					GeometryLayer.New(),
+				);
+			}}
+		>
+			+
+		</Button>
+	</ButtonGroup>}
 >
 	<ListGroup
 		flush

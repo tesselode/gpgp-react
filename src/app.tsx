@@ -1,11 +1,11 @@
 import React from 'react';
+import SplitPane from 'react-split-pane';
 import GeometryLayer from './data/layer/geometry-layer';
 import Level from './data/level';
 import Rect from './data/rect';
 import Grid from './ui/grid';
 import GeometryLayerDisplay from './ui/layer-display/geometry-layer-display';
 import LayerList from './ui/sidebar/layer-list';
-import SplitPane from 'react-split-pane';
 
 type LayerDisplay = GeometryLayerDisplay;
 
@@ -31,6 +31,12 @@ export default class App extends React.Component<{}, State> {
 		});
 
 		this.onClick = this.onClick.bind(this);
+		this.addLayer = this.addLayer.bind(this);
+	}
+
+	private addLayer(layerIndex: number, layer: GeometryLayer) {
+		this.setState({level: this.state.level.addLayer(layerIndex, layer)});
+		this.layerDisplays.splice(layerIndex, 0, new GeometryLayerDisplay(layer));
 	}
 
 	private place(rect: Rect) {
@@ -57,7 +63,10 @@ export default class App extends React.Component<{}, State> {
 				<LayerList
 					level={this.state.level}
 					selectedLayerIndex={this.state.selectedLayerIndex}
-					onSelectLayer={() => {}}
+					onSelectLayer={(layerIndex) => {
+						this.setState({selectedLayerIndex: layerIndex});
+					}}
+					onAddLayer={this.addLayer}
 				/>
 			</div>
 			<Grid
