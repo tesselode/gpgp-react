@@ -112,17 +112,22 @@ export default class GridEditor extends React.Component<Props, State> {
         this.containerRef.current.appendChild(this.pixiApp.view);
     }
 
+    public shouldComponentUpdate(newProps: Props) {
+        if (newProps.width !== this.props.width || newProps.height !== this.props.height) {
+            this.pixiApp.stage.removeChildren(0, this.pixiApp.stage.children.length);
+            this.pixiApp.stage.addChild(this.layerContainer);
+            this.pixiApp.stage.addChild(this.createGridlines());
+            this.pixiApp.stage.addChild(this.createBorder());
+        }
+        return true;
+    }
+
     public componentDidUpdate() {
         this.pixiApp.renderer.resize(this.props.viewportWidth, this.props.viewportHeight);
         this.pixiApp.stage.position.x = this.state.panX;
         this.pixiApp.stage.position.y = this.state.panY;
         this.pixiApp.stage.scale.x = this.state.zoom;
         this.pixiApp.stage.scale.y = this.state.zoom;
-        this.layerContainer.removeChildren(0, this.layerContainer.children.length);
-        if (this.props.layers)
-            this.props.layers.forEach(layer => {
-                this.layerContainer.addChild(layer.container);
-            });
     }
 
     public render() {

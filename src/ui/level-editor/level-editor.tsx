@@ -15,13 +15,8 @@ import Project from '../../data/project/project';
 import Rect from '../../data/rect';
 import Stamp from '../../data/stamp';
 import GridEditor from '../common/grid-editor';
-import EntityCursor from './cursor/entity-cursor';
-import GenericCursor from './cursor/generic-cursor';
-import TileCursor from './cursor/tile-cursor';
 import { EditTool } from './edit-tool';
-import EntityLayerDisplay from './layer/entity-layer-display';
 import GeometryLayerDisplay from './layer/geometry-layer-display';
-import TileLayerDisplay from './layer/tile-layer-display';
 import EntityOptions from './sidebar/entity-options';
 import EntityPicker from './sidebar/entity-picker';
 import HistoryBrowser from './sidebar/history-browser';
@@ -37,6 +32,8 @@ enum CursorState {
 	Place,
 	Remove,
 }
+
+type LayerDisplay = GeometryLayerDisplay;
 
 interface Props {
 	/** The project the currently edited level belongs to. */
@@ -100,6 +97,8 @@ interface State {
 
 /** The level editor screen, which allows you to create or edit levels. */
 export default class LevelEditor extends React.Component<Props, State> {
+	private layerDisplays: LayerDisplay[] = [];
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -127,6 +126,17 @@ export default class LevelEditor extends React.Component<Props, State> {
 		};
 		this.onResize = this.onResize.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
+		this.initLayerDisplays();
+	}
+
+	private initLayerDisplays() {
+		this.layerDisplays = [];
+		const tileSize = this.props.project.data.tileSize;
+		const level = this.state.levelHistory.getCurrentState();
+		level.data.layers.forEach((layer, i) => {
+			if (layer instanceof GeometryLayer)
+				this.layerDisplays[i] = new GeometryLayerDisplay(layer, tileSize);
+		});
 	}
 
 	public componentDidMount() {
@@ -341,38 +351,37 @@ export default class LevelEditor extends React.Component<Props, State> {
 	private onPlace(rect: Rect) {
 		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
-		if (layer instanceof GeometryLayer)
+		let newLayer;
+		if (layer instanceof GeometryLayer) {
+			newLayer = layer.place(rect);
 			this.modifyLevel(
-				level.setLayer(
-					this.state.selectedLayerIndex,
-					layer.place(rect),
-				),
+				level.setLayer(this.state.selectedLayerIndex, newLayer),
 				'Place tiles',
 				true,
 			);
-		else if (layer instanceof TileLayer && this.state.tileStamp)
+		} else if (layer instanceof TileLayer && this.state.tileStamp) {
+			newLayer = layer.place(this.state.tool, rect, this.state.tileStamp);
 			this.modifyLevel(
-				level.setLayer(
-					this.state.selectedLayerIndex,
-					layer.place(this.state.tool, rect, this.state.tileStamp),
-				),
+				level.setLayer(this.state.selectedLayerIndex, newLayer),
 				'Place tiles',
 				true,
 			);
+		}
+		this.layerDisplays[this.state.selectedLayerIndex].update(newLayer);
 	}
 
 	private onRemove(rect: Rect) {
 		const level = this.state.levelHistory.getCurrentState();
 		const layer = level.data.layers[this.state.selectedLayerIndex];
 		if (layer instanceof EntityLayer) return;
+		const newLayer = layer.remove(rect);
 		this.modifyLevel(
-			level.setLayer(
-				this.state.selectedLayerIndex,
-				layer.remove(rect),
-			),
+			level.setLayer(this.state.selectedLayerIndex, newLayer),
 			'Remove tiles',
 			true,
 		);
+		if (newLayer instanceof GeometryLayer)
+			this.layerDisplays[this.state.selectedLayerIndex].update(newLayer);
 	}
 
 	private onDelete() {
@@ -544,6 +553,7 @@ export default class LevelEditor extends React.Component<Props, State> {
 						height={level.data.height}
 						hideGrid={this.state.hideGrid}
 						backgroundColor={level.data.hasBackgroundColor && level.data.backgroundColor}
+						layers={this.layerDisplays}
 						onMoveCursor={this.onMoveCursor.bind(this)}
 						onClick={this.onClickGrid.bind(this)}
 						onRelease={this.onReleaseGrid.bind(this)}
