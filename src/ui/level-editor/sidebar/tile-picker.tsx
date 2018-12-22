@@ -93,18 +93,6 @@ export default class TilePicker extends React.Component<Props, State> {
 				onMoveCursor={this.onMove.bind(this)}
 				onClick={this.onClick.bind(this)}
 				onRelease={this.onRelease.bind(this)}
-				layers={[
-					(context: CanvasRenderingContext2D) => {
-						context.imageSmoothingEnabled = false;
-						context.drawImage(imageData.element, 0, 0);
-						if (!normalizedSelection) return;
-						context.strokeStyle = 'rgba(255, 0, 0, 1)';
-						context.strokeRect(normalizedSelection.l * tileSize,
-							normalizedSelection.t * tileSize,
-							(normalizedSelection.r - normalizedSelection.l + 1) * tileSize,
-							(normalizedSelection.b - normalizedSelection.t + 1) * tileSize);
-					},
-				]}
 			/>
 		</SidebarSection>;
 	}

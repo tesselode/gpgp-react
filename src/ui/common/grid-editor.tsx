@@ -1,6 +1,9 @@
+import * as PIXI from 'pixi.js';
 import React from 'react';
 
-export type GridEditorLayer = (context: CanvasRenderingContext2D) => void;
+interface GridEditorLayer {
+    container: PIXI.Container;
+}
 
 interface Props {
     viewportWidth: number;
@@ -9,7 +12,6 @@ interface Props {
     width: number;
     height: number;
     hideGrid?: boolean;
-    hasShadow?: boolean;
     backgroundColor?: string;
     layers?: GridEditorLayer[];
     /** A function that is called when the cursor is moved. */
@@ -35,7 +37,9 @@ interface State {
 }
 
 export default class GridEditor extends React.Component<Props, State> {
-    private canvasRef = React.createRef<HTMLCanvasElement>();
+    private pixiApp: PIXI.Application;
+    private layerContainer = new PIXI.Container();
+    private containerRef = React.createRef<HTMLDivElement>();
 
     constructor(props) {
         super(props);
@@ -54,100 +58,80 @@ export default class GridEditor extends React.Component<Props, State> {
 
     private getCursorPosition(x: number, y: number): {x: number, y: number} {
         const tileSize = this.props.tileSize;
-        const width = this.props.width;
-        const height = this.props.height;
-        x -= this.props.viewportWidth / 2;
-        y -= this.props.viewportHeight / 2;
         x -= this.state.panX;
         y -= this.state.panY;
         x /= this.state.zoom;
         y /= this.state.zoom;
         x /= tileSize;
         y /= tileSize;
-        x += width / 2;
-        y += height / 2;
         x = Math.floor(x);
         y = Math.floor(y);
         return {x, y};
     }
 
-    private renderBackground(context: CanvasRenderingContext2D) {
-        const tileSize = this.props.tileSize;
-        const width = this.props.width;
-        const height = this.props.height;
-        context.fillStyle = this.props.backgroundColor || 'rgba(255, 255, 255, 1)';
-        if (this.props.hasShadow) {
-            context.shadowColor = 'rgba(0, 0, 0, .33)';
-            context.shadowBlur = 32;
-            context.shadowOffsetX = 8;
-            context.shadowOffsetY = 8;
-        }
-        context.fillRect(0, 0, width * tileSize, height * tileSize);
-        context.shadowColor = 'rgba(0, 0, 0, 0)';
-    }
+    private createGridlines() {
+		const gridlines = new PIXI.Graphics();
+		gridlines.lineStyle(2 / this.state.zoom, 0x000000, .1);
+		for (let x = 1; x < this.props.width; x++) {
+			gridlines.moveTo(x * this.props.tileSize, 0);
+			gridlines.lineTo(x * this.props.tileSize, this.props.height * this.props.tileSize);
+		}
+		for (let y = 1; y < this.props.height; y++) {
+			gridlines.moveTo(0, y * this.props.tileSize);
+			gridlines.lineTo(this.props.width * this.props.tileSize, y * this.props.tileSize);
+		}
+		return gridlines;
+	}
 
-    private renderOutline(context: CanvasRenderingContext2D) {
-        const tileSize = this.props.tileSize;
-        const width = this.props.width;
-        const height = this.props.height;
-        context.strokeStyle = 'rgba(0, 0, 0, 1)';
-        context.strokeRect(0, 0, width * tileSize, height * tileSize);
-    }
-
-    private renderGridlines(context: CanvasRenderingContext2D) {
-        const tileSize = this.props.tileSize;
-        const width = this.props.width;
-        const height = this.props.height;
-        context.lineWidth = 1 / this.state.zoom;
-        context.strokeStyle = 'rgba(0, 0, 0, .25)';
-        for (let x = 1; x < width; x++) {
-            context.beginPath();
-            context.moveTo(x * tileSize, 0);
-            context.lineTo(x * tileSize, height * tileSize);
-            context.stroke();
-        }
-        for (let y = 1; y < height; y++) {
-            context.beginPath();
-            context.moveTo(0, y * tileSize);
-            context.lineTo(width * tileSize, y * tileSize);
-            context.stroke();
-        }
-        context.lineWidth = 1;
-    }
-
-    private renderCanvas() {
-        const tileSize = this.props.tileSize;
-        const width = this.props.width;
-        const height = this.props.height;
-        const canvas = this.canvasRef.current;
-        canvas.width = this.props.viewportWidth;
-        canvas.height = this.props.viewportHeight;
-        const context = canvas.getContext('2d');
-        context.translate(this.props.viewportWidth / 2, this.props.viewportHeight / 2);
-        context.translate(this.state.panX, this.state.panY);
-        context.scale(this.state.zoom, this.state.zoom);
-        context.translate(-(width * tileSize) / 2, -(height * tileSize) / 2);
-        this.renderBackground(context);
-        if (this.props.layers) {
-            this.props.layers.forEach(display => {
-                display(context);
-            });
-        }
-        if (!this.props.hideGrid) this.renderGridlines(context);
-        this.renderOutline(context);
+	private createBorder() {
+        const border = new PIXI.Graphics();
+        border.lineStyle(2 / this.state.zoom, 0x000000);
+        border.lineAlignment = 0;
+        border.drawRect(0, 0, this.props.width * this.props.tileSize,
+            this.props.height * this.props.tileSize);
+        return border;
     }
 
     public componentDidMount() {
-        this.renderCanvas();
+        this.pixiApp = new PIXI.Application({
+            width: this.props.viewportWidth,
+            height: this.props.viewportHeight,
+            transparent: true,
+        });
+        this.pixiApp.stage.position.x = this.state.panX;
+        this.pixiApp.stage.position.y = this.state.panY;
+        this.pixiApp.stage.scale.x = this.state.zoom;
+        this.pixiApp.stage.scale.y = this.state.zoom;
+        if (this.props.layers)
+            this.props.layers.forEach(layer => {
+                this.layerContainer.addChild(layer.container);
+            });
+        this.pixiApp.stage.addChild(this.layerContainer);
+        this.pixiApp.stage.addChild(this.createGridlines());
+        this.pixiApp.stage.addChild(this.createBorder());
+        this.containerRef.current.appendChild(this.pixiApp.view);
     }
 
     public componentDidUpdate() {
-        this.renderCanvas();
+        this.pixiApp.renderer.resize(this.props.viewportWidth, this.props.viewportHeight);
+        this.pixiApp.stage.position.x = this.state.panX;
+        this.pixiApp.stage.position.y = this.state.panY;
+        this.pixiApp.stage.scale.x = this.state.zoom;
+        this.pixiApp.stage.scale.y = this.state.zoom;
+        this.layerContainer.removeChildren(0, this.layerContainer.children.length);
+        if (this.props.layers)
+            this.props.layers.forEach(layer => {
+                this.layerContainer.addChild(layer.container);
+            });
     }
 
     public render() {
-        return <canvas
-            ref={this.canvasRef}
+        return <div
+            ref={this.containerRef}
+            style={{
+                width: this.props.viewportWidth,
+                height: this.props.viewportHeight,
+            }}
             onMouseDown={event => {
                 switch (event.button) {
                     case 1:
@@ -172,7 +156,7 @@ export default class GridEditor extends React.Component<Props, State> {
                 this.props.onDoubleClick(event.button);
             }}
             onMouseMove={event => {
-                const rect = this.canvasRef.current.getBoundingClientRect();
+                const rect = this.containerRef.current.getBoundingClientRect();
                 const mouseX = event.clientX - rect.left;
                 const mouseY = event.clientY - rect.top;
                 if (this.state.panning)
