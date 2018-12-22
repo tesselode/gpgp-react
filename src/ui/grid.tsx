@@ -23,6 +23,7 @@ interface Props {
 /** An interactive grid that can display content. */
 export default class Grid extends React.Component<Props> {
 	private pixiApp: PIXI.Application;
+	private contentContainer = new PIXI.Container();
 	private containerRef = React.createRef<HTMLDivElement>();
 	private zoom = 32;
 	private panX = 0;
@@ -105,13 +106,22 @@ export default class Grid extends React.Component<Props> {
 
 	public componentDidMount() {
 		this.containerRef.current.appendChild(this.pixiApp.view);
+		this.pixiApp.stage.addChild(this.contentContainer);
 		if (this.props.content)
 			this.props.content.forEach(layer => {
-				this.pixiApp.stage.addChild(layer.container);
+				this.contentContainer.addChild(layer.container);
 			});
 		this.pixiApp.stage.addChild(this.createGridlines());
 		this.pixiApp.stage.addChild(this.createBorder());
 		this.pixiApp.stage.scale = new PIXI.Point(this.zoom, this.zoom);
+	}
+
+	public componentDidUpdate() {
+		this.contentContainer.removeChildren(0, this.contentContainer.children.length);
+		if (this.props.content)
+			this.props.content.forEach(layer => {
+				this.contentContainer.addChild(layer.container);
+			});
 	}
 
 	public render() {
