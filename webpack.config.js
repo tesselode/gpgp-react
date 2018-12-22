@@ -1,4 +1,5 @@
 const path = require('path');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 module.exports = {
 	entry: './src/index.tsx',
@@ -28,4 +29,8 @@ module.exports = {
 	performance: {
 		hints: false,
 	},
+	stats: 'minimal',
+	plugins: [
+		new ProgressBarPlugin(),
+	],
 };
