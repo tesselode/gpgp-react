@@ -30,8 +30,21 @@ export default class App extends React.Component<{}, State> {
 				this.layerDisplays.push(new GeometryLayerDisplay(layer));
 		});
 
+		this.onResize = this.onResize.bind(this);
 		this.onClick = this.onClick.bind(this);
 		this.addLayer = this.addLayer.bind(this);
+	}
+
+	private onResize() {
+		this.forceUpdate();
+	}
+
+	public componentDidMount() {
+		window.addEventListener('resize', this.onResize);
+	}
+
+	public componentWillUnmount() {
+		window.removeEventListener('resize', this.onResize);
 	}
 
 	private addLayer(layerIndex: number, layer: GeometryLayer) {

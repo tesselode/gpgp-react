@@ -104,24 +104,26 @@ export default class Grid extends React.Component<Props> {
 		return border;
 	}
 
-	public componentDidMount() {
-		this.containerRef.current.appendChild(this.pixiApp.view);
-		this.pixiApp.stage.addChild(this.contentContainer);
+	private updateContentContainer() {
+		this.contentContainer.removeChildren(0, this.contentContainer.children.length);
 		if (this.props.content)
 			this.props.content.forEach(layer => {
 				this.contentContainer.addChild(layer.container);
 			});
+	}
+
+	public componentDidMount() {
+		this.containerRef.current.appendChild(this.pixiApp.view);
+		this.updateContentContainer();
+		this.pixiApp.stage.addChild(this.contentContainer);
 		this.pixiApp.stage.addChild(this.createGridlines());
 		this.pixiApp.stage.addChild(this.createBorder());
 		this.pixiApp.stage.scale = new PIXI.Point(this.zoom, this.zoom);
 	}
 
 	public componentDidUpdate() {
-		this.contentContainer.removeChildren(0, this.contentContainer.children.length);
-		if (this.props.content)
-			this.props.content.forEach(layer => {
-				this.contentContainer.addChild(layer.container);
-			});
+		this.updateContentContainer();
+		this.pixiApp.renderer.resize(this.props.viewportWidth, this.props.viewportHeight);
 	}
 
 	public render() {
